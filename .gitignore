@@ -227,3 +227,5 @@ jspm_packages/
 # Local configuration files
 config.local.*
 settings.local.*
+.vercel
+.env*.local
