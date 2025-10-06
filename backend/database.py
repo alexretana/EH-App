@@ -1,7 +1,7 @@
 import os
-import psycopg3
-from psycopg3 import sql
-from psycopg3.rows import dict_row
+import psycopg
+from psycopg import sql
+from psycopg.rows import dict_row
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 
@@ -16,7 +16,7 @@ class Database:
     
     def connect(self):
         if not self.conn:
-            self.conn = psycopg3.connect(DATABASE_URL)
+            self.conn = psycopg.connect(DATABASE_URL)
         return self.conn
     
     def execute_query(self, query: str, params: tuple = None) -> List[Dict[str, Any]]:

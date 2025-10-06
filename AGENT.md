@@ -2,7 +2,7 @@
 
 Frontend: Javascript; Solid.js + vite, Tailswindcss, npm/ pnpm (package magager)
 
-Backend: Python; psycopg3, fastapi, uvicorn, uv (package manager)
+Backend: Python; psycopg, fastapi, uvicorn, uv (package manager)
 
 Database: Postgresql
 
