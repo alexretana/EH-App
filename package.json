@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "cd backend && uvicorn main:app --reload",
+    "dev:backend": "cd backend && uv run uvicorn main:app --reload",
     "dev": "concurrently \"pnpm dev:frontend\" \"pnpm dev:backend\""
   },
   "devDependencies": {

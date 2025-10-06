@@ -1,11 +1,21 @@
-import type { Component } from 'solid-js'
+import type { Component } from 'solid-js';
+import { Router } from '@solidjs/router';
+import { Layout } from './components/Layout';
+import { ProjectView } from './views/ProjectView';
+import { KnowledgeBaseView } from './views/KnowledgeBaseView';
+import { TasksView } from './views/TasksView';
 
 const App: Component = () => {
   return (
-    <p class="text-4xl text-green-700 text-center py-20">
-      This is a <a href="https://www.solidjs.com/">Solid</a> + <a href="https://tailwindcss.com/">Tailwind</a> + <a href="https://www.typescriptlang.org/">Typescript</a>!
-    </p>
-  )
-}
+    <Router>
+      <Layout>
+        <ProjectView path="/" />
+        <ProjectView path="/projects" />
+        <KnowledgeBaseView path="/knowledge" />
+        <TasksView path="/tasks" />
+      </Layout>
+    </Router>
+  );
+};
 
-export default App
+export default App;
