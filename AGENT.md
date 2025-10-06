@@ -1,6 +1,6 @@
 # Frameworks
 
-Frontend: Javascript; Solid.js, Tailswindcss, npm/ pnpm (package magager)
+Frontend: Javascript; Solid.js + vite, Tailswindcss, npm/ pnpm (package magager)
 
 Backend: Python; psycopg3, fastapi, gunicorn, uv (package manager)
 
