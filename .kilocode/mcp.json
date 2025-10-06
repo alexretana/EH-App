@@ -16,6 +16,13 @@
         "-y",
         "@playwright/mcp@0.0.38",
         "--browser=chromium"
+      ],
+      "alwaysAllow": [
+        "browser_console_messages",
+        "browser_snapshot",
+        "browser_navigate",
+        "browser_close",
+        "browser_click"
       ]
     }
   }

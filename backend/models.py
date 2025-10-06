@@ -162,6 +162,10 @@ class Task(TaskBase):
 
     class Config:
         from_attributes = True
+        json_encoders = {
+            # Convert UUID to string
+            'UUID': lambda v: str(v)
+        }
 
 class KnowledgeBaseBase(BaseModel):
     document_name: str = Field(..., min_length=1, max_length=255)

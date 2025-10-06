@@ -23,14 +23,21 @@ class Database:
         conn = self.connect()
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute(query, params)
-            return cursor.fetchall()
+            results = cursor.fetchall()
+            # Convert UUID objects to strings
+            for row in results:
+                for key, value in row.items():
+                    if hasattr(value, '__class__') and value.__class__.__name__ == 'UUID':
+                        row[key] = str(value)
+            return results
     
     def execute_insert(self, query: str, params: tuple = None) -> str:
         conn = self.connect()
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute(query, params)
             conn.commit()
-            return str(cursor.fetchone()["id"]) if cursor.description else None
+            result = cursor.fetchone()
+            return str(result["id"]) if result and "id" in result else None
     
     def execute_update(self, query: str, params: tuple = None) -> bool:
         conn = self.connect()

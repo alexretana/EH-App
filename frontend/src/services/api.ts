@@ -131,7 +131,7 @@ export interface KnowledgeBaseCreate {
 // Project API calls
 export const projectsApi = {
   getAll: async (): Promise<Project[]> => {
-    const response = await api.get('/projects');
+    const response = await api.get('/projects/');
     return response.data;
   },
   
@@ -141,7 +141,7 @@ export const projectsApi = {
   },
   
   create: async (project: ProjectCreate): Promise<Project> => {
-    const response = await api.post('/projects', project);
+    const response = await api.post('/projects/', project);
     return response.data;
   },
   
@@ -163,7 +163,7 @@ export const projectsApi = {
 // Goal API calls
 export const goalsApi = {
   getAll: async (): Promise<Goal[]> => {
-    const response = await api.get('/goals');
+    const response = await api.get('/goals/');
     return response.data;
   },
   
@@ -173,7 +173,7 @@ export const goalsApi = {
   },
   
   create: async (goal: GoalCreate): Promise<Goal> => {
-    const response = await api.post('/goals', goal);
+    const response = await api.post('/goals/', goal);
     return response.data;
   },
   
@@ -205,7 +205,7 @@ export const goalsApi = {
 // Task API calls
 export const tasksApi = {
   getAll: async (): Promise<Task[]> => {
-    const response = await api.get('/tasks');
+    const response = await api.get('/tasks/');
     return response.data;
   },
   
@@ -215,7 +215,7 @@ export const tasksApi = {
   },
   
   create: async (task: TaskCreate): Promise<Task> => {
-    const response = await api.post('/tasks', task);
+    const response = await api.post('/tasks/', task);
     return response.data;
   },
   
@@ -267,7 +267,7 @@ export const tasksApi = {
 // Knowledge Base API calls
 export const knowledgeApi = {
   getAll: async (): Promise<KnowledgeBase[]> => {
-    const response = await api.get('/knowledge');
+    const response = await api.get('/knowledge/');
     return response.data;
   },
   
@@ -277,7 +277,7 @@ export const knowledgeApi = {
   },
   
   create: async (item: KnowledgeBaseCreate): Promise<KnowledgeBase> => {
-    const response = await api.post('/knowledge', item);
+    const response = await api.post('/knowledge/', item);
     return response.data;
   },
   

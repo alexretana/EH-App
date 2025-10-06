@@ -1,14 +1,13 @@
 import type { Component } from 'solid-js';
-import { A, useLocation } from '@solidjs/router';
+import { A } from '@solidjs/router';
 import { createSignal, Show } from 'solid-js';
 import { Menu, X, FolderOpen, BookOpen, CheckSquare } from 'lucide-solid';
 
 interface LayoutProps {
-  children: any;
+  children?: any;
 }
 
 export const Layout: Component<LayoutProps> = (props) => {
-  const location = useLocation();
   const [isDrawerOpen, setIsDrawerOpen] = createSignal(false);
 
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen());
@@ -44,17 +43,12 @@ export const Layout: Component<LayoutProps> = (props) => {
           <nav class="space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
               
               return (
                 <A
                   href={item.path}
                   onClick={() => setIsDrawerOpen(false)}
-                  class={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-primary text-bg-dark'
-                      : 'hover:bg-bg-light text-text hover:text-primary'
-                  }`}
+                  class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors hover:bg-bg-light text-text hover:text-primary"
                 >
                   <Icon size={20} />
                   <span>{item.label}</span>
