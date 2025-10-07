@@ -102,7 +102,7 @@ const KnowledgeBaseView: React.FC = () => {
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', damping: 10, stiffness: 100 }}
               >
-                <Card className="glass-card glass-hover h-full">
+                <Card className="glass-card glass-hover-level-1 h-full">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg text-glass line-clamp-2">{doc.document_name}</CardTitle>

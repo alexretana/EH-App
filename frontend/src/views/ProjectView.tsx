@@ -111,7 +111,9 @@ const ProjectView: React.FC = () => {
               return (
                 <motion.div
                   key={project.id}
-                  className="glass-card p-6 rounded-xl glass-hover"
+                  className={`glass-card p-6 rounded-xl ${
+                    isExpanded ? 'glass-expanded' : 'glass-hover-level-1'
+                  }`}
                   layout
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -225,7 +227,7 @@ const ProjectView: React.FC = () => {
                             return (
                               <motion.div
                                 key={goal.id}
-                                className="glass-card p-4 rounded-lg"
+                                className="glass-card p-4 rounded-lg glass-hover-level-2"
                                 layout
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -307,7 +309,7 @@ const ProjectView: React.FC = () => {
                                         goalTasks.map((task) => (
                                           <motion.div
                                             key={task.id}
-                                            className="glass-card p-3 rounded-lg flex items-center justify-between"
+                                            className="glass-card p-3 rounded-lg flex items-center justify-between glass-hover-level-3"
                                             layout
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}

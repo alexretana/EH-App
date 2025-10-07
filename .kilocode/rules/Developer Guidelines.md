@@ -1,6 +1,6 @@
 # Frameworks
 
-Frontend: Javascript; React, Tailswindcss v4, shadcn, npm/ pnpm, (package magager)
+Frontend: Javascript; React, Tailswindcss v4, shadcn, framer motion (ui animations), react bits (background animations/optional), npm/ pnpm, (package magager)
 
 Backend: Python; psycopg, fastapi, uvicorn, uv (package manager)
 

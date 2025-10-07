@@ -284,7 +284,7 @@ const TaskView: React.FC = () => {
               return (
                 <motion.div
                   key={task.id}
-                  className="glass-card p-4 rounded-xl glass-hover"
+                  className="glass-card p-4 rounded-xl glass-hover-level-1"
                   layout
                   whileHover={{ y: -2 }}
                   transition={{ type: 'spring', damping: 10, stiffness: 100 }}
