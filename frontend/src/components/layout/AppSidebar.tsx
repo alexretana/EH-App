@@ -25,7 +25,7 @@ const AppSidebar: React.FC = () => {
   ];
 
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="inset" className="sidebar-glass">
       <SidebarHeader>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500"></div>

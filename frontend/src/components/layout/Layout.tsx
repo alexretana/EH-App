@@ -19,7 +19,7 @@ const Layout: React.FC = () => {
       
       {/* App Content */}
       <div className="relative z-10 w-full h-full bg-transparent">
-        <SidebarProvider>
+        <SidebarProvider className="has-data-[variant=inset]:bg-transparent">
           <AppSidebar />
           <SidebarInset className="bg-transparent">
             <header className="glass-drawer h-16 flex items-center justify-between px-4 md:px-6 border-b border-white/10">
