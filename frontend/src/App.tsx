@@ -1,21 +1,27 @@
-import type { Component } from 'solid-js';
-import { Router, Route } from '@solidjs/router';
-import { Layout } from './components/Layout';
-import { ProjectView } from './views/ProjectView';
-import { KnowledgeBaseView } from './views/KnowledgeBaseView';
-import { TasksView } from './views/TasksView';
+import CountBtn from "@/components/count-btn";
+import ReactSVG from "@/assets/react.svg";
+import { Badge } from "@/components/ui/badge";
 
-const App: Component = () => {
+function App() {
   return (
-    <Router>
-      <Route path="/" component={Layout}>
-        <Route path="/" component={ProjectView} />
-        <Route path="/projects" component={ProjectView} />
-        <Route path="/knowledge" component={KnowledgeBaseView} />
-        <Route path="/tasks" component={TasksView} />
-      </Route>
-    </Router>
+    <main className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center gap-y-4">
+        <div className="inline-flex items-center gap-x-4">
+          <img src={ReactSVG} alt="React Logo" className="w-32" />
+          <span className="text-6xl">+</span>
+          <img src={"/vite.svg"} alt="Vite Logo" className="w-32" />
+        </div>
+        <a
+          href="https://ui.shadcn.com"
+          rel="noopener noreferrer nofollow"
+          target="_blank"
+        >
+          <Badge variant="outline">shadcn/ui</Badge>
+        </a>
+        <CountBtn />
+      </div>
+    </main>
   );
-};
+}
 
 export default App;

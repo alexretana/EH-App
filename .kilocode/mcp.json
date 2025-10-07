@@ -8,7 +8,11 @@
       ],
       "env": {
         "DEFAULT_MINIMUM_TOKENS": ""
-      }
+      },
+      "alwaysAllow": [
+        "get-library-docs",
+        "resolve-library-id"
+      ]
     },
     "playwright": {
       "command": "npx",
@@ -20,10 +24,10 @@
       "alwaysAllow": [
         "browser_console_messages",
         "browser_snapshot",
-        "browser_navigate",
         "browser_close",
         "browser_click"
-      ]
+      ],
+      "disabled": false
     }
   }
 }

@@ -1,82 +1,82 @@
-# [Solid](https://solidjs.com) + [Tailwind CSS](https://tailwindcss.com) + [TypeScript](https://www.typescriptlang.org) + [Vite](https://vitejs.dev) Starter
+# React + Vite + TypeScript Template (react-vite-ui)
 
-A starter template for Solid that comes preconfigured with [Vite](https://vitejs.dev),
-[TypeScript](https://www.typescriptlang.org), [Tailwind CSS](https://tailwindcss.com), [ESLint](https://eslint.org), [Prettier](https://prettier.io) and HMR.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Dan5py/react-vite-ui/blob/main/LICENSE)
 
-## Features
+A React + Vite template powered by shadcn/ui.
 
-- ⚡️ [Solid](https://solidjs.com) & [Vite](https://vitejs.dev) - Simple and performant reactivity for building user interfaces.
+## 🎉 Features
 
-- 🎨 [Tailwind CSS](https://tailwindcss.com) - A utility-first CSS framework for rapid UI development.
+- **React** - A JavaScript library for building user interfaces.
+- **Vite** - A fast, opinionated frontend build tool.
+- **TypeScript** - A typed superset of JavaScript that compiles to plain JavaScript.
+- **Tailwind CSS** - A utility-first CSS framework (`v4`).
+- **Tailwind Prettier Plugin** - A Prettier plugin for formatting Tailwind CSS classes.
+- **ESLint** - A pluggable linting utility for JavaScript and TypeScript.
+- **shadcn/ui** - Beautifully designed components that you can copy and paste into your apps.
 
-- 💪 [TypeScript](https://www.typescriptlang.org) - it's JavaScript with syntax for types.
+## ⚙️ Prerequisites
 
-- 👌 [ESLint](https://eslint.org) + [Prettier](https://prettier.io) - ESLint find problems in your code and Prettier format your code for an easy life.
+Make sure you have the following installed on your development machine:
 
-<br>
+- Node.js (version 22 or above)
+- pnpm (package manager)
 
-## Try it now!
+## 🚀 Getting Started
 
-### GitHub Template
+Follow these steps to get started with the react-vite-ui template:
 
-[Create a repo from this template on GitHub](https://github.com/AR10Dev/solid-tailwind-ts-vite/generate)
+1. Clone the repository:
 
-### Clone to local
+   ```bash
+   git clone https://github.com/dan5py/react-vite-ui.git
+   ```
 
-If you prefer to do it manually with the cleaner git history
+2. Navigate to the project directory:
 
-```bash
-npx degit AR10Dev/solid-tailwind-ts-vite my-app
-cd my-app
-npm install # or pnpm install or yarn install
+   ```bash
+   cd react-vite-ui
+   ```
+
+3. Install the dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+4. Start the development server:
+
+   ```bash
+   pnpm dev
+   ```
+
+## 📜 Available Scripts
+
+- pnpm dev - Starts the development server.
+- pnpm build - Builds the production-ready code.
+- pnpm lint - Runs ESLint to analyze and lint the code.
+- pnpm preview - Starts the Vite development server in preview mode.
+
+## 📂 Project Structure
+
+The project structure follows a standard React application layout:
+
+```python
+react-vite-ui/
+  ├── node_modules/      # Project dependencies
+  ├── public/            # Public assets
+  ├── src/               # Application source code
+  │   ├── components/    # React components
+  │   │   └── ui/        # shadc/ui components
+  │   ├── styles/        # CSS stylesheets
+  │   ├── lib/           # Utility functions
+  │   ├── App.tsx        # Application entry point
+  │   └── index.tsx      # Main rendering file
+  ├── eslint.config.js     # ESLint configuration
+  ├── index.html         # HTML entry point
+  ├── tsconfig.json      # TypeScript configuration
+  └── vite.config.ts     # Vite configuration
 ```
 
-## Checklist
+## 📄 License
 
-When you use this template, follow the checklist to update your info properly
-
-- [ ] Rename `name`, `version` and `author` field in `package.json`
-- [ ] Change the author name in `LICENSE`
-- [ ] Clean up the READMEs
-- [ ] Optional: Remove the `.github` folder which contains the github actions and the renovate config
-- [ ] Enjoy 😉
-
-## Usage
-
-### Development
-
-```bash
-npm run dev # or pnpm dev or yarn dev
-```
-
-Runs the app in the development mode.<br>
-Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
-
-The page will reload automatically if you make edits.<br>
-
-### Build
-
-```bash
-npm run build # or pnpm build or yarn build
-```
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
-
-
-## Variations
-
-The following list provides maintained templates variations with different preferences and feature sets.
-
-- [**solid-tailwind-ts-vite-router**](https://github.com/AR10Dev/solid-tailwind-ts-vite-router) - Based on this template but add support to file-system based routing
-
-- [**tauri-solid-ts-tailwind-vite**](https://github.com/AR10Dev/tauri-solid-ts-tailwind-vite) - Based on [solid-tailwind-ts-vite-router](https://github.com/AR10Dev/solid-tailwind-ts-vite-router) template, it offers the integration with Tauri
-
-- [solidjs/templates](https://github.com/solidjs/templates) - Solid templates created by Solid Team
+This project is licensed under the MIT License. See the [LICENSE](https://choosealicense.com/licenses/mit/) file for details.
