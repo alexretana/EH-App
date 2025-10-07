@@ -59,28 +59,6 @@ const ProjectView: React.FC = () => {
     setCurrentProject(null);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring' as const,
-        damping: 20,
-        stiffness: 100
-      }
-    }
-  };
 
   if (isLoading) {
     return (
@@ -125,12 +103,7 @@ const ProjectView: React.FC = () => {
             </Button>
           </div>
         ) : (
-          <motion.div
-            className="space-y-4"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <div className="space-y-4">
             {projects.map((project) => {
               const projectGoals = getGoalsByProjectId(project.id);
               const isExpanded = expandedProjects.has(project.id);
@@ -139,7 +112,6 @@ const ProjectView: React.FC = () => {
                 <motion.div
                   key={project.id}
                   className="glass-card p-6 rounded-xl glass-hover"
-                  variants={itemVariants}
                   layout
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -389,7 +361,7 @@ const ProjectView: React.FC = () => {
                 </motion.div>
               );
             })}
-          </motion.div>
+          </div>
         )}
       </div>
       

@@ -53,28 +53,6 @@ const TaskView: React.FC = () => {
     setCurrentTask(null);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring' as const,
-        damping: 20,
-        stiffness: 100
-      }
-    }
-  };
 
   if (isLoading) {
     return (
@@ -298,12 +276,7 @@ const TaskView: React.FC = () => {
             </motion.div>
           </div>
         ) : viewMode === 'checklist' ? (
-          <motion.div
-            className="space-y-4"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <div className="space-y-4">
             {sortedTasks.map((task) => {
               const goal = goals.find(g => g.id === task.goal_id);
               const project = goal ? projects.find(p => p.id === goal.project_id) : null;
@@ -312,7 +285,6 @@ const TaskView: React.FC = () => {
                 <motion.div
                   key={task.id}
                   className="glass-card p-4 rounded-xl glass-hover"
-                  variants={itemVariants}
                   layout
                   whileHover={{ y: -2 }}
                   transition={{ type: 'spring', damping: 10, stiffness: 100 }}
@@ -464,7 +436,7 @@ const TaskView: React.FC = () => {
                 </motion.div>
               );
             })}
-          </motion.div>
+          </div>
         ) : (
           <div className="glass-card p-4 rounded-xl">
             <div className="text-center py-8">

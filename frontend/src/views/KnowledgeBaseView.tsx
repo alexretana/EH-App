@@ -50,28 +50,6 @@ const KnowledgeBaseView: React.FC = () => {
     setCurrentDocument(null);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring' as const,
-        damping: 20,
-        stiffness: 100
-      }
-    }
-  };
 
   if (isLoading) {
     return (
@@ -117,16 +95,10 @@ const KnowledgeBaseView: React.FC = () => {
             </Button>
           </div>
         ) : (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {knowledgeBase.map((doc) => (
               <motion.div
                 key={doc.id}
-                variants={itemVariants}
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', damping: 10, stiffness: 100 }}
               >
@@ -205,7 +177,7 @@ const KnowledgeBaseView: React.FC = () => {
                 </Card>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
       

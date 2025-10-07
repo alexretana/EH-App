@@ -1,32 +1,9 @@
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { Outlet } from 'react-router-dom';
 import { SidebarProvider, SidebarInset, SidebarTrigger, SidebarRail } from '@/components/ui/sidebar';
 import AppSidebar from './AppSidebar';
 
 const Layout: React.FC = () => {
-  const location = useLocation();
-
-  const pageVariants = {
-    initial: {
-      opacity: 0,
-      y: 20
-    },
-    in: {
-      opacity: 1,
-      y: 0
-    },
-    out: {
-      opacity: 0,
-      y: -20
-    }
-  };
-
-  const pageTransition = {
-    type: 'tween' as const,
-    ease: 'anticipate' as const,
-    duration: 0.4
-  };
 
   return (
     <SidebarProvider>
@@ -43,20 +20,9 @@ const Layout: React.FC = () => {
           </div>
         </header>
         
-        <main className="transition-all duration-300 ease-in-out">
+        <main>
           <div className="container mx-auto px-4 py-6">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-              >
-                <Outlet />
-              </motion.div>
-            </AnimatePresence>
+            <Outlet />
           </div>
         </main>
         
