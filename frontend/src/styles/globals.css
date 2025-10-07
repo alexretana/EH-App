@@ -5,37 +5,61 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
+  
+  /* Custom color variables from design document */
+  --bg-dark: oklch(0.1 0.03 310);
+  --bg: oklch(0.15 0.03 310);
+  --bg-light: oklch(0.2 0.03 310);
+  --text: oklch(0.96 0.06 310);
+  --text-muted: oklch(0.76 0.06 310);
+  --highlight: oklch(0.5 0.06 310);
+  --border: oklch(0.4 0.06 310);
+  --border-muted: oklch(0.3 0.06 310);
+  --primary: oklch(0.76 0.1 310);
+  --secondary: oklch(0.76 0.1 130);
+  --danger: oklch(0.7 0.06 30);
+  --warning: oklch(0.7 0.06 100);
+  --success: oklch(0.7 0.06 160);
+  --info: oklch(0.7 0.06 260);
+  
+  /* Glassmorphic utility classes */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  
+  /* shadcn/ui color variables (mapped to custom colors) */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--glass-bg);
+  --card-foreground: var(--text);
+  --popover: var(--glass-bg);
+  --popover-foreground: var(--text);
+  --primary: var(--primary);
+  --primary-foreground: var(--bg-dark);
+  --secondary: var(--secondary);
+  --secondary-foreground: var(--bg-dark);
+  --muted: var(--bg-light);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--highlight);
+  --accent-foreground: var(--bg-dark);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--bg-dark);
+  --border: var(--border);
+  --input: var(--glass-bg);
+  --ring: var(--primary);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  --sidebar: var(--glass-bg);
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--bg-dark);
+  --sidebar-accent: var(--highlight);
+  --sidebar-accent-foreground: var(--bg-dark);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--primary);
 }
 
 .dark {
@@ -116,5 +140,123 @@
   }
   body {
     @apply bg-background text-foreground;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg) 50%, var(--bg-dark) 100%);
+    min-height: 100vh;
+  }
+}
+
+/* Glassmorphic utility classes */
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-hover:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+    transition: all 0.3s ease;
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border-radius: 1rem;
+  }
+  
+  .glass-modal {
+    background: rgba(15, 15, 25, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 16px 64px 0 rgba(31, 38, 135, 0.45);
+    border-radius: 1.5rem;
+  }
+  
+  .glass-input {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .glass-input:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(118, 97, 236, 0.2);
+  }
+  
+  .glass-button {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .glass-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.4);
+  }
+  
+  .glass-drawer {
+    background: rgba(15, 15, 25, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 4px 0 24px 0 rgba(0, 0, 0, 0.3);
+  }
+  
+  .glass-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .glass-shimmer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    100% {
+      left: 100%;
+    }
+  }
+  
+  .glass-glow {
+    box-shadow:
+      0 0 20px rgba(118, 97, 236, 0.3),
+      0 0 40px rgba(118, 97, 236, 0.1),
+      0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+  
+  .text-glass {
+    color: var(--text);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  
+  .text-glass-muted {
+    color: var(--text-muted);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 }
