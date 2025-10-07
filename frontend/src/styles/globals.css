@@ -23,9 +23,9 @@
   --info: oklch(0.7 0.06 260);
 
   /* Glassmorphic utility classes */
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --glass-bg: oklab(1 0 0 / 0.1);
+  --glass-border: oklab(1 0 0 / 0.2);
+  --glass-shadow: 0 8px 32px 0 oklch(0.3382 0.1582 271.28 / 0.37);
 
   /* shadcn/ui color variables (mapped to custom colors) */
   --background: var(--bg);
@@ -156,104 +156,106 @@
   }
 
   .glass-hover:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: oklab(1 0 0 / 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+    box-shadow: 0 12px 40px 0 oklab(1 0 0 / 0.45);
     transition: all 0.3s ease;
   }
 
   /* Depth-based hover intensity levels */
   .glass-hover-level-1:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+    background: oklab(1 0 0 / 0.15);
+    border-color: oklab(1 0 0 / 0.3);
+
+    box-shadow: 0 0 0 1px oklab(1 0 0 / 0.2), 0 12px 40px 0 oklab(1 0 0 / 0.45);
     transform: translateY(-2px);
     transition: all 0.3s ease;
   }
 
   .glass-hover-level-2:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 6px 24px 0 rgba(31, 38, 135, 0.35) !important;
+    background: oklab(1 0 0 / 0.08);
+    border-color: oklab(1 0 0 / 0.2) !important;
+    box-shadow: 0 0 0 1px oklab(1 0 0 / 0.12), 0 6px 24px 0 oklab(1 0 0 / 0.35) !important;
     transform: translateY(-1px);
     transition: all 0.3s ease;
   }
 
   .glass-hover-level-3:hover {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 16px 0 rgba(31, 38, 135, 0.3) !important;
+    background: oklab(1 0 0 / 0.05) !important;
+    border-color: oklab(1 0 0 / 0.15) !important;
+    box-shadow: 0 0 0 1px oklab(1 0 0 / 0.08), 0 4px 16px 0 oklab(1 0 0 / 0.3) !important;
     transform: translateY(-1px);
     transition: all 0.3s ease;
   }
 
   /* Expanded project state - no hover effect */
   .glass-expanded {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    background: oklab(1 0 0 / 0.08);
+    border-color:oklab(1 0 0 / 0.15);
+    box-shadow: 0 8px 32px 0 oklch(0.3382 0.1582 271.28 / 0.37);
     transition: all 0.5s ease;
   }
 
   .glass-expanded:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    background: oklab(1 0 0 / 0.08);
+    border-color: oklab(1 0 0 / 0.15);
+    box-shadow: 0 8px 32px 0 oklch(0.3382 0.1582 271.28 / 0.37);
     transform: none;
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.08);
+    background: oklab(1 0 0 / 0.08);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border: 1px solid oklab(1 0 0 / 0.15);
+    box-shadow: 0 8px 32px 0 oklch(0.3382 0.1582 271.28 / 0.37);
+
     border-radius: 1rem;
   }
 
-  .glass-modal {
-    background: rgba(15, 15, 25, 0.85);
+  .glass-modal { 
+    background: oklch(0.1684 0 0 / 0.85);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 16px 64px 0 rgba(31, 38, 135, 0.45);
+    border: 1px solid oklab(1 0 0/ 0.18);
+    box-shadow: 0 16px 64px 0 oklch(0.3382 0.1582 271.28 / 0.45);
     border-radius: 1.5rem;
   }
 
   .glass-input {
-    background: rgba(255, 255, 255, 0.08);
+    background: oklab(1 0 0 / 0.08);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid oklab(1 0 0 / 0.2);
     transition: all 0.3s ease;
   }
 
   .glass-input:focus {
-    background: rgba(255, 255, 255, 0.12);
+    background: oklab(1 0 0 / 0.12);
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(118, 97, 236, 0.2);
+    box-shadow: 0 0 0 2px oklch(0.5875 0.2009 285.3 / 0.2);
   }
 
   .glass-button {
-    background: rgba(255, 255, 255, 0.1);
+    background: oklab(1 0 0 / 0.1);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid oklab(1 0 0 / 0.2);
     transition: all 0.3s ease;
   }
 
   .glass-button:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: oklab(1 0 0 / 0.2);
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.4);
+    box-shadow: 0 8px 24px 0 oklch(0.3382 0.1582 271.28 / 0.4);
   }
 
   .glass-drawer {
-    background: rgba(15, 15, 25, 0.95);
+    background: oklch(0.1684 0 0 / 0.2);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 4px 0 24px 0 rgba(0, 0, 0, 0.3);
+    border-right: 1px solid oklab(1 0 0 / 0.1);
+    box-shadow: 4px 0 24px 0 oklab(0 0 0 / 0.3);
   }
 
   .glass-shimmer {
@@ -271,7 +273,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.1),
+      oklab(1 0 0 / 0.1),
       transparent
     );
     animation: shimmer 2s infinite;
@@ -285,18 +287,18 @@
 
   .glass-glow {
     box-shadow:
-      0 0 20px rgba(118, 97, 236, 0.3),
-      0 0 40px rgba(118, 97, 236, 0.1),
-      0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      0 0 20px oklch(0.5875 0.2009 285.3 / 0.3),
+      0 0 40px oklch(0.5875 0.2009 285.3 / 0.1),
+      0 8px 32px 0 oklch(0.3382 0.1582 271.28 / 0.37);
   }
 
   .text-glass {
     color: var(--text);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 3px oklab(0 0 0 / 0.3);
   }
 
   .text-glass-muted {
     color: var(--text-muted);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px oklab(0 0 0 / 0.2);
   }
 }
