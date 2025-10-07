@@ -138,7 +138,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="modal-backdrop absolute inset-0" onClick={props.onClose}></div>
         <div class="relative bg-bg border border-border rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-in">
-          <div class="sticky top-0 bg-bg border-b border-border p-4 flex justify-between items-center">
+          <div class="sticky top-0 bg-bg border-b border-border p-6 flex justify-between items-center">
             <h2 class="text-xl font-semibold">
               {props.goal ? 'Edit Goal' : 'Create New Goal'}
             </h2>
@@ -150,9 +150,9 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} class="p-4 space-y-4">
+          <form onSubmit={handleSubmit} class="p-6 space-y-6">
             <div>
-              <label class="block text-sm font-medium mb-1">Goal Name *</label>
+              <label class="block text-sm font-medium mb-2">Goal Name *</label>
               <input
                 type="text"
                 value={formData().name}
@@ -163,7 +163,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Description</label>
+              <label class="block text-sm font-medium mb-2">Description</label>
               <textarea
                 value={formData().description}
                 onInput={handleInputChange('description')}
@@ -173,7 +173,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Project *</label>
+              <label class="block text-sm font-medium mb-2">Project *</label>
               <select
                 value={formData().project_id}
                 onChange={handleInputChange('project_id')}
@@ -189,7 +189,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Scope *</label>
+              <label class="block text-sm font-medium mb-2">Scope *</label>
               <select
                 value={formData().scope || ''}
                 onChange={handleInputChange('scope')}
@@ -206,7 +206,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
 
             <Show when={formData().scope === 'Weekly-Milestone' && !props.parentGoalId}>
               <div>
-                <label class="block text-sm font-medium mb-1">Parent Goal *</label>
+                <label class="block text-sm font-medium mb-2">Parent Goal *</label>
                 <select
                   value={formData().parent_goal_id || ''}
                   onChange={handleInputChange('parent_goal_id')}
@@ -222,7 +222,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
             </Show>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Status</label>
+              <label class="block text-sm font-medium mb-2">Status</label>
               <select
                 value={formData().status}
                 onChange={handleInputChange('status')}
@@ -236,7 +236,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Success Criteria</label>
+              <label class="block text-sm font-medium mb-2">Success Criteria</label>
               <textarea
                 value={formData().success_criteria}
                 onInput={handleInputChange('success_criteria')}
@@ -246,7 +246,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Due Date</label>
+              <label class="block text-sm font-medium mb-2">Due Date</label>
               <input
                 type="date"
                 value={formData().due_date}
@@ -261,7 +261,7 @@ export const GoalModal: Component<GoalModalProps> = (props) => {
               </div>
             </Show>
 
-            <div class="flex justify-end space-x-3 pt-4">
+            <div class="flex justify-end space-x-3 pt-6">
               <button
                 type="button"
                 onClick={props.onClose}

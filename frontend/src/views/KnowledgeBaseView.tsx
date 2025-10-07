@@ -57,7 +57,7 @@ export const KnowledgeBaseView: Component = () => {
   };
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-8">
       <div class="flex justify-between items-center">
         <h1 class="text-3xl font-bold">Knowledge Base</h1>
         <button
@@ -85,7 +85,7 @@ export const KnowledgeBaseView: Component = () => {
       </Show>
 
       <Show when={!loading() && documents().length > 0}>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <For each={documents()}>
             {(document) => (
               <div class="bg-bg-light border border-border rounded-lg p-6 card-hover">

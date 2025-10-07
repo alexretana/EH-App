@@ -200,7 +200,7 @@ export const ProjectView: Component = () => {
   };
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-8">
       <div class="flex justify-between items-center">
         <h1 class="text-3xl font-bold">Projects</h1>
         <button
@@ -227,11 +227,11 @@ export const ProjectView: Component = () => {
       </Show>
 
       <Show when={!loading() && projects().length > 0}>
-        <div class="space-y-4">
+        <div class="space-y-6">
           <For each={projects()}>
             {(project) => (
               <div class="bg-bg-light border border-border rounded-lg overflow-hidden">
-                <div class="p-4">
+                <div class="p-6">
                   <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-3">
                       <button
@@ -269,11 +269,11 @@ export const ProjectView: Component = () => {
 
                 <Show when={expandedProjects().has(project.id)}>
                   <div class="border-t border-border">
-                    <div class="p-4 space-y-2">
+                    <div class="p-6 space-y-4">
                       <For each={getProjectGoals(project.id)}>
                         {(goal) => (
                           <div class="bg-bg border border-border-muted rounded-lg">
-                            <div class="p-3">
+                            <div class="p-4">
                               <div class="flex justify-between items-center">
                                 <div class="flex items-center space-x-3">
                                   <button
@@ -319,11 +319,11 @@ export const ProjectView: Component = () => {
 
                             <Show when={expandedGoals().has(goal.id)}>
                               <div class="border-t border-border-muted">
-                                <div class="p-3 space-y-2">
+                                <div class="p-4 space-y-4">
                                   <For each={getGoalChildren(goal.id)}>
                                     {(childGoal) => (
                                       <div class="bg-bg-dark border border-border-muted rounded-lg ml-4">
-                                        <div class="p-3">
+                                        <div class="p-4">
                                           <div class="flex justify-between items-center">
                                             <div class="flex items-center space-x-3">
                                               <button
@@ -356,10 +356,10 @@ export const ProjectView: Component = () => {
 
                                         <Show when={expandedGoals().has(childGoal.id)}>
                                           <div class="border-t border-border-muted">
-                                            <div class="p-3 space-y-2">
+                                            <div class="p-4 space-y-3">
                                               <For each={getGoalTasks(childGoal.id)}>
                                                 {(task) => (
-                                                  <div class="bg-bg-light border border-border-muted rounded ml-4 p-2">
+                                                  <div class="bg-bg-light border border-border-muted rounded ml-4 p-3">
                                                     <div class="flex justify-between items-center">
                                                       <div class="flex items-center space-x-2">
                                                         {getStatusIcon(task.status)}
@@ -386,7 +386,7 @@ export const ProjectView: Component = () => {
                                               </For>
                                               <button
                                                 onClick={() => handleCreateTask(childGoal.id)}
-                                                class="w-full p-2 border border-dashed border-border-muted rounded hover:bg-highlight transition-colors text-sm text-text-muted"
+                                                class="w-full p-3 border border-dashed border-border-muted rounded hover:bg-highlight transition-colors text-sm text-text-muted"
                                               >
                                                 + Add new task
                                               </button>
@@ -399,7 +399,7 @@ export const ProjectView: Component = () => {
                                   
                                   <For each={getGoalTasks(goal.id)}>
                                     {(task) => (
-                                      <div class="bg-bg-dark border border-border-muted rounded-lg ml-4 p-2">
+                                      <div class="bg-bg-dark border border-border-muted rounded-lg ml-4 p-3">
                                         <div class="flex justify-between items-center">
                                           <div class="flex items-center space-x-2">
                                             {getStatusIcon(task.status)}
@@ -427,7 +427,7 @@ export const ProjectView: Component = () => {
                                   
                                   <button
                                     onClick={() => handleCreateTask(goal.id)}
-                                    class="w-full p-2 border border-dashed border-border-muted rounded hover:bg-highlight transition-colors text-sm text-text-muted"
+                                    class="w-full p-3 border border-dashed border-border-muted rounded hover:bg-highlight transition-colors text-sm text-text-muted"
                                   >
                                     + Add new task
                                   </button>
@@ -440,7 +440,7 @@ export const ProjectView: Component = () => {
                       
                       <button
                         onClick={() => handleCreateGoal(project.id)}
-                        class="w-full p-3 border border-dashed border-border rounded hover:bg-highlight transition-colors text-text-muted"
+                        class="w-full p-4 border border-dashed border-border rounded hover:bg-highlight transition-colors text-text-muted"
                       >
                         + Add new goal
                       </button>

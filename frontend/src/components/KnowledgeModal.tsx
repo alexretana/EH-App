@@ -56,8 +56,8 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
         const relatedGoals: string[] = [];
         const relatedTasks: string[] = [];
         
-        props.document.entity_types.forEach((type, index) => {
-          const entityId = props.document.related_entity_ids?.[index];
+        props.document!.entity_types.forEach((type, index) => {
+          const entityId = props.document!.related_entity_ids?.[index];
           if (entityId) {
             if (type === 'project') relatedProjects.push(entityId);
             else if (type === 'goal') relatedGoals.push(entityId);
@@ -157,7 +157,7 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="modal-backdrop absolute inset-0" onClick={props.onClose}></div>
         <div class="relative bg-bg border border-border rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-slide-in">
-          <div class="sticky top-0 bg-bg border-b border-border p-4 flex justify-between items-center">
+          <div class="sticky top-0 bg-bg border-b border-border p-6 flex justify-between items-center">
             <h2 class="text-xl font-semibold">
               {props.document ? 'Knowledge Document' : 'Create New Document'}
             </h2>
@@ -181,9 +181,9 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
           </div>
 
           <Show when={isEditMode()}>
-            <form onSubmit={handleSubmit} class="p-4 space-y-4">
+            <form onSubmit={handleSubmit} class="p-6 space-y-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Document Name *</label>
+                <label class="block text-sm font-medium mb-2">Document Name *</label>
                 <input
                   type="text"
                   value={formData().document_name}
@@ -194,7 +194,7 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-1">Content (Markdown)</label>
+                <label class="block text-sm font-medium mb-2">Content (Markdown)</label>
                 <textarea
                   value={formData().content}
                   onInput={handleInputChange('content')}
@@ -204,7 +204,7 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-1">AI Summary</label>
+                <label class="block text-sm font-medium mb-2">AI Summary</label>
                 <textarea
                   value={formData().ai_summary}
                   onInput={handleInputChange('ai_summary')}
@@ -214,7 +214,7 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
               </div>
 
               <div>
-                <label class="block text-sm font-medium mb-1">Link Citations (one per line)</label>
+                <label class="block text-sm font-medium mb-2">Link Citations (one per line)</label>
                 <textarea
                   value={formData().link_citations?.join('\n') || ''}
                   onInput={handleCitationsChange}
@@ -223,9 +223,9 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
                 />
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label class="block text-sm font-medium mb-1">Related Projects</label>
+                  <label class="block text-sm font-medium mb-2">Related Projects</label>
                   <select
                     multiple
                     value={formData().related_projects || []}
@@ -243,7 +243,7 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium mb-1">Related Goals</label>
+                  <label class="block text-sm font-medium mb-2">Related Goals</label>
                   <select
                     multiple
                     value={formData().related_goals || []}
@@ -261,7 +261,7 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium mb-1">Related Tasks</label>
+                  <label class="block text-sm font-medium mb-2">Related Tasks</label>
                   <select
                     multiple
                     value={formData().related_tasks || []}
@@ -285,7 +285,7 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
                 </div>
               </Show>
 
-              <div class="flex justify-end space-x-3 pt-4">
+              <div class="flex justify-end space-x-3 pt-6">
                 <button
                   type="button"
                   onClick={props.onClose}
@@ -306,30 +306,30 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
           </Show>
 
           <Show when={!isEditMode() && props.document}>
-            <div class="p-6">
-              <h3 class="text-2xl font-bold mb-4">{props.document.document_name}</h3>
+            <div class="p-8">
+              <h3 class="text-2xl font-bold mb-6">{props.document!.document_name}</h3>
               
-              <Show when={props.document.content}>
-                <div class="mb-6">
-                  <h4 class="text-lg font-semibold mb-2">Content</h4>
-                  <div class="bg-bg-light p-4 rounded border border-border markdown-content" innerHTML={renderedContent()} />
+              <Show when={props.document!.content}>
+                <div class="mb-8">
+                  <h4 class="text-lg font-semibold mb-4">Content</h4>
+                  <div class="bg-bg-light p-6 rounded border border-border markdown-content" innerHTML={renderedContent()} />
                 </div>
               </Show>
 
-              <Show when={props.document.ai_summary}>
-                <div class="mb-6">
-                  <h4 class="text-lg font-semibold mb-2">AI Summary</h4>
-                  <p class="text-text-muted bg-bg-light p-4 rounded border border-border">
-                    {props.document.ai_summary}
+              <Show when={props.document!.ai_summary}>
+                <div class="mb-8">
+                  <h4 class="text-lg font-semibold mb-4">AI Summary</h4>
+                  <p class="text-text-muted bg-bg-light p-6 rounded border border-border">
+                    {props.document!.ai_summary}
                   </p>
                 </div>
               </Show>
 
-              <Show when={props.document.link_citations && props.document.link_citations.length > 0}>
-                <div class="mb-6">
-                  <h4 class="text-lg font-semibold mb-2">Citations</h4>
-                  <ul class="list-disc list-inside space-y-1">
-                    {props.document.link_citations.map(citation => (
+              <Show when={props.document!.link_citations && props.document!.link_citations.length > 0}>
+                <div class="mb-8">
+                  <h4 class="text-lg font-semibold mb-4">Citations</h4>
+                  <ul class="list-disc list-inside space-y-2">
+                    {props.document!.link_citations!.map(citation => (
                       <li class="text-text-muted">
                         <a href={citation} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
                           {citation}
@@ -340,11 +340,11 @@ export const KnowledgeModal: Component<KnowledgeModalProps> = (props) => {
                 </div>
               </Show>
 
-              <Show when={props.document.related_entities && props.document.related_entities.length > 0}>
+              <Show when={props.document!.related_entities && props.document!.related_entities.length > 0}>
                 <div>
-                  <h4 class="text-lg font-semibold mb-2">Related Entities</h4>
-                  <div class="flex flex-wrap gap-2">
-                    {props.document.related_entities.map((entity, index) => (
+                  <h4 class="text-lg font-semibold mb-4">Related Entities</h4>
+                  <div class="flex flex-wrap gap-3">
+                    {props.document!.related_entities!.map((entity, index) => (
                       <span class="px-3 py-1 bg-highlight text-text rounded-full text-sm">
                         {entity}
                       </span>

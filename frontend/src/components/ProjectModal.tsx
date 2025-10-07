@@ -79,7 +79,7 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="modal-backdrop absolute inset-0" onClick={props.onClose}></div>
         <div class="relative bg-bg border border-border rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-in">
-          <div class="sticky top-0 bg-bg border-b border-border p-4 flex justify-between items-center">
+          <div class="sticky top-0 bg-bg border-b border-border p-6 flex justify-between items-center">
             <h2 class="text-xl font-semibold">
               {props.project ? 'Edit Project' : 'Create New Project'}
             </h2>
@@ -91,9 +91,9 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} class="p-4 space-y-4">
+          <form onSubmit={handleSubmit} class="p-6 space-y-6">
             <div>
-              <label class="block text-sm font-medium mb-1">Project Name *</label>
+              <label class="block text-sm font-medium mb-2">Project Name *</label>
               <input
                 type="text"
                 value={formData().name}
@@ -104,7 +104,7 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Description</label>
+              <label class="block text-sm font-medium mb-2">Description</label>
               <textarea
                 value={formData().description}
                 onInput={handleInputChange('description')}
@@ -114,7 +114,7 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Status</label>
+              <label class="block text-sm font-medium mb-2">Status</label>
               <select
                 value={formData().status}
                 onChange={handleInputChange('status')}
@@ -127,9 +127,9 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
               </select>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Start Date</label>
+                <label class="block text-sm font-medium mb-2">Start Date</label>
                 <input
                   type="date"
                   value={formData().start_date}
@@ -138,7 +138,7 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">End Date</label>
+                <label class="block text-sm font-medium mb-2">End Date</label>
                 <input
                   type="date"
                   value={formData().end_date}
@@ -149,7 +149,7 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Time Estimate (months)</label>
+              <label class="block text-sm font-medium mb-2">Time Estimate (months)</label>
               <input
                 type="number"
                 min="1"
@@ -159,9 +159,9 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
               />
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Expansion Horizon</label>
+                <label class="block text-sm font-medium mb-2">Expansion Horizon</label>
                 <select
                   value={formData().expansion_horizon || ''}
                   onChange={handleInputChange('expansion_horizon')}
@@ -174,7 +174,7 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">Milestone Granularity</label>
+                <label class="block text-sm font-medium mb-2">Milestone Granularity</label>
                 <select
                   value={formData().milestone_granularity || ''}
                   onChange={handleInputChange('milestone_granularity')}
@@ -215,7 +215,7 @@ export const ProjectModal: Component<ProjectModalProps> = (props) => {
               </div>
             </Show>
 
-            <div class="flex justify-end space-x-3 pt-4">
+            <div class="flex justify-end space-x-3 pt-6">
               <button
                 type="button"
                 onClick={props.onClose}

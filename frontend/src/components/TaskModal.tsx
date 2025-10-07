@@ -111,7 +111,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="modal-backdrop absolute inset-0" onClick={props.onClose}></div>
         <div class="relative bg-bg border border-border rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-in">
-          <div class="sticky top-0 bg-bg border-b border-border p-4 flex justify-between items-center">
+          <div class="sticky top-0 bg-bg border-b border-border p-6 flex justify-between items-center">
             <h2 class="text-xl font-semibold">
               {(window as any).tempTask ? 'Edit Task' : 'Create New Task'}
             </h2>
@@ -123,9 +123,9 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} class="p-4 space-y-4">
+          <form onSubmit={handleSubmit} class="p-6 space-y-6">
             <div>
-              <label class="block text-sm font-medium mb-1">Task Name *</label>
+              <label class="block text-sm font-medium mb-2">Task Name *</label>
               <input
                 type="text"
                 value={formData().name}
@@ -136,7 +136,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Description</label>
+              <label class="block text-sm font-medium mb-2">Description</label>
               <textarea
                 value={formData().description}
                 onInput={handleInputChange('description')}
@@ -146,7 +146,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Goal *</label>
+              <label class="block text-sm font-medium mb-2">Goal *</label>
               <select
                 value={formData().goal_id}
                 onChange={handleInputChange('goal_id')}
@@ -161,9 +161,9 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
               </select>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Status</label>
+                <label class="block text-sm font-medium mb-2">Status</label>
                 <select
                   value={formData().status}
                   onChange={handleInputChange('status')}
@@ -176,7 +176,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">Task Type</label>
+                <label class="block text-sm font-medium mb-2">Task Type</label>
                 <select
                   value={formData().task_type || ''}
                   onChange={handleInputChange('task_type')}
@@ -194,9 +194,9 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Priority</label>
+                <label class="block text-sm font-medium mb-2">Priority</label>
                 <select
                   value={formData().priority || ''}
                   onChange={handleInputChange('priority')}
@@ -209,7 +209,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">Effort Level</label>
+                <label class="block text-sm font-medium mb-2">Effort Level</label>
                 <select
                   value={formData().effort_level || ''}
                   onChange={handleInputChange('effort_level')}
@@ -223,9 +223,9 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Time Estimate (minutes)</label>
+                <label class="block text-sm font-medium mb-2">Time Estimate (minutes)</label>
                 <input
                   type="number"
                   min="1"
@@ -235,7 +235,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">Assignee</label>
+                <label class="block text-sm font-medium mb-2">Assignee</label>
                 <input
                   type="text"
                   value={formData().assignee}
@@ -245,9 +245,9 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Due Date</label>
+                <label class="block text-sm font-medium mb-2">Due Date</label>
                 <input
                   type="date"
                   value={formData().due_date}
@@ -256,7 +256,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">Week Start Date</label>
+                <label class="block text-sm font-medium mb-2">Week Start Date</label>
                 <input
                   type="date"
                   value={formData().week_start_date}
@@ -272,7 +272,7 @@ export const TaskModal: Component<TaskModalProps> = (props) => {
               </div>
             </Show>
 
-            <div class="flex justify-end space-x-3 pt-4">
+            <div class="flex justify-end space-x-3 pt-6">
               <button
                 type="button"
                 onClick={props.onClose}

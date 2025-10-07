@@ -150,6 +150,7 @@ pnpm-lock.yaml
 # Logs
 logs
 *.log
+*nohup.out
 
 # Runtime data
 pids

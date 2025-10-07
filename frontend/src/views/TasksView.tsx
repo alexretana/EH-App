@@ -139,7 +139,7 @@ export const TasksView: Component = () => {
   };
 
   return (
-    <div class="space-y-6">
+    <div class="space-y-8">
       <div class="flex justify-between items-center">
         <h1 class="text-3xl font-bold">Tasks</h1>
         <div class="flex items-center space-x-4">
@@ -160,8 +160,8 @@ export const TasksView: Component = () => {
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div class="flex flex-wrap gap-2">
+      <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
+        <div class="flex flex-wrap gap-4">
           <label class="flex items-center space-x-2">
             <input
               type="radio"
@@ -196,7 +196,7 @@ export const TasksView: Component = () => {
         
         <button
           onClick={() => setSortBy(sortBy() === 'dependency' ? 'status' : 'dependency')}
-          class="flex items-center space-x-2 px-3 py-2 bg-bg-light border border-border rounded-lg hover:bg-highlight transition-colors"
+          class="flex items-center space-x-2 px-4 py-2 bg-bg-light border border-border rounded-lg hover:bg-highlight transition-colors"
         >
           <ArrowUpDown size={16} />
           <span>Sort by {sortBy() === 'dependency' ? 'dependency order' : 'status'}</span>
@@ -219,10 +219,10 @@ export const TasksView: Component = () => {
 
       <Show when={!loading() && tasks().length > 0}>
         <Show when={viewMode() === 'checklist'}>
-          <div class="space-y-2">
+          <div class="space-y-4">
             <For each={tasks()}>
               {(task) => (
-                <div class="bg-bg-light border border-border rounded-lg p-4">
+                <div class="bg-bg-light border border-border rounded-lg p-6">
                   <div class="flex justify-between items-center">
                     <div class="flex-1">
                       <div class="flex items-center space-x-3">
@@ -255,20 +255,20 @@ export const TasksView: Component = () => {
         </Show>
 
         <Show when={viewMode() === 'kanban'}>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {['Not started', 'Active', 'Done', 'Cancelled'].map(status => (
-              <div class={`bg-bg-light border rounded-lg p-4 ${getStatusColumnColor(status)}`}>
-                <h3 class="font-semibold mb-4 flex items-center space-x-2">
+              <div class={`bg-bg-light border rounded-lg p-6 ${getStatusColumnColor(status)}`}>
+                <h3 class="font-semibold mb-6 flex items-center space-x-2">
                   {getStatusIcon(status)}
                   <span>{status}</span>
                   <span class="text-sm text-text-muted">
                     ({tasks().filter(t => t.status === status).length})
                   </span>
                 </h3>
-                <div class="space-y-2">
+                <div class="space-y-4">
                   <For each={tasks().filter(t => t.status === status)}>
                     {(task) => (
-                      <div class="bg-bg border border-border rounded p-3">
+                      <div class="bg-bg border border-border rounded p-4">
                         <div class="flex justify-between items-start mb-2">
                           <h4 class="font-medium text-sm">{task.name}</h4>
                           {task.time_estimate_minutes && (
