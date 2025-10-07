@@ -2,6 +2,8 @@
 
 Frontend: Javascript; React, Tailswindcss v4, shadcn, framer motion (ui animations), react bits (background animations/optional), npm/ pnpm, (package magager)
 
+Color Format: Use oklch, not rga. It's easier to edit colors meanifully with oklch.
+
 Backend: Python; psycopg, fastapi, uvicorn, uv (package manager)
 
 Database: Postgresql

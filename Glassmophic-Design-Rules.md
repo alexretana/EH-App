@@ -1,12 +1,14 @@
 Glassmorphism Aesthetic Rules
 
+Color Format: Always use oklab(), not rgb/rgba.
+
 Backgrounds: Use translucent panels with bg-white/10 to bg-white/20 or bg-slate-100/10 for dark mode.
 
 Backdrop Blur: Apply backdrop-blur-md to backdrop-blur-2xl depending on hierarchy.
 
 Borders: Add subtle, semi-transparent borders (border border-white/20 or border-white/10 in dark mode).
 
-Shadows: Use soft, diffused shadows (shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]). Avoid harsh or dark shadows.
+Shadows: Use soft, diffused shadows (shadow-[0_8px_32px_0_oklch(0.3382 0.1582 271.28 / 0.37)]). Avoid harsh or dark shadows.
 
 Lighting Accents: Create contrast through inner glows or gradients, not opaque blocks. Gradients should be subtle (e.g. bg-gradient-to-br from-white/10 to-white/5).
 
