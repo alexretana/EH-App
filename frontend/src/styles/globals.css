@@ -5,7 +5,7 @@
 
 :root {
   --radius: 0.625rem;
-  
+
   /* Custom color variables from design document */
   --bg-dark: oklch(0.1 0.03 310);
   --bg: oklch(0.15 0.03 310);
@@ -21,12 +21,12 @@
   --warning: oklch(0.7 0.06 100);
   --success: oklch(0.7 0.06 160);
   --info: oklch(0.7 0.06 260);
-  
+
   /* Glassmorphic utility classes */
   --glass-bg: rgba(255, 255, 255, 0.1);
   --glass-border: rgba(255, 255, 255, 0.2);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  
+
   /* shadcn/ui color variables (mapped to custom colors) */
   --background: var(--bg);
   --foreground: var(--text);
@@ -154,14 +154,14 @@
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
   }
-  
+
   .glass-hover:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
     box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
     transition: all 0.3s ease;
   }
-  
+
   .glass-card {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(20px);
@@ -170,7 +170,7 @@
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     border-radius: 1rem;
   }
-  
+
   .glass-modal {
     background: rgba(15, 15, 25, 0.85);
     backdrop-filter: blur(24px);
@@ -179,7 +179,7 @@
     box-shadow: 0 16px 64px 0 rgba(31, 38, 135, 0.45);
     border-radius: 1.5rem;
   }
-  
+
   .glass-input {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
@@ -187,13 +187,13 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
   }
-  
+
   .glass-input:focus {
     background: rgba(255, 255, 255, 0.12);
     border-color: var(--primary);
     box-shadow: 0 0 0 2px rgba(118, 97, 236, 0.2);
   }
-  
+
   .glass-button {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
@@ -201,13 +201,13 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
   }
-  
+
   .glass-button:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
     box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.4);
   }
-  
+
   .glass-drawer {
     background: rgba(15, 15, 25, 0.95);
     backdrop-filter: blur(24px);
@@ -215,12 +215,12 @@
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 4px 0 24px 0 rgba(0, 0, 0, 0.3);
   }
-  
+
   .glass-shimmer {
     position: relative;
     overflow: hidden;
   }
-  
+
   .glass-shimmer::before {
     content: "";
     position: absolute;
@@ -236,25 +236,25 @@
     );
     animation: shimmer 2s infinite;
   }
-  
+
   @keyframes shimmer {
     100% {
       left: 100%;
     }
   }
-  
+
   .glass-glow {
     box-shadow:
       0 0 20px rgba(118, 97, 236, 0.3),
       0 0 40px rgba(118, 97, 236, 0.1),
       0 8px 32px 0 rgba(31, 38, 135, 0.37);
   }
-  
+
   .text-glass {
     color: var(--text);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
-  
+
   .text-glass-muted {
     color: var(--text-muted);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
