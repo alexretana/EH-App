@@ -13,12 +13,12 @@ import {
   CreateKnowledgeBase,
   UpdateKnowledgeBase
 } from '@/types/mockData';
-import { 
-  projectApi, 
-  goalApi, 
-  taskApi, 
-  knowledgeApi 
-} from '@/data/api/mockApi';
+import {
+  projectApi,
+  goalApi,
+  taskApi,
+  knowledgeApi
+} from '@/data/api/realApi';
 
 interface AppContextType {
   // Data
@@ -95,7 +95,18 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   // Error handling
   const handleError = (err: unknown, message: string) => {
     console.error(message, err);
-    setError(message);
+    
+    // Extract detailed error information for developers
+    let errorMessage = message;
+    if (err instanceof Error) {
+      errorMessage = `${message}: ${err.message}`;
+      // Log additional error details if available
+      if ((err as any).details) {
+        console.error('Error details:', (err as any).details);
+      }
+    }
+    
+    setError(errorMessage);
     setIsLoading(false);
   };
   
