@@ -129,7 +129,14 @@ const TaskView: React.FC = () => {
 
         {/* View Controls */}
         <motion.div
-          className="glass-card p-4 rounded-xl"
+          className="p-4 rounded-xl"
+          style={{
+            background: 'oklab(1 0 0 / 0.12)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid oklab(1 0 0 / 0.15)',
+            boxShadow: '0 8px 32px 0 oklch(0.3382 0.1582 271.28 / 0.37)'
+          }}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
