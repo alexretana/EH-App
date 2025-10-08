@@ -25,6 +25,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { Task } from "@/types/mockData"
 import { Edit, Trash2, Play, Pause, CheckCircle, RotateCcw, Clock, Target } from "lucide-react"
 
@@ -185,64 +190,106 @@ export function TaskDataTable({
         
         return (
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEditTask(task)}
-              className="glass-button h-8 w-8 p-0"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEditTask(task)}
+                  className="glass-button h-8 w-8 p-0"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit Task</p>
+              </TooltipContent>
+            </Tooltip>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDeleteTask(task.id)}
-              className="glass-button text-danger hover:text-danger h-8 w-8 p-0"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDeleteTask(task.id)}
+                  className="glass-button text-danger hover:text-danger h-8 w-8 p-0"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete Task</p>
+              </TooltipContent>
+            </Tooltip>
             
             {task.status === 'Not started' && (
-              <Button
-                size="sm"
-                onClick={() => onUpdateTaskStatus(task.id, 'Active')}
-                className="glass-button h-8 w-8 p-0"
-              >
-                <Play className="h-4 w-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    onClick={() => onUpdateTaskStatus(task.id, 'Active')}
+                    className="glass-button h-8 w-8 p-0"
+                  >
+                    <Play className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Start Task</p>
+                </TooltipContent>
+              </Tooltip>
             )}
             
             {task.status === 'Active' && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onUpdateTaskStatus(task.id, 'Not started')}
-                  className="glass-button h-8 w-8 p-0"
-                >
-                  <Pause className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onUpdateTaskStatus(task.id, 'Done')}
-                  className="glass-button h-8 w-8 p-0"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onUpdateTaskStatus(task.id, 'Not started')}
+                      className="glass-button h-8 w-8 p-0"
+                    >
+                      <Pause className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Pause Task</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onUpdateTaskStatus(task.id, 'Done')}
+                      className="glass-button h-8 w-8 p-0"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Complete Task</p>
+                  </TooltipContent>
+                </Tooltip>
               </>
             )}
             
             {(task.status === 'Done' || task.status === 'Cancelled') && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onUpdateTaskStatus(task.id, 'Active')}
-                className="glass-button h-8 w-8 p-0"
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onUpdateTaskStatus(task.id, 'Active')}
+                    className="glass-button h-8 w-8 p-0"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Reactivate Task</p>
+                </TooltipContent>
+              </Tooltip>
             )}
           </div>
         );

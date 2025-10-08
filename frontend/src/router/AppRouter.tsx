@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from '@/contexts/AppContext';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import Layout from '@/components/layout/Layout';
 import AnimatedPage from '@/components/layout/AnimatedPage';
 import ProjectView from '@/views/ProjectView';
@@ -10,8 +11,9 @@ import TaskView from '@/views/TaskView';
 const AppRouter: React.FC = () => {
   return (
     <BrowserRouter>
-      <AppProvider>
-        <Routes>
+      <TooltipProvider>
+        <AppProvider>
+          <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Navigate to="/projects" replace />} />
             <Route path="/projects" element={
@@ -33,6 +35,7 @@ const AppRouter: React.FC = () => {
           </Route>
         </Routes>
       </AppProvider>
+    </TooltipProvider>
     </BrowserRouter>
   );
 };
