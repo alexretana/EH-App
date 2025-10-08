@@ -144,10 +144,10 @@ const TaskView: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Button
-                    variant={viewMode === 'table' ? 'default' : 'outline'}
+                    variant={viewMode === 'table' ? 'ghost' : 'outline'}
                     size="sm"
                     onClick={() => setViewMode('table')}
-                    className="glass-button"
+                    className={`glass-button ${viewMode === 'table' ? 'text-[var(--text-muted)]' : ''}`}
                   >
                     <List className="h-4 w-4 mr-1" />
                     <span className="hidden sm:inline">Table</span>
@@ -158,10 +158,10 @@ const TaskView: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Button
-                    variant={viewMode === 'kanban' ? 'default' : 'outline'}
+                    variant={viewMode === 'kanban' ? 'ghost' : 'outline'}
                     size="sm"
                     onClick={() => setViewMode('kanban')}
-                    className="glass-button"
+                    className={`glass-button ${viewMode === 'kanban' ? 'text-[var(--text-muted)]' : ''}`}
                   >
                     <LayoutGrid className="h-4 w-4 mr-1" />
                     <span className="hidden sm:inline">Kanban</span>
