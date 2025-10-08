@@ -76,7 +76,7 @@ const KnowledgeBaseView: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-glass">Knowledge Base</h1>
-          <Button className="glass-button" onClick={handleCreateDocument}>
+          <Button className="glass-button text-[var(--text)]" onClick={handleCreateDocument}>
             <Plus className="h-4 w-4 mr-2" />
             Add Document
           </Button>
@@ -89,7 +89,7 @@ const KnowledgeBaseView: React.FC = () => {
             <p className="text-glass-muted mb-6 text-center max-w-md">
               Create your first knowledge base document to store important information related to your projects.
             </p>
-            <Button className="glass-button" onClick={handleCreateDocument}>
+            <Button className="glass-button text-[var(--text)]" onClick={handleCreateDocument}>
               <Plus className="h-4 w-4 mr-2" />
               Create Document
             </Button>

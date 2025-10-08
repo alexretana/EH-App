@@ -140,7 +140,7 @@ const TaskView: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Button className="glass-button" onClick={handleCreateTask}>
+            <Button className="glass-button text-[var(--text)]" onClick={handleCreateTask}>
               <Plus className="h-4 w-4 mr-2" />
               Add Task
             </Button>
@@ -270,7 +270,7 @@ const TaskView: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button className="glass-button" onClick={handleCreateTask}>
+              <Button className="glass-button text-[var(--text)]" onClick={handleCreateTask}>
                 Add Task
               </Button>
             </motion.div>

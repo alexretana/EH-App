@@ -85,7 +85,7 @@ const ProjectView: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-glass">Projects</h1>
-          <Button className="glass-button" onClick={handleCreateProject}>
+          <Button className="glass-button text-[var(--text)]" onClick={handleCreateProject}>
             <Plus className="h-4 w-4 mr-2" />
             Add Project
           </Button>
@@ -97,7 +97,7 @@ const ProjectView: React.FC = () => {
             <p className="text-glass-muted mb-6 text-center max-w-md">
               Get started by creating your first project. You can add goals and tasks to organize your work.
             </p>
-            <Button className="glass-button" onClick={handleCreateProject}>
+            <Button className="glass-button text-[var(--text)]" onClick={handleCreateProject}>
               <Plus className="h-4 w-4 mr-2" />
               Create Project
             </Button>
