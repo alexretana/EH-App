@@ -11,6 +11,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 import { CreateProject, UpdateProject, Project } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
 
@@ -39,6 +41,7 @@ interface ProjectModalProps {
 const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project }) => {
   const { createProject, updateProject } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -91,6 +94,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
   
   const onSubmit = async (values: ProjectFormValues) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       if (project) {
         await updateProject(project.id, values as UpdateProject);
@@ -100,6 +104,27 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
       onClose();
     } catch (error) {
       console.error('Error saving project:', error);
+      // Extract user-friendly error message
+      let errorMessage = 'Failed to save project. Please try again.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Try to extract more specific error details from API response
+        if ((error as any).details && (error as any).details.detail) {
+          const details = (error as any).details.detail;
+          if (Array.isArray(details) && details.length > 0) {
+            // Extract field-specific errors
+            const fieldErrors = details.map((d: any) => {
+              if (d.loc && d.loc.length > 0) {
+                const fieldName = d.loc[d.loc.length - 1];
+                return `${fieldName}: ${d.msg}`;
+              }
+              return d.msg;
+            });
+            errorMessage = fieldErrors.join(', ');
+          }
+        }
+      }
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -353,6 +378,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
             </form>
           </Form>
         </ScrollArea>
+        
+        {error && (
+          <div className="px-4 pb-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        )}
         
         <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
           <Button

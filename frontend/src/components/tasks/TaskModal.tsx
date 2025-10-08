@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 import { CreateTask, UpdateTask, Task, Goal, Project } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
 
@@ -42,6 +44,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [filteredGoals, setFilteredGoals] = useState<Goal[]>([]);
+  const [error, setError] = useState<string | null>(null);
   
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
@@ -115,6 +118,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
   
   const onSubmit = async (values: TaskFormValues) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       if (task) {
         await updateTask(task.id, values as UpdateTask);
@@ -124,6 +128,27 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
       onClose();
     } catch (error) {
       console.error('Error saving task:', error);
+      // Extract user-friendly error message
+      let errorMessage = 'Failed to save task. Please try again.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Try to extract more specific error details from API response
+        if ((error as any).details && (error as any).details.detail) {
+          const details = (error as any).details.detail;
+          if (Array.isArray(details) && details.length > 0) {
+            // Extract field-specific errors
+            const fieldErrors = details.map((d: any) => {
+              if (d.loc && d.loc.length > 0) {
+                const fieldName = d.loc[d.loc.length - 1];
+                return `${fieldName}: ${d.msg}`;
+              }
+              return d.msg;
+            });
+            errorMessage = fieldErrors.join(', ');
+          }
+        }
+      }
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -399,6 +424,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
             </form>
           </Form>
         </ScrollArea>
+        
+        {error && (
+          <div className="px-4 pb-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        )}
         
         <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
           <Button

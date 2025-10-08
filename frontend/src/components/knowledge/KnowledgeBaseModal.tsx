@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 import { CreateKnowledgeBase, UpdateKnowledgeBase, KnowledgeBase } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
 
@@ -44,6 +46,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
   const [activeTab, setActiveTab] = useState('content');
   const [newCitation, setNewCitation] = useState('');
   const [citations, setCitations] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
   
   const form = useForm<KnowledgeBaseFormValues>({
     resolver: zodResolver(knowledgeBaseSchema),
@@ -78,6 +81,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
   
   const onSubmit = async (values: KnowledgeBaseFormValues) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       const data = {
         ...values,
@@ -92,6 +96,27 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
       onClose();
     } catch (error) {
       console.error('Error saving knowledge base document:', error);
+      // Extract user-friendly error message
+      let errorMessage = 'Failed to save document. Please try again.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Try to extract more specific error details from API response
+        if ((error as any).details && (error as any).details.detail) {
+          const details = (error as any).details.detail;
+          if (Array.isArray(details) && details.length > 0) {
+            // Extract field-specific errors
+            const fieldErrors = details.map((d: any) => {
+              if (d.loc && d.loc.length > 0) {
+                const fieldName = d.loc[d.loc.length - 1];
+                return `${fieldName}: ${d.msg}`;
+              }
+              return d.msg;
+            });
+            errorMessage = fieldErrors.join(', ');
+          }
+        }
+      }
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -239,6 +264,15 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
             </form>
           </Form>
         </ScrollArea>
+        
+        {error && (
+          <div className="px-4 pb-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        )}
         
         <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
           <Button

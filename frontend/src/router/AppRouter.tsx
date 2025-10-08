@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from '@/contexts/AppContext';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/sonner';
 import Layout from '@/components/layout/Layout';
 import AnimatedPage from '@/components/layout/AnimatedPage';
 import ProjectView from '@/views/ProjectView';
@@ -34,6 +35,7 @@ const AppRouter: React.FC = () => {
             <Route path="*" element={<Navigate to="/projects" replace />} />
           </Route>
         </Routes>
+        <Toaster />
       </AppProvider>
     </TooltipProvider>
     </BrowserRouter>

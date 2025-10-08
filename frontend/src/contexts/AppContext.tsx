@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { toast } from 'sonner';
 import { 
   Project, 
   Goal, 
@@ -106,6 +107,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         console.error('Error details:', (err as any).details);
       }
     }
+    
+    // Show error toast using sonner
+    toast.error(errorMessage);
     
     setError(errorMessage);
     setIsLoading(false);
