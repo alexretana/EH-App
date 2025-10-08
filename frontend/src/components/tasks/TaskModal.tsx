@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { CreateTask, UpdateTask, Task, Goal, Project } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
 
@@ -146,15 +147,16 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal max-w-2xl">
+      <DialogContent className="glass-modal max-w-2xl max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="text-glass">
             {task ? 'Edit Task' : 'Create New Task'}
           </DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pr-2">
             <FormField
               control={form.control}
               name="name"
@@ -394,25 +396,28 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
               />
             </div>
             
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="glass-button"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="glass-button"
-              >
-                {isSubmitting ? 'Saving...' : task ? 'Update Task' : 'Create Task'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+            </form>
+          </Form>
+        </ScrollArea>
+        
+        <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="glass-button"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="glass-button"
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {isSubmitting ? 'Saving...' : task ? 'Update Task' : 'Create Task'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

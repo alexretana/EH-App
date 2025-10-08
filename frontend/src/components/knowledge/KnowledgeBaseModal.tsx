@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { CreateKnowledgeBase, UpdateKnowledgeBase, KnowledgeBase } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
 
@@ -99,15 +100,16 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="glass-modal max-w-4xl max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="text-glass">
             {knowledgeBase ? 'Edit Document' : 'Create New Document'}
           </DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pr-2">
             <FormField
               control={form.control}
               name="document_name"
@@ -224,25 +226,28 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
               </TabsContent>
             </Tabs>
             
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="glass-button"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="glass-button"
-              >
-                {isSubmitting ? 'Saving...' : knowledgeBase ? 'Update Document' : 'Create Document'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+            </form>
+          </Form>
+        </ScrollArea>
+        
+        <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="glass-button"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="glass-button"
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {isSubmitting ? 'Saving...' : knowledgeBase ? 'Update Document' : 'Create Document'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

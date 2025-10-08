@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { CreateProject, UpdateProject, Project } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
 
@@ -106,15 +107,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal max-w-2xl">
+      <DialogContent className="glass-modal max-w-2xl max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="text-glass">
             {project ? 'Edit Project' : 'Create New Project'}
           </DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pr-2">
             <FormField
               control={form.control}
               name="name"
@@ -348,25 +350,28 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
               )}
             />
             
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="glass-button"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="glass-button"
-              >
-                {isSubmitting ? 'Saving...' : project ? 'Update Project' : 'Create Project'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+            </form>
+          </Form>
+        </ScrollArea>
+        
+        <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="glass-button"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="glass-button"
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {isSubmitting ? 'Saving...' : project ? 'Update Project' : 'Create Project'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
