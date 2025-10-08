@@ -274,7 +274,7 @@ export function TaskDataTable({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-glass/20">
+              <TableRow key={headerGroup.id} className="border-glass/20 glass-header">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id} className="text-glass">
                     {header.isPlaceholder
