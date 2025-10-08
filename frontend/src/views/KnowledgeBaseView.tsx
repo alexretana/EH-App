@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useApp } from '@/contexts/AppContext';
 import KnowledgeBaseModal from '@/components/knowledge/KnowledgeBaseModal';
 import { KnowledgeBase } from '@/types/mockData';
@@ -198,7 +199,7 @@ const KnowledgeBaseView: React.FC = () => {
       
       {/* Read Document Modal */}
       <Dialog open={isReadModalOpen} onOpenChange={closeReadModal}>
-        <DialogContent className="glass-modal !max-w-[90%] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="glass-modal !max-w-[90%] max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-glass">
               {currentDocument?.document_name}
@@ -206,7 +207,8 @@ const KnowledgeBaseView: React.FC = () => {
           </DialogHeader>
           
           {currentDocument && (
-            <div className="space-y-6">
+            <ScrollArea className="max-h-[calc(90vh-8rem)] pr-4">
+              <div className="space-y-6">
               {currentDocument.ai_summary && (
                 <div className="glass-card p-4 rounded-lg">
                   <h3 className="text-lg font-medium text-glass mb-2">AI Summary</h3>
@@ -251,7 +253,8 @@ const KnowledgeBaseView: React.FC = () => {
                 <span>Added: {new Date(currentDocument.date_added).toLocaleDateString()}</span>
                 <span>Last updated: {new Date(currentDocument.updated_at).toLocaleDateString()}</span>
               </div>
-            </div>
+              </div>
+            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
