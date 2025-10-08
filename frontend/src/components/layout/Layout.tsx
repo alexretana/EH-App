@@ -29,7 +29,7 @@ const Layout: React.FC = () => {
                 <SidebarTrigger className="glass-button text-glass hover:text-glass" />
                 
                 <div className="flex items-center gap-2">
-                  <BlackHoleIcon />
+                  <BlackHoleIcon size="w-16 h-16"/>
                   <h1 className="text-4xl font-semibold text-gradient-primary">Event Horizon</h1>
                 </div>
               </div>

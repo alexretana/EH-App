@@ -1,10 +1,13 @@
 import React from 'react';
 
-const BlackHoleIcon: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => {
+const BlackHoleIcon: React.FC<{ className?: string; size?: string }> = ({
+  className = "",
+  size = "w-10 h-10"
+}) => {
   return (
-    <svg 
-      viewBox="0 0 100 100" 
-      className={className}
+    <svg
+      viewBox="0 0 100 100"
+      className={`${size} ${className}`}
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
