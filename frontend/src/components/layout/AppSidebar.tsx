@@ -31,7 +31,7 @@ const AppSidebar: React.FC = () => {
       <SidebarHeader className="glass">
         <div className="flex items-center gap-2">
           <BlackHoleIcon />
-          <h1 className="text-xl font-semibold text-gradient-primary">Event Horizon</h1>
+          <h1 className="text-2xl font-semibold text-gradient-primary">Event Horizon</h1>
         </div>
       </SidebarHeader>
       
