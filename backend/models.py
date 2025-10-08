@@ -195,3 +195,7 @@ class KnowledgeBase(KnowledgeBaseBase):
 
     class Config:
         from_attributes = True
+        json_encoders = {
+            # Convert UUID to string
+            'UUID': lambda v: str(v)
+        }

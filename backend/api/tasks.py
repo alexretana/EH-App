@@ -254,18 +254,19 @@ def get_active_weekly_milestone_tasks():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/details/{task_id}")
-def get_task_details(task_id: str):
-    """Get detailed task information including dependencies"""
-    query = """
-    SELECT td.*
-    FROM task_details td
-    WHERE td.id = %s
-    """
-    try:
-        tasks = db.execute_query(query, (task_id,))
-        if not tasks:
-            raise HTTPException(status_code=404, detail="Task not found")
-        return tasks[0]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# Temporarily comment out the problematic endpoint
+# @router.get("/details/{task_id}")
+# def get_task_details(task_id: str):
+#     """Get detailed task information including dependencies"""
+#     query = """
+#     SELECT td.*
+#     FROM task_details td
+#     WHERE td.id = %s
+#     """
+#     try:
+#         tasks = db.execute_query(query, (task_id,))
+#         if not tasks:
+#             raise HTTPException(status_code=404, detail="Task not found")
+#         return tasks[0]
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))

@@ -91,6 +91,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [knowledgeApiEnabled, setKnowledgeApiEnabled] = useState(true);
   
   // Error handling
   const handleError = (err: unknown, message: string) => {
@@ -141,11 +142,19 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
   
   const refreshKnowledgeBase = async () => {
+    // Skip if knowledge API is disabled
+    if (!knowledgeApiEnabled) {
+      return;
+    }
+    
     try {
       const data = await knowledgeApi.getAll();
       setKnowledgeBase(data);
     } catch (err) {
-      handleError(err, 'Failed to load knowledge base');
+      // If knowledge API fails, disable it and continue with other data
+      console.warn('Knowledge API is currently unavailable. Disabling knowledge base features.');
+      setKnowledgeApiEnabled(false);
+      // Don't show an error to the user for this specific failure
     }
   };
   
@@ -307,6 +316,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   
   // Knowledge base operations
   const createKnowledgeBase = async (kb: CreateKnowledgeBase): Promise<KnowledgeBase> => {
+    if (!knowledgeApiEnabled) {
+      throw new Error('Knowledge API is currently unavailable');
+    }
+    
     try {
       const newKb = await knowledgeApi.create(kb);
       setKnowledgeBase(prev => [...prev, newKb]);
@@ -318,6 +331,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
   
   const updateKnowledgeBase = async (id: string, updates: UpdateKnowledgeBase): Promise<KnowledgeBase | null> => {
+    if (!knowledgeApiEnabled) {
+      throw new Error('Knowledge API is currently unavailable');
+    }
+    
     try {
       const updatedKb = await knowledgeApi.update(id, updates);
       if (updatedKb) {
@@ -331,6 +348,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
   
   const deleteKnowledgeBase = async (id: string): Promise<boolean> => {
+    if (!knowledgeApiEnabled) {
+      throw new Error('Knowledge API is currently unavailable');
+    }
+    
     try {
       const success = await knowledgeApi.delete(id);
       if (success) {

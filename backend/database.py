@@ -27,9 +27,27 @@ class Database:
             # Convert UUID objects to strings
             for row in results:
                 for key, value in row.items():
+                    # Handle direct UUID values
                     if hasattr(value, '__class__') and value.__class__.__name__ == 'UUID':
                         row[key] = str(value)
+                    # Handle UUIDs in arrays
+                    elif isinstance(value, list):
+                        row[key] = self._convert_uuids_in_list(value)
+                    # Handle UUIDs in other iterables
+                    elif hasattr(value, '__iter__') and not isinstance(value, (str, bytes, dict)):
+                        try:
+                            row[key] = self._convert_uuids_in_list(list(value))
+                        except (TypeError, AttributeError):
+                            # If conversion fails, leave as is
+                            pass
             return results
+    
+    def _convert_uuids_in_list(self, items):
+        """Helper method to convert UUIDs in a list to strings"""
+        return [
+            str(item) if hasattr(item, '__class__') and item.__class__.__name__ == 'UUID' else item
+            for item in items
+        ]
     
     def execute_insert(self, query: str, params: tuple = None) -> str:
         conn = self.connect()

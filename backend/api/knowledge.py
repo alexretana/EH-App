@@ -1,85 +1,55 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Optional
+from fastapi.responses import Response
+from typing import List, Optional, Dict, Any
 from models import KnowledgeBase, KnowledgeBaseCreate, KnowledgeBaseUpdate
 from database import db
+import json
 
 router = APIRouter(prefix="/knowledge", tags=["knowledge"])
 
-@router.get("/", response_model=List[KnowledgeBase])
+@router.get("/")
 def get_knowledge_items():
     """Get all knowledge base items"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-           kb.link_citations, kb.created_at, kb.updated_at,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.name
-                   WHEN kbr.entity_type = 'goal' THEN g.name  
-                   WHEN kbr.entity_type = 'task' THEN t.name
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entities,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.id
-                   WHEN kbr.entity_type = 'goal' THEN g.id  
-                   WHEN kbr.entity_type = 'task' THEN t.id
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entity_ids,
-           array_agg(DISTINCT kbr.entity_type) FILTER (WHERE kbr.entity_type IS NOT NULL) as entity_types
+    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.created_at, kb.updated_at
     FROM knowledge_base kb
-    LEFT JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
-    LEFT JOIN projects p ON kbr.entity_type = 'project' AND kbr.entity_id = p.id
-    LEFT JOIN goals g ON kbr.entity_type = 'goal' AND kbr.entity_id = g.id
-    LEFT JOIN tasks t ON kbr.entity_type = 'task' AND kbr.entity_id = t.id
-    GROUP BY kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-             kb.link_citations, kb.created_at, kb.updated_at
     ORDER BY kb.updated_at DESC
     """
     try:
         items = db.execute_query(query)
-        return items
+        # Convert datetime objects to ISO strings
+        for item in items:
+            for key, value in item.items():
+                if hasattr(value, 'isoformat'):
+                    item[key] = value.isoformat()
+        return Response(content=json.dumps(items), media_type="application/json")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{knowledge_id}", response_model=KnowledgeBase)
+@router.get("/{knowledge_id}")
 def get_knowledge_item(knowledge_id: str):
     """Get a specific knowledge base item by ID"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-           kb.link_citations, kb.created_at, kb.updated_at,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.name
-                   WHEN kbr.entity_type = 'goal' THEN g.name  
-                   WHEN kbr.entity_type = 'task' THEN t.name
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entities,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.id
-                   WHEN kbr.entity_type = 'goal' THEN g.id  
-                   WHEN kbr.entity_type = 'task' THEN t.id
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entity_ids,
-           array_agg(DISTINCT kbr.entity_type) FILTER (WHERE kbr.entity_type IS NOT NULL) as entity_types
+    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.created_at, kb.updated_at
     FROM knowledge_base kb
-    LEFT JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
-    LEFT JOIN projects p ON kbr.entity_type = 'project' AND kbr.entity_id = p.id
-    LEFT JOIN goals g ON kbr.entity_type = 'goal' AND kbr.entity_id = g.id
-    LEFT JOIN tasks t ON kbr.entity_type = 'task' AND kbr.entity_id = t.id
     WHERE kb.id = %s
-    GROUP BY kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-             kb.link_citations, kb.created_at, kb.updated_at
     """
     try:
         items = db.execute_query(query, (knowledge_id,))
         if not items:
             raise HTTPException(status_code=404, detail="Knowledge base item not found")
-        return items[0]
+        # Convert datetime objects to ISO strings
+        item = items[0]
+        for key, value in item.items():
+            if hasattr(value, 'isoformat'):
+                item[key] = value.isoformat()
+        return Response(content=json.dumps(item), media_type="application/json")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/", response_model=KnowledgeBase)
+@router.post("/")
 def create_knowledge_item(item: KnowledgeBaseCreate):
     """Create a new knowledge base item"""
     # First insert the knowledge base item
@@ -126,7 +96,7 @@ def create_knowledge_item(item: KnowledgeBaseCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.put("/{knowledge_id}", response_model=KnowledgeBase)
+@router.put("/{knowledge_id}")
 def update_knowledge_item(knowledge_id: str, item: KnowledgeBaseUpdate):
     """Update an existing knowledge base item"""
     # First check if item exists
@@ -185,31 +155,11 @@ def delete_knowledge_item(knowledge_id: str):
 def get_project_knowledge(project_id: str):
     """Get all knowledge base items related to a specific project"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-           kb.link_citations, kb.created_at, kb.updated_at,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.name
-                   WHEN kbr.entity_type = 'goal' THEN g.name  
-                   WHEN kbr.entity_type = 'task' THEN t.name
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entities,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.id
-                   WHEN kbr.entity_type = 'goal' THEN g.id  
-                   WHEN kbr.entity_type = 'task' THEN t.id
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entity_ids,
-           array_agg(DISTINCT kbr.entity_type) FILTER (WHERE kbr.entity_type IS NOT NULL) as entity_types
+    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.created_at, kb.updated_at
     FROM knowledge_base kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
-    LEFT JOIN projects p ON kbr.entity_type = 'project' AND kbr.entity_id = p.id
-    LEFT JOIN goals g ON kbr.entity_type = 'goal' AND kbr.entity_id = g.id
-    LEFT JOIN tasks t ON kbr.entity_type = 'task' AND kbr.entity_id = t.id
     WHERE kbr.entity_type = 'project' AND kbr.entity_id = %s
-    GROUP BY kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-             kb.link_citations, kb.created_at, kb.updated_at
     ORDER BY kb.updated_at DESC
     """
     try:
@@ -222,31 +172,11 @@ def get_project_knowledge(project_id: str):
 def get_goal_knowledge(goal_id: str):
     """Get all knowledge base items related to a specific goal"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-           kb.link_citations, kb.created_at, kb.updated_at,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.name
-                   WHEN kbr.entity_type = 'goal' THEN g.name  
-                   WHEN kbr.entity_type = 'task' THEN t.name
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entities,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.id
-                   WHEN kbr.entity_type = 'goal' THEN g.id  
-                   WHEN kbr.entity_type = 'task' THEN t.id
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entity_ids,
-           array_agg(DISTINCT kbr.entity_type) FILTER (WHERE kbr.entity_type IS NOT NULL) as entity_types
+    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.created_at, kb.updated_at
     FROM knowledge_base kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
-    LEFT JOIN projects p ON kbr.entity_type = 'project' AND kbr.entity_id = p.id
-    LEFT JOIN goals g ON kbr.entity_type = 'goal' AND kbr.entity_id = g.id
-    LEFT JOIN tasks t ON kbr.entity_type = 'task' AND kbr.entity_id = t.id
     WHERE kbr.entity_type = 'goal' AND kbr.entity_id = %s
-    GROUP BY kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-             kb.link_citations, kb.created_at, kb.updated_at
     ORDER BY kb.updated_at DESC
     """
     try:
@@ -259,31 +189,11 @@ def get_goal_knowledge(goal_id: str):
 def get_task_knowledge(task_id: str):
     """Get all knowledge base items related to a specific task"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-           kb.link_citations, kb.created_at, kb.updated_at,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.name
-                   WHEN kbr.entity_type = 'goal' THEN g.name  
-                   WHEN kbr.entity_type = 'task' THEN t.name
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entities,
-           array_agg(DISTINCT 
-               CASE 
-                   WHEN kbr.entity_type = 'project' THEN p.id
-                   WHEN kbr.entity_type = 'goal' THEN g.id  
-                   WHEN kbr.entity_type = 'task' THEN t.id
-               END
-           ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entity_ids,
-           array_agg(DISTINCT kbr.entity_type) FILTER (WHERE kbr.entity_type IS NOT NULL) as entity_types
+    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.created_at, kb.updated_at
     FROM knowledge_base kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
-    LEFT JOIN projects p ON kbr.entity_type = 'project' AND kbr.entity_id = p.id
-    LEFT JOIN goals g ON kbr.entity_type = 'goal' AND kbr.entity_id = g.id
-    LEFT JOIN tasks t ON kbr.entity_type = 'task' AND kbr.entity_id = t.id
     WHERE kbr.entity_type = 'task' AND kbr.entity_id = %s
-    GROUP BY kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added, 
-             kb.link_citations, kb.created_at, kb.updated_at
     ORDER BY kb.updated_at DESC
     """
     try:
