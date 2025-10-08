@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { SidebarProvider, SidebarInset, SidebarTrigger, SidebarRail } from '@/components/ui/sidebar';
 import AppSidebar from './AppSidebar';
 import Aurora from '../Aurora';
+import BlackHoleIcon from '../BlackHoleIcon';
 
 const Layout: React.FC = () => {
 
@@ -27,7 +28,7 @@ const Layout: React.FC = () => {
                 <SidebarTrigger className="glass-button text-glass hover:text-glass" />
                 
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500"></div>
+                  <BlackHoleIcon />
                   <h1 className="text-xl font-semibold text-glass">Event Horizon</h1>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import BlackHoleIcon from '../BlackHoleIcon';
 
 interface HeaderProps {
   toggleDrawer: () => void;
@@ -20,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ toggleDrawer }) => {
         </Button>
         
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500"></div>
+          <BlackHoleIcon />
           <h1 className="text-xl font-semibold text-glass">Event Horizon</h1>
         </div>
       </div>
