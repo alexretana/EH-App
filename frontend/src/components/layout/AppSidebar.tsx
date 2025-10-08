@@ -25,17 +25,17 @@ const AppSidebar: React.FC = () => {
   ];
 
   return (
-    <Sidebar variant="inset" className="sidebar-glass">
-      <SidebarHeader>
+    <Sidebar variant="inset" className="">
+      <SidebarHeader className="glass">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500"></div>
-          <h1 className="text-xl font-semibold">Event Horizon</h1>
+          <h1 className="text-xl font-semibold text-glass">Event Horizon</h1>
         </div>
       </SidebarHeader>
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-glass">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => {
@@ -50,8 +50,8 @@ const AppSidebar: React.FC = () => {
                         className={cn(
                           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                           isActive
-                            ? "bg-primary/20 text-primary"
-                            : "hover:bg-white/10"
+                            ? "glass-hover-level-1 text-primary sidebar-glass"
+                            : "hover:bg-white/10 glass-hover-level-3"
                         )}
                       >
                         <Icon className="h-5 w-5" />
@@ -67,9 +67,9 @@ const AppSidebar: React.FC = () => {
       </SidebarContent>
       
       <SidebarFooter>
-        <div className="p-3 rounded-lg border border-white/10">
-          <p className="text-xs text-muted-foreground">Event Horizon</p>
-          <p className="text-xs text-muted-foreground">v1.0.0</p>
+        <div className="p-3">
+          <p className="text-xs text-glass-muted">Event Horizon</p>
+          <p className="text-xs text-glass-muted">v1.0.0</p>
         </div>
       </SidebarFooter>
     </Sidebar>

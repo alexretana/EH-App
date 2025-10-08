@@ -309,4 +309,21 @@
     -webkit-backdrop-filter: blur(16px) !important;
     border-right: 1px solid var(--glass-border) !important;
   }
+
+  /* Remove space between sidebar container and sidebar divs */
+  [data-variant="inset"][data-slot="sidebar-container"] {
+    padding: 0 !important;
+  }
+
+  [data-variant="inset"][data-slot="sidebar-gap"] {
+    width: 0 !important;
+  }
+
+  /* Apply glass effect to sidebar inner container */
+  [data-sidebar="sidebar"][data-slot="sidebar-inner"] {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-right: 1px solid var(--glass-border) !important;
+  }
 }
