@@ -309,7 +309,7 @@ export function TaskDataTable({
                     {row.getVisibleCells().map((cell) => (
                       <motion.td
                         key={cell.id}
-                        className="text-glass"
+                        className="text-glass p-2 border-t"
                         layout
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
