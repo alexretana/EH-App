@@ -108,7 +108,7 @@ const TaskView: React.FC = () => {
     
     // Default sort or dependency sort would be implemented here
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-  });
+  }).map(task => ({ ...task, uniqueKey: `${task.id}-${task.updated_at}` }));
 
 
   return (

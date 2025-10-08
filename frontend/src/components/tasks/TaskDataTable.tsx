@@ -13,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -289,27 +290,45 @@ export function TaskDataTable({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-glass/10 hover:bg-glass/5"
+            <AnimatePresence mode="popLayout">
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <motion.tr
+                    key={row.original.uniqueKey || row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="border-glass/10 hover:bg-glass/5"
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{
+                      opacity: { duration: 0.2 },
+                      layout: { type: "spring", stiffness: 300, damping: 30 }
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <motion.td
+                        key={cell.id}
+                        className="text-glass"
+                        layout
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </motion.td>
+                    ))}
+                  </motion.tr>
+                ))
+              ) : (
+                <motion.tr
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-glass">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-glass-muted">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
+                  <TableCell colSpan={columns.length} className="h-24 text-center text-glass-muted">
+                    No results.
+                  </TableCell>
+                </motion.tr>
+              )}
+            </AnimatePresence>
           </TableBody>
         </Table>
       </div>

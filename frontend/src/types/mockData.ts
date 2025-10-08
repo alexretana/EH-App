@@ -46,6 +46,7 @@ export interface Task extends BaseEntity {
   week_start_date?: string;
   assignee?: string;
   goal_id: string;
+  uniqueKey?: string; // Added for Framer Motion AnimatePresence to track reordering
 }
 
 // Task dependency entity
