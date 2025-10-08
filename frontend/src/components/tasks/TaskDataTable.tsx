@@ -31,8 +31,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Task } from "@/types/mockData"
-import { Edit, Trash2, Play, Pause, CheckCircle, RotateCcw, Clock, Target } from "lucide-react"
+import { Edit, Trash2, Play, Pause, CheckCircle, RotateCcw, Clock, Target, Calendar } from "lucide-react"
 
 interface TaskDataTableProps {
   tasks: Task[]
@@ -58,6 +59,148 @@ export function TaskDataTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  
+  // Mobile card view component
+  const TaskCard = ({ task }: { task: Task }) => {
+    const goal = goals.find(g => g.id === task.goal_id);
+    const project = goal ? projects.find(p => p.id === goal.project_id) : null;
+    
+    return (
+      <motion.div
+        key={task.id}
+        className="glass-card p-4 rounded-xl glass-hover-level-1"
+        layout
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{
+          opacity: { duration: 0.2 },
+          layout: { type: "spring", stiffness: 300, damping: 30 }
+        }}
+      >
+        <CardHeader className="pb-3 px-0 pt-0">
+          <div className="flex items-start justify-between">
+            <CardTitle className="text-lg text-glass line-clamp-2">{task.name}</CardTitle>
+            <div className="flex gap-1">
+              {task.status === 'Not started' && (
+                <Button
+                  size="sm"
+                  onClick={() => onUpdateTaskStatus(task.id, 'Active')}
+                  className="glass-button h-8 w-8 p-0"
+                >
+                  <Play className="h-4 w-4" />
+                </Button>
+              )}
+              
+              {task.status === 'Active' && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onUpdateTaskStatus(task.id, 'Done')}
+                    className="glass-button h-8 w-8 p-0"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditTask(task)}
+                className="glass-button h-8 w-8 p-0"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDeleteTask(task.id)}
+                className="glass-button text-danger hover:text-danger h-8 w-8 p-0"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          {task.description && (
+            <p className="text-sm text-glass-muted mt-1">{task.description}</p>
+          )}
+        </CardHeader>
+        
+        <CardContent className="px-0 pb-3">
+          <div className="flex flex-wrap gap-2 mb-3">
+            <Badge className={`text-xs ${getTaskTypeColor(task.task_type)}`}>
+              {task.task_type}
+            </Badge>
+            <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
+              {task.priority}
+            </Badge>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
+              {task.status}
+            </span>
+          </div>
+          
+          <div className="space-y-2 text-sm text-glass-muted">
+            {project && goal && (
+              <div>
+                <span className="font-medium text-glass">Project/Goal:</span> {project.name} / {goal.name}
+              </div>
+            )}
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {task.time_estimate_minutes} min
+              </div>
+              
+              {task.due_date && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {new Date(task.due_date).toLocaleDateString()}
+                </div>
+              )}
+            </div>
+            
+            {task.assignee && (
+              <div>
+                <span className="font-medium text-glass">Assignee:</span> {task.assignee}
+              </div>
+            )}
+          </div>
+        </CardContent>
+        
+        <CardFooter className="px-0 pt-0">
+          <div className="flex gap-2 w-full">
+            {task.status === 'Active' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUpdateTaskStatus(task.id, 'Not started')}
+                className="glass-button flex-1"
+              >
+                <Pause className="h-3 w-3 mr-1" />
+                Pause
+              </Button>
+            )}
+            
+            {(task.status === 'Done' || task.status === 'Cancelled') && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUpdateTaskStatus(task.id, 'Active')}
+                className="glass-button flex-1"
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Reactivate
+              </Button>
+            )}
+          </div>
+        </CardFooter>
+      </motion.div>
+    );
+  };
 
   const getTaskTypeColor = (taskType: string) => {
     switch (taskType) {
@@ -319,90 +462,113 @@ export function TaskDataTable({
 
   return (
     <div className="w-full">
-      <div className="glass-card rounded-xl overflow-hidden">
-        <ScrollArea className="w-full max-h-[600px]">
-          <div className="min-w-[800px]">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id} className="border-glass/20 glass-header">
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id} className="text-glass whitespace-nowrap">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                <AnimatePresence mode="popLayout">
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
+      {/* Desktop Table View */}
+      <div className="hidden md:block">
+        <div className="glass-card rounded-xl overflow-hidden">
+          <ScrollArea className="w-full max-h-[600px]">
+            <div className="min-w-[800px]">
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id} className="border-glass/20 glass-header">
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id} className="text-glass whitespace-nowrap">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  <AnimatePresence mode="popLayout">
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <motion.tr
+                          key={row.original.uniqueKey || row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                          className="border-glass/10 hover:bg-glass/5"
+                          layout
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{
+                            opacity: { duration: 0.2 },
+                            layout: { type: "spring", stiffness: 300, damping: 30 }
+                          }}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <motion.td
+                              key={cell.id}
+                              className="text-glass p-2 border-t whitespace-nowrap"
+                              layout
+                            >
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </motion.td>
+                          ))}
+                        </motion.tr>
+                      ))
+                    ) : (
                       <motion.tr
-                        key={row.original.uniqueKey || row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                        className="border-glass/10 hover:bg-glass/5"
-                        layout
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{
-                          opacity: { duration: 0.2 },
-                          layout: { type: "spring", stiffness: 300, damping: 30 }
-                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                       >
-                        {row.getVisibleCells().map((cell) => (
-                          <motion.td
-                            key={cell.id}
-                            className="text-glass p-2 border-t whitespace-nowrap"
-                            layout
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </motion.td>
-                        ))}
+                        <TableCell colSpan={columns.length} className="h-24 text-center text-glass-muted">
+                          No results.
+                        </TableCell>
                       </motion.tr>
-                    ))
-                  ) : (
-                    <motion.tr
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <TableCell colSpan={columns.length} className="h-24 text-center text-glass-muted">
-                        No results.
-                      </TableCell>
-                    </motion.tr>
-                  )}
-                </AnimatePresence>
-              </TableBody>
-            </Table>
-          </div>
-        </ScrollArea>
+                    )}
+                  </AnimatePresence>
+                </TableBody>
+              </Table>
+            </div>
+          </ScrollArea>
+        </div>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="glass-button"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="glass-button"
+          >
+            Next
+          </Button>
+        </div>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-          className="glass-button"
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-          className="glass-button"
-        >
-          Next
-        </Button>
+      
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        <AnimatePresence mode="popLayout">
+          {tasks.length ? (
+            tasks.map((task) => (
+              <TaskCard key={task.id} task={task} />
+            ))
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="glass-card p-6 rounded-xl text-center text-glass-muted"
+            >
+              No results.
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
