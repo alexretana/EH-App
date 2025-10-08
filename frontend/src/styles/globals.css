@@ -310,7 +310,7 @@
     border-right: 1px solid var(--glass-border) !important;
   }
 
-  /* Remove space between sidebar container and sidebar divs */
+  /* Remove space between sidebar container and sidebar divs - Desktop */
   [data-variant="inset"][data-slot="sidebar-container"] {
     padding: 0 !important;
   }
@@ -319,11 +319,27 @@
     width: 0 !important;
   }
 
-  /* Apply glass effect to sidebar inner container */
+  /* Apply glass effect to sidebar inner container - Desktop */
   [data-sidebar="sidebar"][data-slot="sidebar-inner"] {
     background: var(--glass-bg) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
     border-right: 1px solid var(--glass-border) !important;
+  }
+
+  /* Remove space between sidebar container and sidebar divs - Mobile */
+  [data-mobile="true"][data-slot="sidebar"] {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-right: 1px solid var(--glass-border) !important;
+  }
+
+  /* Apply glass effect to Sheet content for mobile sidebar */
+  [data-sidebar="sidebar"][data-mobile="true"] {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--glass-border) !important;
   }
 }
