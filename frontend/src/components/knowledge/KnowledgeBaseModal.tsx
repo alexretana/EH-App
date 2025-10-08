@@ -100,7 +100,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal max-w-4xl max-h-[85vh]">
+      <DialogContent className="glass-modal max-w-[80%] max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="text-glass">
             {knowledgeBase ? 'Edit Document' : 'Create New Document'}

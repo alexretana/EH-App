@@ -189,18 +189,10 @@ const KnowledgeBaseView: React.FC = () => {
       
       {/* Read Document Modal */}
       <Dialog open={isReadModalOpen} onOpenChange={closeReadModal}>
-        <DialogContent className="glass-modal max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="glass-modal max-w-[80%] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-glass flex items-center justify-between">
+            <DialogTitle className="text-glass">
               {currentDocument?.document_name}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={closeReadModal}
-                className="glass-button"
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </DialogTitle>
           </DialogHeader>
           
