@@ -9,10 +9,11 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import TaskModal from '@/components/tasks/TaskModal';
+import { TaskDataTable } from '@/components/tasks/TaskDataTable';
 import { Task } from '@/types/mockData';
 
 const TaskView: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'checklist' | 'kanban'>('checklist');
+  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   const [filterOption, setFilterOption] = useState<'all' | 'active-projects' | 'active-goals' | 'active-milestones'>('all');
   const [sortOption, setSortOption] = useState<'dependency' | 'status'>('status');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,27 +110,6 @@ const TaskView: React.FC = () => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
-  const getTaskTypeColor = (taskType: string) => {
-    switch (taskType) {
-      case 'Network': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Debug': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Review': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'Develop': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Marketing': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Provision': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
-      case 'Research': return 'bg-pink-100 text-pink-800 border-pink-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'High': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
   return (
     <>
@@ -164,13 +144,13 @@ const TaskView: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Button
-                    variant={viewMode === 'checklist' ? 'default' : 'outline'}
+                    variant={viewMode === 'table' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setViewMode('checklist')}
+                    onClick={() => setViewMode('table')}
                     className="glass-button"
                   >
                     <List className="h-4 w-4 mr-1" />
-                    <span className="hidden sm:inline">Checklist</span>
+                    <span className="hidden sm:inline">Table</span>
                   </Button>
                 </motion.div>
                 <motion.div
@@ -275,168 +255,15 @@ const TaskView: React.FC = () => {
               </Button>
             </motion.div>
           </div>
-        ) : viewMode === 'checklist' ? (
-          <div className="space-y-4">
-            {sortedTasks.map((task) => {
-              const goal = goals.find(g => g.id === task.goal_id);
-              const project = goal ? projects.find(p => p.id === goal.project_id) : null;
-              
-              return (
-                <motion.div
-                  key={task.id}
-                  className="glass-card p-4 rounded-xl glass-hover-level-1"
-                  layout
-                  whileHover={{ y: -2 }}
-                  transition={{ type: 'spring', damping: 10, stiffness: 100 }}
-                >
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <h3 className="text-lg font-medium text-glass">{task.name}</h3>
-                        <div className="flex items-center gap-2">
-                          <Badge className={`text-xs ${getTaskTypeColor(task.task_type)}`}>
-                            {task.task_type}
-                          </Badge>
-                          <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
-                            {task.priority}
-                          </Badge>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            task.status === 'Active'
-                              ? 'bg-success/20 text-success'
-                              : task.status === 'Not started'
-                              ? 'bg-warning/20 text-warning'
-                              : task.status === 'Done'
-                              ? 'bg-info/20 text-info'
-                              : 'bg-danger/20 text-danger'
-                          }`}>
-                            {task.status}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-glass-muted text-sm">
-                        {project?.name} / {goal?.name}
-                      </p>
-                      {task.description && (
-                        <p className="text-glass text-sm">{task.description}</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-glass-muted">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {task.time_estimate_minutes} min
-                        </div>
-                        {task.due_date && (
-                          <div className="flex items-center gap-1">
-                            <Target className="h-3 w-3" />
-                            Due: {new Date(task.due_date).toLocaleDateString()}
-                          </div>
-                        )}
-                        {task.assignee && (
-                          <div>
-                            Assignee: {task.assignee}
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                        >
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEditTask(task)}
-                            className="glass-button h-8 w-8 p-0"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </motion.div>
-                        
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                        >
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteTask(task.id)}
-                            className="glass-button text-danger hover:text-danger h-8 w-8 p-0"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </motion.div>
-                        
-                        {task.status === 'Not started' && (
-                          <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Button
-                              size="sm"
-                              onClick={() => handleUpdateTaskStatus(task.id, 'Active')}
-                              className="glass-button h-8 w-8 p-0"
-                            >
-                              <Play className="h-4 w-4" />
-                            </Button>
-                          </motion.div>
-                        )}
-                        
-                        {task.status === 'Active' && (
-                          <>
-                            <motion.div
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleUpdateTaskStatus(task.id, 'Not started')}
-                                className="glass-button h-8 w-8 p-0"
-                              >
-                                <Pause className="h-4 w-4" />
-                              </Button>
-                            </motion.div>
-                            <motion.div
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleUpdateTaskStatus(task.id, 'Done')}
-                                className="glass-button h-8 w-8 p-0"
-                              >
-                                <CheckCircle className="h-4 w-4" />
-                              </Button>
-                            </motion.div>
-                          </>
-                        )}
-                        
-                        {(task.status === 'Done' || task.status === 'Cancelled') && (
-                          <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUpdateTaskStatus(task.id, 'Active')}
-                              className="glass-button h-8 w-8 p-0"
-                            >
-                              <RotateCcw className="h-4 w-4" />
-                            </Button>
-                          </motion.div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+        ) : viewMode === 'table' ? (
+          <TaskDataTable
+            tasks={sortedTasks}
+            goals={goals}
+            projects={projects}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+            onUpdateTaskStatus={handleUpdateTaskStatus}
+          />
         ) : (
           <div className="glass-card p-4 rounded-xl">
             <div className="text-center py-8">
