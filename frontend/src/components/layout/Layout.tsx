@@ -30,7 +30,7 @@ const Layout: React.FC = () => {
                 
                 <div className="flex items-center gap-2">
                   <BlackHoleIcon />
-                  <h1 className="text-xl font-semibold text-glass">Event Horizon</h1>
+                  <h1 className="text-xl font-semibold text-gradient-primary">Event Horizon</h1>
                 </div>
               </div>
             </header>
