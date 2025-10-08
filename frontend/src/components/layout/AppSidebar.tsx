@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 const AppSidebar: React.FC = () => {
@@ -65,6 +66,8 @@ const AppSidebar: React.FC = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <Separator />
       
       <SidebarFooter>
         <div className="p-3">
