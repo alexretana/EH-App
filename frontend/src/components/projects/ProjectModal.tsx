@@ -111,14 +111,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
           <DialogTitle className="text-glass">
             {project ? 'Edit Project' : 'Create New Project'}
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute right-4 top-4 glass-button"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
         
         <Form {...form}>

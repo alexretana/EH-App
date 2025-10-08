@@ -151,14 +151,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
           <DialogTitle className="text-glass">
             {task ? 'Edit Task' : 'Create New Task'}
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute right-4 top-4 glass-button"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
         
         <Form {...form}>
