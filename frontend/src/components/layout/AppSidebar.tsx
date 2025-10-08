@@ -37,7 +37,7 @@ const AppSidebar: React.FC = () => {
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-glass">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-glass">My Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => {
