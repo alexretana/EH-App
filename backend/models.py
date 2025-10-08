@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, List, Any, Union
 from datetime import date, datetime
 from enum import Enum
 import uuid
@@ -192,6 +192,15 @@ class KnowledgeBase(KnowledgeBaseBase):
     related_entities: Optional[List[str]] = None
     related_entity_ids: Optional[List[str]] = None
     entity_types: Optional[List[str]] = None
+
+    @field_validator('related_entity_ids', mode='before')
+    @classmethod
+    def convert_uuids_to_strings(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, list):
+            return [str(item) if isinstance(item, uuid.UUID) else item for item in v]
+        return v
 
     class Config:
         from_attributes = True

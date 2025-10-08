@@ -14,6 +14,7 @@
    - Discuss with the team to decide on the correct approach
    - Implement the agreed-upon solution
    - Update both frontend and backend to match
+   - if it makes more sense to update the database, suggest the change the user for approval. Upon approval, update the relevant ddl file. Ideally, you should never have to change more than a view, and you must state your case if you believe you need to change more than just a view
 
 3. **Validation Strategy**:
    - Backend: Enforce all validation through PostgreSQL constraints, triggers, and foreign keys

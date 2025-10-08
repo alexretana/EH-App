@@ -1,9 +1,15 @@
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse
 from typing import List, Optional, Dict, Any
 from models import KnowledgeBase, KnowledgeBaseCreate, KnowledgeBaseUpdate
 from database import db
 import json
+import logging
+import uuid
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/knowledge", tags=["knowledge"])
 
@@ -11,42 +17,58 @@ router = APIRouter(prefix="/knowledge", tags=["knowledge"])
 def get_knowledge_items():
     """Get all knowledge base items"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.created_at, kb.updated_at
-    FROM knowledge_base kb
+    SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
+           kb.entity_types, kb.created_at, kb.updated_at
+    FROM knowledge_base_with_references kb
     ORDER BY kb.updated_at DESC
     """
     try:
         items = db.execute_query(query)
-        # Convert datetime objects to ISO strings
+        # Convert datetime objects to ISO strings and UUIDs to strings
         for item in items:
             for key, value in item.items():
                 if hasattr(value, 'isoformat'):
                     item[key] = value.isoformat()
-        return Response(content=json.dumps(items), media_type="application/json")
+                elif isinstance(value, uuid.UUID):
+                    item[key] = str(value)
+                elif isinstance(value, list):
+                    # Handle UUIDs in arrays
+                    item[key] = [str(v) if isinstance(v, uuid.UUID) else v for v in value]
+        logger.info(f"Returning knowledge items: {json.dumps(items)}")
+        return JSONResponse(content=items)
     except Exception as e:
+        logger.error(f"Error getting knowledge items: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{knowledge_id}")
 def get_knowledge_item(knowledge_id: str):
     """Get a specific knowledge base item by ID"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.created_at, kb.updated_at
-    FROM knowledge_base kb
+    SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
+           kb.entity_types, kb.created_at, kb.updated_at
+    FROM knowledge_base_with_references kb
     WHERE kb.id = %s
     """
     try:
         items = db.execute_query(query, (knowledge_id,))
         if not items:
             raise HTTPException(status_code=404, detail="Knowledge base item not found")
-        # Convert datetime objects to ISO strings
+        # Convert datetime objects to ISO strings and UUIDs to strings
         item = items[0]
         for key, value in item.items():
             if hasattr(value, 'isoformat'):
                 item[key] = value.isoformat()
-        return Response(content=json.dumps(item), media_type="application/json")
+            elif isinstance(value, uuid.UUID):
+                item[key] = str(value)
+            elif isinstance(value, list):
+                # Handle UUIDs in arrays
+                item[key] = [str(v) if isinstance(v, uuid.UUID) else v for v in value]
+        logger.info(f"Returning knowledge item: {json.dumps(item)}")
+        return JSONResponse(content=item)
     except Exception as e:
+        logger.error(f"Error getting knowledge item: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/")
@@ -56,7 +78,7 @@ def create_knowledge_item(item: KnowledgeBaseCreate):
     kb_query = """
     INSERT INTO knowledge_base (document_name, content, ai_summary, link_citations)
     VALUES (%s, %s, %s, %s)
-    RETURNING id, document_name, content, ai_summary, date_added, link_citations, created_at, updated_at
+    RETURNING id
     """
     
     try:
@@ -94,6 +116,7 @@ def create_knowledge_item(item: KnowledgeBaseCreate):
         
         return get_knowledge_item(kb_id)
     except Exception as e:
+        logger.error(f"Error creating knowledge item: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{knowledge_id}")
@@ -109,9 +132,6 @@ def update_knowledge_item(knowledge_id: str, item: KnowledgeBaseUpdate):
     if item.document_name is not None:
         update_fields.append("document_name = %s")
         values.append(item.document_name)
-    if item.content is not None:
-        update_fields.append("content = %s")
-        values.append(item.content)
     if item.ai_summary is not None:
         update_fields.append("ai_summary = %s")
         values.append(item.ai_summary)
@@ -135,6 +155,7 @@ def update_knowledge_item(knowledge_id: str, item: KnowledgeBaseUpdate):
         db.execute_update(query, values)
         return get_knowledge_item(knowledge_id)
     except Exception as e:
+        logger.error(f"Error updating knowledge item: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{knowledge_id}")
@@ -149,55 +170,92 @@ def delete_knowledge_item(knowledge_id: str):
         db.execute_delete(query, (knowledge_id,))
         return {"message": "Knowledge base item deleted successfully"}
     except Exception as e:
+        logger.error(f"Error deleting knowledge item: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/project/{project_id}")
 def get_project_knowledge(project_id: str):
     """Get all knowledge base items related to a specific project"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.created_at, kb.updated_at
-    FROM knowledge_base kb
+    SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
+           kb.entity_types, kb.created_at, kb.updated_at
+    FROM knowledge_base_with_references kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
     WHERE kbr.entity_type = 'project' AND kbr.entity_id = %s
     ORDER BY kb.updated_at DESC
     """
     try:
         items = db.execute_query(query, (project_id,))
-        return items
+        # Convert datetime objects to ISO strings and UUIDs to strings
+        for item in items:
+            for key, value in item.items():
+                if hasattr(value, 'isoformat'):
+                    item[key] = value.isoformat()
+                elif isinstance(value, uuid.UUID):
+                    item[key] = str(value)
+                elif isinstance(value, list):
+                    # Handle UUIDs in arrays
+                    item[key] = [str(v) if isinstance(v, uuid.UUID) else v for v in value]
+        return JSONResponse(content=items)
     except Exception as e:
+        logger.error(f"Error getting project knowledge: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/goal/{goal_id}")
 def get_goal_knowledge(goal_id: str):
     """Get all knowledge base items related to a specific goal"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.created_at, kb.updated_at
-    FROM knowledge_base kb
+    SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
+           kb.entity_types, kb.created_at, kb.updated_at
+    FROM knowledge_base_with_references kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
     WHERE kbr.entity_type = 'goal' AND kbr.entity_id = %s
     ORDER BY kb.updated_at DESC
     """
     try:
         items = db.execute_query(query, (goal_id,))
-        return items
+        # Convert datetime objects to ISO strings and UUIDs to strings
+        for item in items:
+            for key, value in item.items():
+                if hasattr(value, 'isoformat'):
+                    item[key] = value.isoformat()
+                elif isinstance(value, uuid.UUID):
+                    item[key] = str(value)
+                elif isinstance(value, list):
+                    # Handle UUIDs in arrays
+                    item[key] = [str(v) if isinstance(v, uuid.UUID) else v for v in value]
+        return JSONResponse(content=items)
     except Exception as e:
+        logger.error(f"Error getting goal knowledge: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/task/{task_id}")
 def get_task_knowledge(task_id: str):
     """Get all knowledge base items related to a specific task"""
     query = """
-    SELECT kb.id, kb.document_name, kb.content, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.created_at, kb.updated_at
-    FROM knowledge_base kb
+    SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
+           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
+           kb.entity_types, kb.created_at, kb.updated_at
+    FROM knowledge_base_with_references kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
     WHERE kbr.entity_type = 'task' AND kbr.entity_id = %s
     ORDER BY kb.updated_at DESC
     """
     try:
         items = db.execute_query(query, (task_id,))
-        return items
+        # Convert datetime objects to ISO strings and UUIDs to strings
+        for item in items:
+            for key, value in item.items():
+                if hasattr(value, 'isoformat'):
+                    item[key] = value.isoformat()
+                elif isinstance(value, uuid.UUID):
+                    item[key] = str(value)
+                elif isinstance(value, list):
+                    # Handle UUIDs in arrays
+                    item[key] = [str(v) if isinstance(v, uuid.UUID) else v for v in value]
+        return JSONResponse(content=items)
     except Exception as e:
+        logger.error(f"Error getting task knowledge: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

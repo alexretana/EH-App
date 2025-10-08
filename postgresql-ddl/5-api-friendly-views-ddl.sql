@@ -3,7 +3,7 @@
 -- Project dashboard view with comprehensive metrics
 CREATE VIEW project_dashboard AS
 SELECT 
-    p.id,
+    p.id::text as id,
     p.name,
     p.status,
     p.start_date,
@@ -45,7 +45,7 @@ GROUP BY p.id, p.name, p.status, p.start_date, p.end_date, p.is_active, p.is_val
 -- Task details view with comprehensive relationships
 CREATE VIEW task_details AS
 SELECT 
-    t.id,
+    t.id::text as id,
     t.name,
     t.description,
     t.status,
@@ -58,13 +58,13 @@ SELECT
     t.week_start_date,
     t.assignee,
     p.name as project_name,
-    p.id as project_id,
+    p.id::text as project_id,
     g.name as goal_name,
-    g.id as goal_id,
+    g.id::text as goal_id,
     array_agg(DISTINCT dep_tasks.name) FILTER (WHERE dep_tasks.name IS NOT NULL) as dependencies,
-    array_agg(DISTINCT dep_tasks.id) FILTER (WHERE dep_tasks.id IS NOT NULL) as dependency_ids,
+    array_agg(DISTINCT dep_tasks.id::text) FILTER (WHERE dep_tasks.id IS NOT NULL) as dependency_ids,
     array_agg(DISTINCT blocked_tasks.name) FILTER (WHERE blocked_tasks.name IS NOT NULL) as blocks_tasks,
-    array_agg(DISTINCT blocked_tasks.id) FILTER (WHERE blocked_tasks.id IS NOT NULL) as blocked_task_ids,
+    array_agg(DISTINCT blocked_tasks.id::text) FILTER (WHERE blocked_tasks.id IS NOT NULL) as blocked_task_ids,
     CASE 
         WHEN t.due_date IS NOT NULL AND t.due_date < CURRENT_DATE AND t.status != 'Done' 
         THEN true 
@@ -91,7 +91,7 @@ GROUP BY t.id, t.name, t.description, t.status, t.task_type, t.priority, t.effor
 -- Goal progress view with task metrics
 CREATE VIEW goal_progress AS
 SELECT 
-    g.id,
+    g.id::text as id,
     g.name,
     g.description,
     g.status,
@@ -99,9 +99,9 @@ SELECT
     g.success_criteria,
     g.due_date,
     p.name as project_name,
-    p.id as project_id,
+    p.id::text as project_id,
     parent_g.name as parent_goal_name,
-    parent_g.id as parent_goal_id,
+    parent_g.id::text as parent_goal_id,
     COUNT(t.id) as total_tasks,
     COUNT(CASE WHEN t.status = 'Done' THEN 1 END) as completed_tasks,
     COUNT(CASE WHEN t.due_date < CURRENT_DATE AND t.status != 'Done' THEN 1 END) as overdue_tasks,
@@ -134,7 +134,7 @@ GROUP BY g.id, g.name, g.description, g.status, g.scope, g.success_criteria, g.d
 -- Knowledge base with comprehensive references
 CREATE VIEW knowledge_base_with_references AS
 SELECT 
-    kb.id,
+    kb.id::text as id,
     kb.document_name,
     kb.ai_summary,
     kb.date_added,
@@ -147,11 +147,11 @@ SELECT
             WHEN kbr.entity_type = 'task' THEN t.name
         END
     ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entities,
-    array_agg(DISTINCT 
-        CASE 
-            WHEN kbr.entity_type = 'project' THEN p.id
-            WHEN kbr.entity_type = 'goal' THEN g.id  
-            WHEN kbr.entity_type = 'task' THEN t.id
+    array_agg(DISTINCT
+        CASE
+            WHEN kbr.entity_type = 'project' THEN p.id::text
+            WHEN kbr.entity_type = 'goal' THEN g.id::text
+            WHEN kbr.entity_type = 'task' THEN t.id::text
         END
     ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entity_ids,
     array_agg(DISTINCT kbr.entity_type) FILTER (WHERE kbr.entity_type IS NOT NULL) as entity_types,
