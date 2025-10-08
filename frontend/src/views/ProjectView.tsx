@@ -8,7 +8,7 @@ import ProjectModal from '@/components/projects/ProjectModal';
 import { Project } from '@/types/mockData';
 
 const ProjectView: React.FC = () => {
-  const { projects, goals, tasks, isLoading, error, deleteProject, getGoalsByProjectId, getTasksByGoalId } = useApp();
+  const { projects, goals, tasks, isLoading, deleteProject, getGoalsByProjectId, getTasksByGoalId } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
@@ -70,15 +70,6 @@ const ProjectView: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="glass-card p-6 rounded-xl border border-danger/30">
-          <p className="text-danger">Error: {error}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>

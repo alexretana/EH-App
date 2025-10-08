@@ -31,8 +31,6 @@ interface AppContextType {
   // Loading states
   isLoading: boolean;
   
-  // Error states
-  error: string | null;
   
   // Current active project
   activeProjectId: string | null;
@@ -66,7 +64,6 @@ interface AppContextType {
   
   // Utility functions
   refreshAllData: () => Promise<void>;
-  clearError: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -90,7 +87,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeBase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [knowledgeApiEnabled, setKnowledgeApiEnabled] = useState(true);
   
@@ -110,12 +106,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     
     // Show error toast using sonner
     toast.error(errorMessage);
-    
-    setError(errorMessage);
     setIsLoading(false);
   };
-  
-  const clearError = () => setError(null);
   
   // Refresh functions
   const refreshProjects = async () => {
@@ -164,7 +156,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   
   const refreshAllData = async () => {
     setIsLoading(true);
-    clearError();
     
     try {
       await Promise.all([
@@ -377,7 +368,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     
     // States
     isLoading,
-    error,
     activeProjectId,
     
     // Actions
@@ -410,8 +400,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     refreshKnowledgeBase,
     
     // Utility functions
-    refreshAllData,
-    clearError
+    refreshAllData
   };
   
   return (

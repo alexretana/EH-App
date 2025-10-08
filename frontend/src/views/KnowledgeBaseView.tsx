@@ -20,7 +20,7 @@ const KnowledgeBaseView: React.FC = () => {
       pedantic: false
     });
   }, []);
-  const { knowledgeBase, isLoading, error, deleteKnowledgeBase } = useApp();
+  const { knowledgeBase, isLoading, deleteKnowledgeBase } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [currentDocument, setCurrentDocument] = useState<KnowledgeBase | null>(null);
@@ -71,15 +71,6 @@ const KnowledgeBaseView: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="glass-card p-6 rounded-xl border border-danger/30">
-          <p className="text-danger">Error: {error}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>

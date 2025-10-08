@@ -19,7 +19,7 @@ const TaskView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   
-  const { tasks, goals, projects, isLoading, error, createTask, updateTask, deleteTask } = useApp();
+  const { tasks, goals, projects, isLoading, createTask, updateTask, deleteTask } = useApp();
 
   const handleCreateTask = () => {
     setCurrentTask(null);
@@ -65,15 +65,6 @@ const TaskView: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="glass-card p-6 rounded-xl border border-danger/30">
-          <p className="text-danger">Error: {error}</p>
-        </div>
-      </div>
-    );
-  }
 
   // Filter tasks based on selected option
   const filteredTasks = tasks.filter(task => {
