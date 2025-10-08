@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, FileText, Link } from 'lucide-react';
+import { X, FileText, Link, Eye } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,6 +30,15 @@ interface KnowledgeBaseModalProps {
 }
 
 const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose, knowledgeBase }) => {
+  // Configure marked with GFM support
+  useEffect(() => {
+    marked.use({
+      gfm: true,
+      breaks: false,
+      pedantic: false
+    });
+  }, []);
+  
   const { createKnowledgeBase, updateKnowledgeBase } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('content');

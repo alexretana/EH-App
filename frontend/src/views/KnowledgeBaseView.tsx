@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +11,14 @@ import KnowledgeBaseModal from '@/components/knowledge/KnowledgeBaseModal';
 import { KnowledgeBase } from '@/types/mockData';
 
 const KnowledgeBaseView: React.FC = () => {
+  // Configure marked with GFM support
+  useEffect(() => {
+    marked.use({
+      gfm: true,
+      breaks: false,
+      pedantic: false
+    });
+  }, []);
   const { knowledgeBase, isLoading, error, deleteKnowledgeBase } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
@@ -208,9 +217,12 @@ const KnowledgeBaseView: React.FC = () => {
               {currentDocument.content && (
                 <div className="glass-card p-4 rounded-lg">
                   <h3 className="text-lg font-medium text-glass mb-2">Content</h3>
-                  <div className="text-glass whitespace-pre-wrap">
-                    {currentDocument.content}
-                  </div>
+                  <div
+                    className="prose prose-invert max-w-none text-glass"
+                    dangerouslySetInnerHTML={{
+                      __html: marked.parse(currentDocument.content)
+                    }}
+                  />
                 </div>
               )}
               
