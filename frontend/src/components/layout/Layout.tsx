@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { SidebarProvider, SidebarInset, SidebarTrigger, SidebarRail } from '@/components/ui/sidebar';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import AppSidebar from './AppSidebar';
 import Aurora from '../Aurora';
 import BlackHoleIcon from '../BlackHoleIcon';
@@ -34,10 +35,12 @@ const Layout: React.FC = () => {
               </div>
             </header>
             
-            <main className="h-[calc(100vh-4rem)] overflow-y-auto bg-transparent">
-              <div className="container mx-auto px-4 py-6">
-                <Outlet />
-              </div>
+            <main className="h-[calc(100vh-4rem)] bg-transparent">
+              <ScrollArea className="h-full">
+                <div className="container mx-auto px-4 py-6">
+                  <Outlet />
+                </div>
+              </ScrollArea>
             </main>
             
             <SidebarRail />

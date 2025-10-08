@@ -30,6 +30,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Task } from "@/types/mockData"
 import { Edit, Trash2, Play, Pause, CheckCircle, RotateCcw, Clock, Target } from "lucide-react"
 
@@ -319,65 +320,69 @@ export function TaskDataTable({
   return (
     <div className="w-full">
       <div className="glass-card rounded-xl overflow-hidden">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-glass/20 glass-header">
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="text-glass">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            <AnimatePresence mode="popLayout">
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <motion.tr
-                    key={row.original.uniqueKey || row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="border-glass/10 hover:bg-glass/5"
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{
-                      opacity: { duration: 0.2 },
-                      layout: { type: "spring", stiffness: 300, damping: 30 }
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <motion.td
-                        key={cell.id}
-                        className="text-glass p-2 border-t"
-                        layout
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </motion.td>
+        <ScrollArea className="w-full max-h-[600px]">
+          <div className="min-w-[800px]">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id} className="border-glass/20 glass-header">
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id} className="text-glass whitespace-nowrap">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
                     ))}
-                  </motion.tr>
-                ))
-              ) : (
-                <motion.tr
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <TableCell colSpan={columns.length} className="h-24 text-center text-glass-muted">
-                    No results.
-                  </TableCell>
-                </motion.tr>
-              )}
-            </AnimatePresence>
-          </TableBody>
-        </Table>
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                <AnimatePresence mode="popLayout">
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <motion.tr
+                        key={row.original.uniqueKey || row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        className="border-glass/10 hover:bg-glass/5"
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{
+                          opacity: { duration: 0.2 },
+                          layout: { type: "spring", stiffness: 300, damping: 30 }
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <motion.td
+                            key={cell.id}
+                            className="text-glass p-2 border-t whitespace-nowrap"
+                            layout
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </motion.td>
+                        ))}
+                      </motion.tr>
+                    ))
+                  ) : (
+                    <motion.tr
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <TableCell colSpan={columns.length} className="h-24 text-center text-glass-muted">
+                        No results.
+                      </TableCell>
+                    </motion.tr>
+                  )}
+                </AnimatePresence>
+              </TableBody>
+            </Table>
+          </div>
+        </ScrollArea>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
