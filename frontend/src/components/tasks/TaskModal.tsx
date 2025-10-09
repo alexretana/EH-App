@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { X, Clock, Target } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -175,14 +172,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal max-w-2xl max-h-[85vh]">
+      <DialogContent className="glass-modal max-w-2xl max-h-[85vh] gap-1">
         <DialogHeader>
           <DialogTitle className="text-glass">
             {task ? 'Edit Task' : 'Create New Task'}
           </DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
+        <ScrollArea className="max-h-[calc(75vh-8rem)] pr-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pr-2">
             <FormField
@@ -383,7 +380,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
             {/* Project and Goal Selection */}
             <div className="space-y-4">
               <div>
-                <Label className="text-glass">Project</Label>
+                <FormLabel className="text-glass">Project</FormLabel>
                 <Select value={selectedProjectId} onValueChange={handleProjectChange}>
                   <SelectTrigger className="glass-input text-glass mt-2">
                     <SelectValue placeholder="Select project" />
@@ -429,7 +426,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
         </ScrollArea>
         
         {error && (
-          <div className="px-4 pb-4">
+          <div className="pt-2">
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
@@ -437,7 +434,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
           </div>
         )}
         
-        <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
+        <div className="flex justify-end gap-2 mt-2">
           <Button
             type="button"
             variant="outline"
@@ -449,7 +446,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="glass-button"
+            className="glass-button text-glass"
             onClick={form.handleSubmit(onSubmit)}
           >
             {isSubmitting ? 'Saving...' : task ? 'Update Task' : 'Create Task'}
