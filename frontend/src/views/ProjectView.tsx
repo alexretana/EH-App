@@ -5,23 +5,41 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import ProjectModal from '@/components/projects/ProjectModal';
-import { Project } from '@/types/mockData';
+import GoalModal from '@/components/goals/GoalModal';
+import TaskModal from '@/components/tasks/TaskModal';
+import { Project, Goal } from '@/types/mockData';
 
 const ProjectView: React.FC = () => {
   const { projects, goals, tasks, isLoading, deleteProject, getGoalsByProjectId, getTasksByGoalId } = useApp();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [currentGoal, setCurrentGoal] = useState<Goal | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
 
   const handleCreateProject = () => {
     setCurrentProject(null);
-    setIsModalOpen(true);
+    setIsProjectModalOpen(true);
   };
 
   const handleEditProject = (project: Project) => {
     setCurrentProject(project);
-    setIsModalOpen(true);
+    setIsProjectModalOpen(true);
+  };
+
+  const handleCreateGoal = (projectId: string) => {
+    setSelectedProjectId(projectId);
+    setCurrentGoal(null);
+    setIsGoalModalOpen(true);
+  };
+
+  const handleCreateTask = (goalId: string) => {
+    setSelectedGoalId(goalId);
+    setIsTaskModalOpen(true);
   };
 
   const handleDeleteProject = async (id: string) => {
@@ -54,9 +72,20 @@ const ProjectView: React.FC = () => {
     setExpandedGoals(newExpanded);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeProjectModal = () => {
+    setIsProjectModalOpen(false);
     setCurrentProject(null);
+  };
+
+  const closeGoalModal = () => {
+    setIsGoalModalOpen(false);
+    setCurrentGoal(null);
+    setSelectedProjectId(null);
+  };
+
+  const closeTaskModal = () => {
+    setIsTaskModalOpen(false);
+    setSelectedGoalId(null);
   };
 
 
@@ -210,7 +239,8 @@ const ProjectView: React.FC = () => {
                             <p className="text-glass-muted text-sm">No goals yet. Add your first goal to this project.</p>
                           </div>
                         ) : (
-                          projectGoals.map((goal) => {
+                          <>
+                            {projectGoals.map((goal) => {
                             const goalTasks = getTasksByGoalId(goal.id);
                             const isGoalExpanded = expandedGoals.has(goal.id);
                             const completedTasks = goalTasks.filter(task => task.status === 'Done').length;
@@ -341,12 +371,41 @@ const ProjectView: React.FC = () => {
                                           </motion.div>
                                         ))
                                       )}
+                                      
+                                      {/* Add New Task Button */}
+                                      <motion.div
+                                        className="glass-card p-3 rounded-lg flex items-center justify-center glass-hover-level-3 cursor-pointer"
+                                        layout
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => handleCreateTask(goal.id)}
+                                      >
+                                        <Plus className="h-4 w-4 mr-2 text-glass" />
+                                        <span className="text-sm font-medium text-glass">Add New Task</span>
+                                      </motion.div>
                                     </motion.div>
                                   )}
                                 </AnimatePresence>
                               </motion.div>
                             );
-                          })
+                          })}
+                          
+                          {/* Add New Goal Button */}
+                          <motion.div
+                            className="glass-card p-4 rounded-lg flex items-center justify-center glass-hover-level-2 cursor-pointer"
+                            layout
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleCreateGoal(project.id)}
+                          >
+                            <Plus className="h-5 w-5 mr-2 text-glass" />
+                            <span className="text-base font-medium text-glass">Add New Goal</span>
+                          </motion.div>
+                        </>
                         )}
                       </motion.div>
                     )}
@@ -359,9 +418,22 @@ const ProjectView: React.FC = () => {
       </div>
       
       <ProjectModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
+        isOpen={isProjectModalOpen}
+        onClose={closeProjectModal}
         project={currentProject}
+      />
+      
+      <GoalModal
+        isOpen={isGoalModalOpen}
+        onClose={closeGoalModal}
+        goal={currentGoal}
+        projectId={selectedProjectId}
+      />
+      
+      <TaskModal
+        isOpen={isTaskModalOpen}
+        onClose={closeTaskModal}
+        goalId={selectedGoalId}
       />
     </>
   );
