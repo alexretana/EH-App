@@ -1,7 +1,10 @@
 services:
   postgres:
-    image: postgres:16-alpine
-    container_name: event-horizon-postgres
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    image: event-horizon-postgres:latest
+    container_name: eh-app-postgres
     environment:
       POSTGRES_DB: "event_horizon"
       POSTGRES_USER: "event_horizon_user"
