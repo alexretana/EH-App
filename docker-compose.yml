@@ -3,7 +3,6 @@ services:
     build:
       context: ./database
       dockerfile: Dockerfile
-    image: event-horizon-postgres:latest
     container_name: eh-app-postgres
     environment:
       POSTGRES_DB: "event_horizon"
@@ -24,7 +23,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: event-horizon-backend
+    container_name: eh-app-backend
     ports:
       - "8000:8000"
     environment:
@@ -38,9 +37,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: event-horizon-frontend
+    container_name: eh-app-frontend
     ports:
       - "5173:5173"
+    environment:
+      - DOCKER_ENV=true
     depends_on:
       - backend
     restart: unless-stopped

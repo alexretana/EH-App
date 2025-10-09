@@ -56,7 +56,6 @@ SELECT
     t.due_date,
     t.date_completed,
     t.week_start_date,
-    t.assignee,
     p.name as project_name,
     p.id::text as project_id,
     g.name as goal_name,
@@ -84,8 +83,8 @@ LEFT JOIN task_dependencies td ON t.id = td.task_id
 LEFT JOIN tasks dep_tasks ON td.depends_on_task_id = dep_tasks.id
 LEFT JOIN task_dependencies td2 ON t.id = td2.depends_on_task_id
 LEFT JOIN tasks blocked_tasks ON td2.task_id = blocked_tasks.id
-GROUP BY t.id, t.name, t.description, t.status, t.task_type, t.priority, t.effort_level, 
-         t.time_estimate_minutes, t.due_date, t.date_completed, t.week_start_date, t.assignee,
+GROUP BY t.id, t.name, t.description, t.status, t.task_type, t.priority, t.effort_level,
+         t.time_estimate_minutes, t.due_date, t.date_completed, t.week_start_date,
          p.name, p.id, g.name, g.id, t.created_at, t.updated_at;
 
 -- Goal progress view with task metrics

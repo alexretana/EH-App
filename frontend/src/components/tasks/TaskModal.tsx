@@ -24,7 +24,6 @@ const taskSchema = z.object({
   effort_level: z.enum(['Small', 'Medium', 'Large']),
   time_estimate_minutes: z.number().min(1, 'Time estimate is required'),
   due_date: z.string().optional(),
-  assignee: z.string().optional(),
   goal_id: z.string().min(1, 'Goal is required')
 });
 
@@ -55,7 +54,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
       effort_level: 'Medium',
       time_estimate_minutes: 60,
       due_date: '',
-      assignee: '',
       goal_id: goalId || ''
     }
   });
@@ -95,7 +93,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
         effort_level: task.effort_level,
         time_estimate_minutes: task.time_estimate_minutes,
         due_date: task.due_date || '',
-        assignee: task.assignee || '',
         goal_id: task.goal_id
       });
     } else {
@@ -108,7 +105,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
         effort_level: 'Medium',
         time_estimate_minutes: 60,
         due_date: '',
-        assignee: '',
         goal_id: goalId || ''
       });
     }
@@ -358,24 +354,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
                 )}
               />
             </div>
-            
-            <FormField
-              control={form.control}
-              name="assignee"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-glass">Assignee</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter assignee name" 
-                      className="glass-input text-glass"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             
             {/* Project and Goal Selection */}
             <div className="space-y-4">

@@ -89,51 +89,51 @@ INSERT INTO goals (name, description, status, scope, success_criteria, due_date,
  (SELECT id FROM projects WHERE name = 'Performance Testing Suite'), NULL);
 
 -- Insert sample tasks covering all enum values and optional fields
-INSERT INTO tasks (name, description, status, task_type, priority, effort_level, time_estimate_minutes, due_date, date_completed, week_start_date, assignee, goal_id) VALUES
+INSERT INTO tasks (name, description, status, task_type, priority, effort_level, time_estimate_minutes, due_date, date_completed, week_start_date, goal_id) VALUES
 -- Tasks for Goal: Database Schema Design (Project 1)
-('Write DDL Scripts', 'Create complete DDL for all tables, indexes, and constraints', 'Done', 'Develop', 'High', 'Medium', 240, '2025-01-25', '2025-01-24', '2025-01-20', 'alice.smith@example.com',
+('Write DDL Scripts', 'Create complete DDL for all tables, indexes, and constraints', 'Done', 'Develop', 'High', 'Medium', 240, '2025-01-25', '2025-01-24', '2025-01-20',
  (SELECT id FROM goals WHERE name = 'Database Schema Design')),
 
-('Review Schema Design', 'Technical review of database schema design', 'Active', 'Review', 'High', 'Small', 60, '2025-01-30', NULL, '2025-01-27', 'bob.johnson@example.com',
+('Review Schema Design', 'Technical review of database schema design', 'Active', 'Review', 'High', 'Small', 60, '2025-01-30', NULL, '2025-01-27',
  (SELECT id FROM goals WHERE name = 'Database Schema Design')),
 
 -- Tasks for Goal: Create Core Tables (Project 1)
-('Create Projects Table', 'Implement the projects table with all constraints', 'Active', 'Develop', 'Medium', 'Medium', 120, '2025-02-10', NULL, '2025-02-05', 'alice.smith@example.com',
+('Create Projects Table', 'Implement the projects table with all constraints', 'Active', 'Develop', 'Medium', 'Medium', 120, '2025-02-10', NULL, '2025-02-05',
  (SELECT id FROM goals WHERE name = 'Create Core Tables')),
 
-('Create Tasks Table', 'Implement the tasks table with proper relationships', 'Not started', 'Develop', 'Medium', 'Large', 180, '2025-02-12', NULL, '2025-02-05', 'charlie.brown@example.com',
+('Create Tasks Table', 'Implement the tasks table with proper relationships', 'Not started', 'Develop', 'Medium', 'Large', 180, '2025-02-12', NULL, '2025-02-05',
  (SELECT id FROM goals WHERE name = 'Create Core Tables')),
 
 -- Tasks for Goal: Workflow Analysis (Project 2)
-('Analyze Workflow Performance', 'Measure current workflow execution times', 'Active', 'Research', 'Medium', 'Medium', 150, '2025-03-01', NULL, '2025-02-24', 'diana.prince@example.com',
+('Analyze Workflow Performance', 'Measure current workflow execution times', 'Active', 'Research', 'Medium', 'Medium', 150, '2025-03-01', NULL, '2025-02-24',
  (SELECT id FROM goals WHERE name = 'Workflow Analysis')),
 
-('Identify Bottlenecks', 'Find performance bottlenecks in workflows', 'Not started', 'Debug', 'High', 'Small', 90, '2025-03-05', NULL, '2025-03-01', 'eve.wilson@example.com',
+('Identify Bottlenecks', 'Find performance bottlenecks in workflows', 'Not started', 'Debug', 'High', 'Small', 90, '2025-03-05', NULL, '2025-03-01',
  (SELECT id FROM goals WHERE name = 'Workflow Analysis')),
 
 -- Tasks for Goal: API Review (Project 3) - Completed
-('Document Endpoints', 'Document all existing API endpoints', 'Done', 'Develop', 'Medium', 'Large', 300, '2025-02-10', '2025-02-09', '2025-02-05', 'frank.miller@example.com',
+('Document Endpoints', 'Document all existing API endpoints', 'Done', 'Develop', 'Medium', 'Large', 300, '2025-02-10', '2025-02-09', '2025-02-05',
  (SELECT id FROM goals WHERE name = 'API Review')),
 
-('Test Documentation', 'Verify all documentation is accurate', 'Done', 'Review', 'Low', 'Small', 45, '2025-02-12', '2025-02-11', '2025-02-08', 'grace.kelly@example.com',
+('Test Documentation', 'Verify all documentation is accurate', 'Done', 'Review', 'Low', 'Small', 45, '2025-02-12', '2025-02-11', '2025-02-08',
  (SELECT id FROM goals WHERE name = 'API Review')),
 
 -- Tasks for Goal: Design Mockups (Project 4) - Cancelled
-('Create Wireframes', 'Design initial wireframes for new interface', 'Cancelled', 'Develop', 'Medium', 'Medium', 180, '2025-05-15', NULL, '2025-05-10', 'henry.ford@example.com',
+('Create Wireframes', 'Design initial wireframes for new interface', 'Cancelled', 'Develop', 'Medium', 'Medium', 180, '2025-05-15', NULL, '2025-05-10',
  (SELECT id FROM goals WHERE name = 'Design Mockups')),
 
 -- Tasks for Goal: Test Framework Setup (Project 5)
-('Select Testing Tools', 'Research and select appropriate testing tools', 'Active', 'Research', 'Medium', 'Medium', 120, '2025-04-15', NULL, '2025-04-10', 'iris.west@example.com',
+('Select Testing Tools', 'Research and select appropriate testing tools', 'Active', 'Research', 'Medium', 'Medium', 120, '2025-04-15', NULL, '2025-04-10',
  (SELECT id FROM goals WHERE name = 'Test Framework Setup')),
 
-('Configure CI/CD', 'Set up continuous integration with testing pipeline', 'Not started', 'Provision', 'High', 'Large', 240, '2025-04-25', NULL, '2025-04-20', 'jack.bauer@example.com',
+('Configure CI/CD', 'Set up continuous integration with testing pipeline', 'Not started', 'Provision', 'High', 'Large', 240, '2025-04-25', NULL, '2025-04-20',
  (SELECT id FROM goals WHERE name = 'Test Framework Setup')),
 
 -- Tasks with different types and priorities
-('Network Configuration', 'Configure network settings for deployment', 'Active', 'Network', 'High', 'Small', 60, '2025-03-20', NULL, '2025-03-15', 'kate.kane@example.com',
+('Network Configuration', 'Configure network settings for deployment', 'Active', 'Network', 'High', 'Small', 60, '2025-03-20', NULL, '2025-03-15',
  (SELECT id FROM goals WHERE name = 'Implement Optimizations')),
 
-('Marketing Materials', 'Prepare marketing materials for project launch', 'Not started', 'Marketing', 'Low', 'Small', 90, '2025-05-01', NULL, '2025-04-20', 'luke.cage@example.com',
+('Marketing Materials', 'Prepare marketing materials for project launch', 'Not started', 'Marketing', 'Low', 'Small', 90, '2025-05-01', NULL, '2025-04-20',
  (SELECT id FROM goals WHERE name = 'Implement Optimizations'));
 
 -- Insert task dependencies to demonstrate relationships

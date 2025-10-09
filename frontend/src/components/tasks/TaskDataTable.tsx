@@ -167,11 +167,6 @@ export function TaskDataTable({
               )}
             </div>
             
-            {task.assignee && (
-              <div>
-                <span className="font-medium text-glass">Assignee:</span> {task.assignee}
-              </div>
-            )}
           </div>
         </CardContent>
         
@@ -313,18 +308,6 @@ export function TaskDataTable({
             <Target className="h-3 w-3" />
             {new Date(dueDate).toLocaleDateString()}
           </div>
-        ) : (
-          <div className="text-sm text-glass-muted">-</div>
-        );
-      },
-    },
-    {
-      accessorKey: "assignee",
-      header: "Assignee",
-      cell: ({ row }) => {
-        const assignee = row.getValue("assignee") as string;
-        return assignee ? (
-          <div className="text-sm text-glass-muted">{assignee}</div>
         ) : (
           <div className="text-sm text-glass-muted">-</div>
         );

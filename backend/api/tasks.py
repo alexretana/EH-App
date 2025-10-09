@@ -10,7 +10,7 @@ def get_tasks():
     """Get all tasks"""
     query = """
     SELECT id, name, description, status, task_type, priority, effort_level, time_estimate_minutes,
-           due_date, date_completed, week_start_date, assignee, goal_id, created_at, updated_at
+           due_date, date_completed, week_start_date, goal_id, created_at, updated_at
     FROM tasks
     ORDER BY created_at DESC
     """
@@ -25,7 +25,7 @@ def get_task(task_id: str):
     """Get a specific task by ID"""
     query = """
     SELECT id, name, description, status, task_type, priority, effort_level, time_estimate_minutes,
-           due_date, date_completed, week_start_date, assignee, goal_id, created_at, updated_at
+           due_date, date_completed, week_start_date, goal_id, created_at, updated_at
     FROM tasks
     WHERE id = %s
     """
@@ -42,16 +42,16 @@ def create_task(task: TaskCreate):
     """Create a new task"""
     query = """
     INSERT INTO tasks (name, description, status, task_type, priority, effort_level, time_estimate_minutes,
-                      due_date, date_completed, week_start_date, assignee, goal_id)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                      due_date, date_completed, week_start_date, goal_id)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING id, name, description, status, task_type, priority, effort_level, time_estimate_minutes,
-              due_date, date_completed, week_start_date, assignee, goal_id, created_at, updated_at
+              due_date, date_completed, week_start_date, goal_id, created_at, updated_at
     """
     try:
         result = db.execute_insert(query, (
             task.name, task.description, task.status, task.task_type, task.priority,
             task.effort_level, task.time_estimate_minutes, task.due_date, task.date_completed,
-            task.week_start_date, task.assignee, task.goal_id
+            task.week_start_date, task.goal_id
         ))
         return get_task(result)
     except Exception as e:
@@ -100,9 +100,6 @@ def update_task(task_id: str, task: TaskUpdate):
     if task.week_start_date is not None:
         update_fields.append("week_start_date = %s")
         values.append(task.week_start_date)
-    if task.assignee is not None:
-        update_fields.append("assignee = %s")
-        values.append(task.assignee)
     
     if not update_fields:
         return get_task(task_id)

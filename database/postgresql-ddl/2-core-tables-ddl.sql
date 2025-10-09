@@ -49,7 +49,6 @@ CREATE TABLE tasks (
     due_date DATE,
     date_completed DATE,
     week_start_date DATE,
-    assignee VARCHAR(255),
     goal_id UUID NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

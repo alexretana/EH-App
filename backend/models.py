@@ -136,7 +136,6 @@ class TaskBase(BaseModel):
     due_date: Optional[date] = None
     date_completed: Optional[date] = None
     week_start_date: Optional[date] = None
-    assignee: Optional[str] = None
     goal_id: str
 
 class TaskCreate(TaskBase):
@@ -153,7 +152,6 @@ class TaskUpdate(BaseModel):
     due_date: Optional[date] = None
     date_completed: Optional[date] = None
     week_start_date: Optional[date] = None
-    assignee: Optional[str] = None
 
 class Task(TaskBase):
     id: str

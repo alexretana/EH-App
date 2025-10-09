@@ -44,7 +44,6 @@ export interface Task extends BaseEntity {
   due_date?: string;
   date_completed?: string;
   week_start_date?: string;
-  assignee?: string;
   goal_id: string;
   uniqueKey?: string; // Added for Framer Motion AnimatePresence to track reordering
 }
@@ -107,7 +106,6 @@ export interface TaskDetails extends BaseEntity {
   due_date?: string;
   date_completed?: string;
   week_start_date?: string;
-  assignee?: string;
   project_name: string;
   project_id: string;
   goal_name: string;
