@@ -66,7 +66,13 @@ export function TaskDataTable({
     return (
       <motion.div
         key={task.id}
-        className="glass-card p-4 rounded-xl glass-hover-level-1"
+        className="glass-card p-4 rounded-xl glass-hover-level-1 cursor-pointer"
+        onClick={(e) => {
+          // Don't trigger card click when clicking on action buttons
+          if (!(e.target as HTMLElement).closest('button')) {
+            onEditTask(task);
+          }
+        }}
         layout
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -488,7 +494,13 @@ export function TaskDataTable({
                         <motion.tr
                           key={row.original.uniqueKey || row.id}
                           data-state={row.getIsSelected() && "selected"}
-                          className="border-glass/10 hover:bg-glass/5"
+                          className="border-glass/10 cursor-pointer glass-hover-level-3 transition-all"
+                          onClick={(e) => {
+                            // Don't trigger row click when clicking on action buttons
+                            if (!(e.target as HTMLElement).closest('button')) {
+                              onEditTask(row.original);
+                            }
+                          }}
                           layout
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
