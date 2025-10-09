@@ -17,7 +17,7 @@ DDL_FILES=(
     "4-essential-triggers-ddl.sql"
     "5-api-friendly-views-ddl.sql"
     "6-stored-procedures-ddl.sql"
-    "7-sample-data-ddl.sql"
+    # "7-sample-data-ddl.sql"
 )
 
 # Execute each DDL file in order
