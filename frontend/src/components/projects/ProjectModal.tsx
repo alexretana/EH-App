@@ -97,11 +97,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
     setIsSubmitting(true);
     setError(null);
     try {
+      // Transform empty strings to null for optional date fields
+      const data = {
+        ...values,
+        start_date: values.start_date || null,
+        end_date: values.end_date || null,
+      };
+      
       if (project) {
-        await updateProject(project.id, values as UpdateProject);
+        await updateProject(project.id, data as UpdateProject);
         toast.success('Project updated successfully!');
       } else {
-        await createProject(values as CreateProject);
+        await createProject(data as CreateProject);
         toast.success('Project created successfully!');
       }
       onClose();
