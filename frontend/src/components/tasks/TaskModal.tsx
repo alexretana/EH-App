@@ -3,6 +3,7 @@ import { X, Clock, Target } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -122,8 +123,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
     try {
       if (task) {
         await updateTask(task.id, values as UpdateTask);
+        toast.success('Task updated successfully!');
       } else {
         await createTask(values as CreateTask);
+        toast.success('Task created successfully!');
       }
       onClose();
     } catch (error) {

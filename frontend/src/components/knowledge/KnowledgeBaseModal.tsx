@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { marked } from 'marked';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -90,8 +91,10 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
       
       if (knowledgeBase) {
         await updateKnowledgeBase(knowledgeBase.id, data as UpdateKnowledgeBase);
+        toast.success('Document updated successfully!');
       } else {
         await createKnowledgeBase(data as CreateKnowledgeBase);
+        toast.success('Document created successfully!');
       }
       onClose();
     } catch (error) {

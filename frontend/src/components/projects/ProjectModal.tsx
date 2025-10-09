@@ -3,6 +3,7 @@ import { X, Calendar, Clock } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -98,8 +99,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
     try {
       if (project) {
         await updateProject(project.id, values as UpdateProject);
+        toast.success('Project updated successfully!');
       } else {
         await createProject(values as CreateProject);
+        toast.success('Project created successfully!');
       }
       onClose();
     } catch (error) {

@@ -478,4 +478,151 @@
     border-top: 1px solid var(--border);
     margin: 2em 0;
   }
+
+  /* Glass toast styles */
+  .glass-toast {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-lg);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 400px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-toast-title {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .glass-toast-description {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 0;
+    margin-top: 4px;
+  }
+
+  .glass-toast-action {
+    background: var(--primary);
+    color: var(--bg-dark);
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .glass-toast-action:hover {
+    background: var(--highlight);
+    transform: translateY(-1px);
+  }
+
+  .glass-toast-cancel {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-muted);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .glass-toast-cancel:hover {
+    background: var(--bg-light);
+    color: var(--text);
+  }
+
+  .glass-toast-close {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: calc(var(--radius) - 4px);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .glass-toast-close:hover {
+    background: oklab(1 0 0 / 0.1);
+    color: var(--text);
+  }
+
+  /* Toast type specific styles with accent borders */
+  .glass-toast-success {
+    position: relative;
+  }
+
+  .glass-toast-success::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--success);
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  }
+
+  .glass-toast-error {
+    position: relative;
+  }
+
+  .glass-toast-error::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--danger);
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  }
+
+  .glass-toast-warning {
+    position: relative;
+  }
+
+  .glass-toast-warning::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--warning);
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  }
+
+  .glass-toast-info {
+    position: relative;
+  }
+
+  .glass-toast-info::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--info);
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  }
 }
