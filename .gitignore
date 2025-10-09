@@ -229,3 +229,8 @@ config.local.*
 settings.local.*
 .vercel
 .env*.local
+
+# playwright reports
+playwright-report/
+frontend/test-results/
+/test-results/
