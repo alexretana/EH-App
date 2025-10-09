@@ -239,8 +239,7 @@ const ProjectView: React.FC = () => {
                             <p className="text-glass-muted text-sm">No goals yet. Add your first goal to this project.</p>
                           </div>
                         ) : (
-                          <>
-                            {projectGoals.map((goal) => {
+                          projectGoals.map((goal) => {
                             const goalTasks = getTasksByGoalId(goal.id);
                             const isGoalExpanded = expandedGoals.has(goal.id);
                             const completedTasks = goalTasks.filter(task => task.status === 'Done').length;
@@ -390,23 +389,22 @@ const ProjectView: React.FC = () => {
                                 </AnimatePresence>
                               </motion.div>
                             );
-                          })}
-                          
-                          {/* Add New Goal Button */}
-                          <motion.div
-                            className="glass-card p-4 rounded-lg flex items-center justify-center glass-hover-level-2 cursor-pointer"
-                            layout
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => handleCreateGoal(project.id)}
-                          >
-                            <Plus className="h-5 w-5 mr-2 text-glass" />
-                            <span className="text-base font-medium text-glass">Add New Goal</span>
-                          </motion.div>
-                        </>
+                          })
                         )}
+                        
+                        {/* Add New Goal Button - Always show */}
+                        <motion.div
+                          className="glass-card p-4 rounded-lg flex items-center justify-center glass-hover-level-2 cursor-pointer"
+                          layout
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleCreateGoal(project.id)}
+                        >
+                          <Plus className="h-5 w-5 mr-2 text-glass" />
+                          <span className="text-base font-medium text-glass">Add New Goal</span>
+                        </motion.div>
                       </motion.div>
                     )}
                   </AnimatePresence>
