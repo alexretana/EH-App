@@ -14,20 +14,14 @@
         "resolve-library-id"
       ]
     },
-    "playwright": {
+    "playwright-test": {
+      "type": "stdio",
       "command": "npx",
       "args": [
-        "-y",
-        "@playwright/mcp@0.0.38",
-        "--browser=chromium"
+        "playwright",
+        "run-test-mcp-server"
       ],
-      "alwaysAllow": [
-        "browser_console_messages",
-        "browser_snapshot",
-        "browser_close",
-        "browser_click"
-      ],
-      "disabled": false
+      "cwd": "${workspaceFolder}"
     }
   }
 }
