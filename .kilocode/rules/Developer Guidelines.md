@@ -19,7 +19,7 @@ To test out the backend, construct http requests and send them using curl. There
 to validate the frontend you run
 
 ```bash
-cd frontend && npx tsc --noEmit
+cd frontend && npx tsc -b
 ```
 
 And debug any errors it presents.

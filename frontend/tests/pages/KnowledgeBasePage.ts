@@ -42,23 +42,21 @@ export class KnowledgeBasePage extends BasePage {
   }) {
     await this.openAddDocumentModal();
 
-    // Content tab (should be default)
+    // Fill in all fields in the single scrollable area
     await this.fillInput('Document Name', data.name);
     
     if (data.content) {
-      await this.page.getByLabel('Content').fill(data.content);
+      await this.page.locator('textarea[placeholder*="Markdown"]').fill(data.content);
     }
 
-    // AI Summary tab
     if (data.aiSummary) {
-      await this.page.getByRole('tab', { name: /ai summary/i }).click();
-      await this.page.getByLabel('AI Summary').fill(data.aiSummary);
+      await this.page.getByText('AI Summary').scrollIntoViewIfNeeded();
+      await this.page.locator('textarea[placeholder*="AI-generated"]').fill(data.aiSummary);
     }
 
-    // Citations tab
     if (data.citations && data.citations.length > 0) {
-      await this.page.getByRole('tab', { name: /citations/i }).click();
-      
+      // Find the citations section
+      await this.page.getByText('Citations').scrollIntoViewIfNeeded();
       for (const citation of data.citations) {
         await this.page.getByPlaceholder(/citation url/i).fill(citation);
         await this.page.getByRole('button', { name: /^add$/i }).click();
@@ -103,17 +101,17 @@ export class KnowledgeBasePage extends BasePage {
     }
 
     if (updates.content) {
-      await this.page.getByLabel('Content').fill(updates.content);
+      await this.page.locator('textarea[placeholder*="Markdown"]').fill(updates.content);
     }
 
     if (updates.aiSummary) {
-      await this.page.getByRole('tab', { name: /ai summary/i }).click();
-      await this.page.getByLabel('AI Summary').fill(updates.aiSummary);
+      await this.page.getByText('AI Summary').scrollIntoViewIfNeeded();
+      await this.page.locator('textarea[placeholder*="AI-generated"]').fill(updates.aiSummary);
     }
 
     if (updates.addCitations && updates.addCitations.length > 0) {
-      await this.page.getByRole('tab', { name: /citations/i }).click();
-      
+      // Find the citations section
+      await this.page.getByText('Citations').scrollIntoViewIfNeeded();
       for (const citation of updates.addCitations) {
         await this.page.getByPlaceholder(/citation url/i).fill(citation);
         await this.page.getByRole('button', { name: /^add$/i }).click();
@@ -145,8 +143,7 @@ export class KnowledgeBasePage extends BasePage {
     await card.getByRole('button', { name: /edit/i }).click();
     await this.waitForModal();
 
-    // Go to Attachment tab
-    await this.page.getByRole('tab', { name: /attachment/i }).click();
+    // Find the Attachment section
 
     // Upload file
     const fileInput = this.page.locator('input[type="file"]');
@@ -163,7 +160,7 @@ export class KnowledgeBasePage extends BasePage {
     await card.getByRole('button', { name: /edit/i }).click();
     await this.waitForModal();
 
-    await this.page.getByRole('tab', { name: /attachment/i }).click();
+    // Find the Attachment section
     
     const downloadPromise = this.page.waitForEvent('download');
     await this.page.getByRole('button', { name: /download/i }).click();
@@ -181,7 +178,7 @@ export class KnowledgeBasePage extends BasePage {
     await card.getByRole('button', { name: /edit/i }).click();
     await this.waitForModal();
 
-    await this.page.getByRole('tab', { name: /attachment/i }).click();
+    // Find the Attachment section
     await this.page.locator('button[aria-label="Delete attachment"]').click();
     
     await this.waitForToast('File deleted successfully!');
@@ -195,7 +192,7 @@ export class KnowledgeBasePage extends BasePage {
     await card.getByRole('button', { name: /edit/i }).click();
     await this.waitForModal();
 
-    await this.page.getByRole('tab', { name: /citations/i }).click();
+    // Find the Citations section
     
     const citationItem = this.page.locator(`[data-testid="citation-item"]:has-text("${citationUrl}")`);
     await citationItem.locator('button[aria-label="Remove"]').click();

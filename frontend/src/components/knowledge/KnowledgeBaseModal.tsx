@@ -10,8 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { CreateKnowledgeBase, UpdateKnowledgeBase, KnowledgeBase } from '@/types/mockData';
@@ -45,7 +45,6 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
   
   const { createKnowledgeBase, updateKnowledgeBase } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState('content');
   const [newCitation, setNewCitation] = useState('');
   const [citations, setCitations] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -155,159 +154,141 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal !max-w-[90%] max-h-[85vh]">
+      <DialogContent className="glass-modal max-w-2xl max-h-[85vh] gap-1">
         <DialogHeader>
           <DialogTitle className="text-glass">
             {knowledgeBase ? 'Edit Document' : 'Create New Document'}
           </DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
+        <ScrollArea className="max-h-[calc(75vh-8rem)] pr-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pr-2">
-            <FormField
-              control={form.control}
-              name="document_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-glass">Document Name</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter document name" 
-                      className="glass-input text-glass"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="glass-card w-full grid grid-cols-4">
-                <TabsTrigger value="content" className="data-[state=active]:glass-glow">
-                  Content
-                </TabsTrigger>
-                <TabsTrigger value="summary" className="data-[state=active]:glass-glow">
-                  AI Summary
-                </TabsTrigger>
-                <TabsTrigger value="citations" className="data-[state=active]:glass-glow">
-                  Citations
-                </TabsTrigger>
-                <TabsTrigger value="attachment" className="data-[state=active]:glass-glow">
-                  Attachment
-                </TabsTrigger>
-              </TabsList>
+              <FormField
+                control={form.control}
+                name="document_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-glass">Document Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter document name"
+                        className="glass-input text-glass"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               
-              <TabsContent value="content" className="space-y-4 mt-4">
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-glass">Content</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Enter document content (supports Markdown)" 
-                          className="glass-input text-glass min-h-[300px]"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </TabsContent>
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-glass">Content</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter document content (supports Markdown)"
+                        className="glass-input text-glass min-h-[200px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               
-              <TabsContent value="summary" className="space-y-4 mt-4">
-                <FormField
-                  control={form.control}
-                  name="ai_summary"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-glass">AI Summary</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Enter AI-generated summary" 
-                          className="glass-input text-glass min-h-[200px]"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </TabsContent>
+              <Separator className="my-4" />
               
-              <TabsContent value="citations" className="space-y-4 mt-4">
-                <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Add citation URL"
-                      value={newCitation}
-                      onChange={(e) => setNewCitation(e.target.value)}
-                      className="glass-input text-glass flex-1"
-                    />
-                    <Button type="button" onClick={addCitation} className="glass-button">
-                      Add
-                    </Button>
-                  </div>
-                  
-                  {citations.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-glass">Citations:</h4>
-                      {citations.map((citation, index) => (
-                        <div key={index} className="flex items-center gap-2 glass-card p-3 rounded-lg">
-                          <Link className="h-4 w-4 text-glass-muted flex-shrink-0" />
-                          <a 
-                            href={citation} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-sm text-glass hover:text-primary truncate flex-1"
-                          >
-                            {citation}
-                          </a>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeCitation(index)}
-                            className="glass-button text-danger hover:text-danger h-6 w-6 p-0"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
+              <FormField
+                control={form.control}
+                name="ai_summary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-glass">AI Summary</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter AI-generated summary"
+                        className="glass-input text-glass min-h-[150px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               
-              <TabsContent value="attachment" className="space-y-4 mt-4">
-                <div className="space-y-4">
-                  <div className="text-sm text-glass-muted">
-                    {knowledgeBase ? (
-                      <p>Upload or manage file attachments for this document.</p>
-                    ) : (
-                      <p className="text-warning">Please save the document first before uploading attachments.</p>
-                    )}
-                  </div>
-                  <FileUpload
-                    knowledgeId={knowledgeBase?.id}
-                    currentFilename={attachmentFilename}
-                    onUploadSuccess={(filename) => setAttachmentFilename(filename)}
-                    onDeleteSuccess={() => setAttachmentFilename(undefined)}
+              <Separator className="my-4" />
+              
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-glass">Citations</h3>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add citation URL"
+                    value={newCitation}
+                    onChange={(e) => setNewCitation(e.target.value)}
+                    className="glass-input text-glass flex-1"
                   />
+                  <Button type="button" onClick={addCitation} className="glass-button">
+                    Add
+                  </Button>
                 </div>
-              </TabsContent>
-            </Tabs>
-            
+                
+                {citations.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-glass">Citations:</h4>
+                    {citations.map((citation, index) => (
+                      <div key={index} className="flex items-center gap-2 glass-card p-3 rounded-lg">
+                        <Link className="h-4 w-4 text-glass-muted flex-shrink-0" />
+                        <a
+                          href={citation}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-glass hover:text-primary truncate flex-1"
+                        >
+                          {citation}
+                        </a>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeCitation(index)}
+                          className="glass-button text-danger hover:text-danger h-6 w-6 p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-glass">Attachment</h3>
+                <div className="text-sm text-glass-muted">
+                  {knowledgeBase ? (
+                    <p>Upload or manage file attachments for this document.</p>
+                  ) : (
+                    <p className="text-warning">Please save the document first before uploading attachments.</p>
+                  )}
+                </div>
+                <FileUpload
+                  knowledgeId={knowledgeBase?.id}
+                  currentFilename={attachmentFilename}
+                  onUploadSuccess={(filename) => setAttachmentFilename(filename)}
+                  onDeleteSuccess={() => setAttachmentFilename(undefined)}
+                />
+              </div>
             </form>
           </Form>
         </ScrollArea>
         
         {error && (
-          <div className="px-4 pb-4">
+          <div className="pt-2">
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
@@ -315,7 +296,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
           </div>
         )}
         
-        <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
+        <div className="flex justify-end gap-2 mt-2">
           <Button
             type="button"
             variant="outline"
@@ -327,7 +308,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="glass-button"
+            className="glass-button text-glass"
             onClick={form.handleSubmit(onSubmit)}
           >
             {isSubmitting ? 'Saving...' : knowledgeBase ? 'Update Document' : 'Create Document'}
