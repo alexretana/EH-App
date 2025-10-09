@@ -370,7 +370,7 @@ export function TaskDataTable({
                   <Button
                     size="sm"
                     onClick={() => onUpdateTaskStatus(task.id, 'Active')}
-                    className="glass-button h-8 w-8 p-0"
+                    className="glass-button text-glass h-8 w-8 p-0"
                   >
                     <Play className="h-4 w-4" />
                   </Button>
