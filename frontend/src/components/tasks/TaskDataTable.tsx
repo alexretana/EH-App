@@ -33,14 +33,13 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Task } from "@/types/mockData"
-import { Edit, Trash2, Play, Pause, CheckCircle, RotateCcw, Clock, Target, Calendar } from "lucide-react"
+import { Edit, XCircle, Play, Pause, CheckCircle, RotateCcw, Clock, Target, Calendar } from "lucide-react"
 
 interface TaskDataTableProps {
   tasks: Task[]
   goals: any[]
   projects: any[]
   onEditTask: (task: Task) => void
-  onDeleteTask: (id: string) => void
   onUpdateTaskStatus: (id: string, status: Task['status']) => void
 }
 
@@ -49,7 +48,6 @@ export function TaskDataTable({
   goals,
   projects,
   onEditTask,
-  onDeleteTask,
   onUpdateTaskStatus,
 }: TaskDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -117,10 +115,10 @@ export function TaskDataTable({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onDeleteTask(task.id)}
+                onClick={() => onUpdateTaskStatus(task.id, 'Cancelled')}
                 className="glass-button text-danger hover:text-danger h-8 w-8 p-0"
               >
-                <Trash2 className="h-4 w-4" />
+                <XCircle className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -355,14 +353,14 @@ export function TaskDataTable({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => onDeleteTask(task.id)}
+                  onClick={() => onUpdateTaskStatus(task.id, 'Cancelled')}
                   className="glass-button text-danger hover:text-danger h-8 w-8 p-0"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <XCircle className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Delete Task</p>
+                <p>Cancel Task</p>
               </TooltipContent>
             </Tooltip>
             

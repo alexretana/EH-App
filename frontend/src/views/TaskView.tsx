@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { List, LayoutGrid, Filter, ArrowUpDown, Plus, Edit, Trash2, Clock, Target, Play, Pause, CheckCircle, RotateCcw } from 'lucide-react';
+import { List, LayoutGrid, Filter, ArrowUpDown, Plus, Edit, Clock, Target, Play, Pause, CheckCircle, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -19,7 +19,7 @@ const TaskView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   
-  const { tasks, goals, projects, isLoading, createTask, updateTask, deleteTask } = useApp();
+  const { tasks, goals, projects, isLoading, createTask, updateTask } = useApp();
 
   const handleCreateTask = () => {
     setCurrentTask(null);
@@ -31,15 +31,6 @@ const TaskView: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteTask = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      try {
-        await deleteTask(id);
-      } catch (error) {
-        console.error('Error deleting task:', error);
-      }
-    }
-  };
 
   const handleUpdateTaskStatus = async (id: string, status: Task['status']) => {
     try {
@@ -259,7 +250,6 @@ const TaskView: React.FC = () => {
             goals={goals}
             projects={projects}
             onEditTask={handleEditTask}
-            onDeleteTask={handleDeleteTask}
             onUpdateTaskStatus={handleUpdateTaskStatus}
           />
         ) : (
