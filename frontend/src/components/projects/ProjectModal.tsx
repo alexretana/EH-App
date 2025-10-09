@@ -132,14 +132,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-modal max-w-2xl max-h-[85vh]">
+      <DialogContent className="glass-modal max-w-2xl max-h-[85vh] gap-1">
         <DialogHeader>
           <DialogTitle className="text-glass">
             {project ? 'Edit Project' : 'Create New Project'}
           </DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="max-h-[calc(85vh-8rem)] pr-4">
+        <ScrollArea className="max-h-[calc(75vh-8rem)] pr-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pr-2">
             <FormField
@@ -380,7 +380,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
         </ScrollArea>
         
         {error && (
-          <div className="px-4 pb-4">
+          <div className="pt-2">
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
@@ -388,7 +388,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
           </div>
         )}
         
-        <div className="flex justify-end gap-2 pt-4 border-t border-glass-border mt-4">
+        <div className="flex justify-end gap-2 mt-2">
           <Button
             type="button"
             variant="outline"
@@ -400,7 +400,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="glass-button"
+            className="glass-button text-glass"
             onClick={form.handleSubmit(onSubmit)}
           >
             {isSubmitting ? 'Saving...' : project ? 'Update Project' : 'Create Project'}
