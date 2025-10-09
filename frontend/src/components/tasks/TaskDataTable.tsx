@@ -445,7 +445,6 @@ export function TaskDataTable({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -463,7 +462,7 @@ export function TaskDataTable({
       {/* Desktop Table View */}
       <div className="hidden md:block">
         <div className="glass-card rounded-xl overflow-hidden">
-          <ScrollArea className="w-full max-h-[600px]">
+          <ScrollArea className="w-full" style={{ height: 'calc(100vh - 280px)' }}>
             <div className="min-w-[800px]">
               <Table>
                 <TableHeader>
@@ -526,26 +525,6 @@ export function TaskDataTable({
               </Table>
             </div>
           </ScrollArea>
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="glass-button"
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="glass-button"
-          >
-            Next
-          </Button>
         </div>
       </div>
       
