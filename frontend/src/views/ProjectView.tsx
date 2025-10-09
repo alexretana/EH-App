@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, ChevronDown, ChevronRight, Calendar, Clock, Target } from 'lucide-react';
+import { Plus, Edit, Trash2, ChevronRight, Calendar, Clock, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,15 +7,16 @@ import { useApp } from '@/contexts/AppContext';
 import ProjectModal from '@/components/projects/ProjectModal';
 import GoalModal from '@/components/goals/GoalModal';
 import TaskModal from '@/components/tasks/TaskModal';
-import { Project, Goal } from '@/types/mockData';
+import { Project, Goal, Task } from '@/types/mockData';
 
 const ProjectView: React.FC = () => {
-  const { projects, goals, tasks, isLoading, deleteProject, getGoalsByProjectId, getTasksByGoalId } = useApp();
+  const { projects, isLoading, deleteProject, deleteGoal, deleteTask, getGoalsByProjectId, getTasksByGoalId } = useApp();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [currentGoal, setCurrentGoal] = useState<Goal | null>(null);
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
@@ -39,7 +40,38 @@ const ProjectView: React.FC = () => {
 
   const handleCreateTask = (goalId: string) => {
     setSelectedGoalId(goalId);
+    setCurrentTask(null);
     setIsTaskModalOpen(true);
+  };
+
+  const handleEditGoal = (goal: Goal) => {
+    setCurrentGoal(goal);
+    setIsGoalModalOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setCurrentTask(task);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleDeleteGoal = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this goal? This will also delete all associated tasks.')) {
+      try {
+        await deleteGoal(id);
+      } catch (error) {
+        console.error('Error deleting goal:', error);
+      }
+    }
+  };
+
+  const handleDeleteTask = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      try {
+        await deleteTask(id);
+      } catch (error) {
+        console.error('Error deleting task:', error);
+      }
+    }
   };
 
   const handleDeleteProject = async (id: string) => {
@@ -86,6 +118,7 @@ const ProjectView: React.FC = () => {
   const closeTaskModal = () => {
     setIsTaskModalOpen(false);
     setSelectedGoalId(null);
+    setCurrentTask(null);
   };
 
 
@@ -308,6 +341,36 @@ const ProjectView: React.FC = () => {
                                     }`}>
                                       {goal.status}
                                     </Badge>
+                                    
+                                    <div className="flex gap-1">
+                                      <motion.div
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                      >
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => handleEditGoal(goal)}
+                                          className="glass-button h-7 w-7"
+                                        >
+                                          <Edit className="h-3 w-3" />
+                                        </Button>
+                                      </motion.div>
+                                      
+                                      <motion.div
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                      >
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => handleDeleteGoal(goal.id)}
+                                          className="glass-button text-danger hover:text-danger h-7 w-7"
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </motion.div>
+                                    </div>
                                   </div>
                                 </div>
                                 
@@ -366,6 +429,34 @@ const ProjectView: React.FC = () => {
                                                   Complete
                                                 </Button>
                                               )}
+                                              
+                                              <motion.div
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.9 }}
+                                              >
+                                                <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  onClick={() => handleEditTask(task)}
+                                                  className="glass-button h-7 w-7"
+                                                >
+                                                  <Edit className="h-3 w-3" />
+                                                </Button>
+                                              </motion.div>
+                                              
+                                              <motion.div
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.9 }}
+                                              >
+                                                <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  onClick={() => handleDeleteTask(task.id)}
+                                                  className="glass-button text-danger hover:text-danger h-7 w-7"
+                                                >
+                                                  <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                              </motion.div>
                                             </div>
                                           </motion.div>
                                         ))
@@ -431,6 +522,7 @@ const ProjectView: React.FC = () => {
       <TaskModal
         isOpen={isTaskModalOpen}
         onClose={closeTaskModal}
+        task={currentTask}
         goalId={selectedGoalId}
       />
     </>
