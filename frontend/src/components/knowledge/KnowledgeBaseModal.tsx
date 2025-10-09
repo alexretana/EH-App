@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { CreateKnowledgeBase, UpdateKnowledgeBase, KnowledgeBase } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
+import FileUpload from './FileUpload';
 
 const knowledgeBaseSchema = z.object({
   document_name: z.string().min(1, 'Document name is required'),
@@ -48,6 +49,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
   const [newCitation, setNewCitation] = useState('');
   const [citations, setCitations] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [attachmentFilename, setAttachmentFilename] = useState<string | undefined>(undefined);
   
   const form = useForm<KnowledgeBaseFormValues>({
     resolver: zodResolver(knowledgeBaseSchema),
@@ -63,6 +65,8 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
     if (knowledgeBase) {
       const citations = knowledgeBase.link_citations || [];
       setCitations(citations);
+      // Check if there's an attachment by fetching metadata
+      fetchAttachmentInfo(knowledgeBase.id);
       form.reset({
         document_name: knowledgeBase.document_name,
         content: knowledgeBase.content || '',
@@ -71,6 +75,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
       });
     } else {
       setCitations([]);
+      setAttachmentFilename(undefined);
       form.reset({
         document_name: '',
         content: '',
@@ -79,6 +84,18 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
       });
     }
   }, [knowledgeBase, form]);
+  
+  const fetchAttachmentInfo = async (id: string) => {
+    try {
+      const response = await fetch(`/api/knowledge/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setAttachmentFilename(data.filename);
+      }
+    } catch (error) {
+      console.error('Error fetching attachment info:', error);
+    }
+  };
   
   const onSubmit = async (values: KnowledgeBaseFormValues) => {
     setIsSubmitting(true);
@@ -167,7 +184,7 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
             />
             
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="glass-card w-full">
+              <TabsList className="glass-card w-full grid grid-cols-4">
                 <TabsTrigger value="content" className="data-[state=active]:glass-glow">
                   Content
                 </TabsTrigger>
@@ -176,6 +193,9 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
                 </TabsTrigger>
                 <TabsTrigger value="citations" className="data-[state=active]:glass-glow">
                   Citations
+                </TabsTrigger>
+                <TabsTrigger value="attachment" className="data-[state=active]:glass-glow">
+                  Attachment
                 </TabsTrigger>
               </TabsList>
               
@@ -260,6 +280,24 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
                       ))}
                     </div>
                   )}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="attachment" className="space-y-4 mt-4">
+                <div className="space-y-4">
+                  <div className="text-sm text-glass-muted">
+                    {knowledgeBase ? (
+                      <p>Upload or manage file attachments for this document.</p>
+                    ) : (
+                      <p className="text-warning">Please save the document first before uploading attachments.</p>
+                    )}
+                  </div>
+                  <FileUpload
+                    knowledgeId={knowledgeBase?.id}
+                    currentFilename={attachmentFilename}
+                    onUploadSuccess={(filename) => setAttachmentFilename(filename)}
+                    onDeleteSuccess={() => setAttachmentFilename(undefined)}
+                  />
                 </div>
               </TabsContent>
             </Tabs>

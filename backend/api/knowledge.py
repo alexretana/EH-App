@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi.responses import JSONResponse, Response
 from typing import List, Optional, Dict, Any
 from models import KnowledgeBase, KnowledgeBaseCreate, KnowledgeBaseUpdate
 from database import db
@@ -18,8 +18,8 @@ def get_knowledge_items():
     """Get all knowledge base items"""
     query = """
     SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
-           kb.entity_types, kb.created_at, kb.updated_at
+           kb.link_citations, kb.related_entities, kb.related_entity_ids,
+           kb.entity_types, kb.filename, kb.content_type, kb.created_at, kb.updated_at
     FROM knowledge_base_with_references kb
     ORDER BY kb.updated_at DESC
     """
@@ -46,8 +46,8 @@ def get_knowledge_item(knowledge_id: str):
     """Get a specific knowledge base item by ID"""
     query = """
     SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
-           kb.entity_types, kb.created_at, kb.updated_at
+           kb.link_citations, kb.related_entities, kb.related_entity_ids,
+           kb.entity_types, kb.filename, kb.content_type, kb.created_at, kb.updated_at
     FROM knowledge_base_with_references kb
     WHERE kb.id = %s
     """
@@ -178,8 +178,8 @@ def get_project_knowledge(project_id: str):
     """Get all knowledge base items related to a specific project"""
     query = """
     SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
-           kb.entity_types, kb.created_at, kb.updated_at
+           kb.link_citations, kb.related_entities, kb.related_entity_ids,
+           kb.entity_types, kb.filename, kb.content_type, kb.created_at, kb.updated_at
     FROM knowledge_base_with_references kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
     WHERE kbr.entity_type = 'project' AND kbr.entity_id = %s
@@ -207,8 +207,8 @@ def get_goal_knowledge(goal_id: str):
     """Get all knowledge base items related to a specific goal"""
     query = """
     SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
-           kb.entity_types, kb.created_at, kb.updated_at
+           kb.link_citations, kb.related_entities, kb.related_entity_ids,
+           kb.entity_types, kb.filename, kb.content_type, kb.created_at, kb.updated_at
     FROM knowledge_base_with_references kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
     WHERE kbr.entity_type = 'goal' AND kbr.entity_id = %s
@@ -236,8 +236,8 @@ def get_task_knowledge(task_id: str):
     """Get all knowledge base items related to a specific task"""
     query = """
     SELECT kb.id, kb.document_name, kb.ai_summary, kb.date_added,
-           kb.link_citations, kb.related_entities, kb.related_entity_ids, 
-           kb.entity_types, kb.created_at, kb.updated_at
+           kb.link_citations, kb.related_entities, kb.related_entity_ids,
+           kb.entity_types, kb.filename, kb.content_type, kb.created_at, kb.updated_at
     FROM knowledge_base_with_references kb
     JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
     WHERE kbr.entity_type = 'task' AND kbr.entity_id = %s
@@ -258,4 +258,90 @@ def get_task_knowledge(task_id: str):
         return JSONResponse(content=items)
     except Exception as e:
         logger.error(f"Error getting task knowledge: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{knowledge_id}/upload")
+async def upload_attachment(knowledge_id: str, file: UploadFile = File(...)):
+    """Upload a file attachment to a knowledge base item"""
+    # First check if knowledge base item exists
+    get_knowledge_item(knowledge_id)
+    
+    try:
+        # Read file content
+        content = await file.read()
+        
+        # Update the knowledge base item with file data
+        query = """
+        UPDATE knowledge_base
+        SET file_attachment = %s, filename = %s, content_type = %s, updated_at = CURRENT_TIMESTAMP
+        WHERE id = %s
+        """
+        
+        db.execute_update(query, (content, file.filename, file.content_type, knowledge_id))
+        
+        return {
+            "id": knowledge_id,
+            "filename": file.filename,
+            "content_type": file.content_type,
+            "size": len(content)
+        }
+    except Exception as e:
+        logger.error(f"Error uploading attachment: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{knowledge_id}/download")
+async def download_attachment(knowledge_id: str):
+    """Download a file attachment from a knowledge base item"""
+    query = """
+    SELECT filename, content_type, file_attachment
+    FROM knowledge_base
+    WHERE id = %s
+    """
+    
+    try:
+        items = db.execute_query(query, (knowledge_id,))
+        
+        if not items:
+            raise HTTPException(status_code=404, detail="Knowledge base item not found")
+        
+        attachment = items[0]
+        
+        if not attachment['file_attachment']:
+            raise HTTPException(status_code=404, detail="No file attachment found")
+        
+        # Convert memoryview to bytes if necessary
+        file_data = attachment['file_attachment']
+        if isinstance(file_data, memoryview):
+            file_data = bytes(file_data)
+        
+        return Response(
+            content=file_data,
+            media_type=attachment['content_type'] or 'application/octet-stream',
+            headers={
+                "Content-Disposition": f'attachment; filename="{attachment["filename"]}"'
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading attachment: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/{knowledge_id}/attachment")
+async def delete_attachment(knowledge_id: str):
+    """Delete a file attachment from a knowledge base item"""
+    # First check if knowledge base item exists
+    get_knowledge_item(knowledge_id)
+    
+    query = """
+    UPDATE knowledge_base
+    SET file_attachment = NULL, filename = NULL, content_type = NULL, updated_at = CURRENT_TIMESTAMP
+    WHERE id = %s
+    """
+    
+    try:
+        db.execute_update(query, (knowledge_id,))
+        return {"message": "Attachment deleted successfully"}
+    except Exception as e:
+        logger.error(f"Error deleting attachment: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

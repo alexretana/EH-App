@@ -76,6 +76,8 @@ CREATE TABLE knowledge_base (
     content TEXT,
     ai_summary TEXT,
     file_attachment BYTEA,
+    filename VARCHAR(255),
+    content_type VARCHAR(100),
     link_citations TEXT[],
     date_added DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

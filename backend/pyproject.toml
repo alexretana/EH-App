@@ -11,4 +11,5 @@ dependencies = [
     "pydantic>=2.0.0",
     "python-dotenv>=1.0.0",
     "uuid>=1.30",
+    "python-multipart>=0.0.9",
 ]

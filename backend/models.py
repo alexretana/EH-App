@@ -172,6 +172,8 @@ class KnowledgeBaseBase(BaseModel):
     content: Optional[str] = None
     ai_summary: Optional[str] = None
     link_citations: Optional[List[str]] = None
+    filename: Optional[str] = None
+    content_type: Optional[str] = None
 
 class KnowledgeBaseCreate(KnowledgeBaseBase):
     related_projects: Optional[List[str]] = None
@@ -192,6 +194,8 @@ class KnowledgeBase(KnowledgeBaseBase):
     related_entities: Optional[List[str]] = None
     related_entity_ids: Optional[List[str]] = None
     entity_types: Optional[List[str]] = None
+    filename: Optional[str] = None
+    content_type: Optional[str] = None
 
     @field_validator('related_entity_ids', mode='before')
     @classmethod

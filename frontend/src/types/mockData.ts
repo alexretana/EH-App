@@ -61,6 +61,8 @@ export interface KnowledgeBase extends BaseEntity {
   content?: string;
   ai_summary?: string;
   file_attachment?: string;
+  filename?: string;
+  content_type?: string;
   link_citations?: string[];
   date_added: string;
 }
@@ -142,6 +144,8 @@ export interface KnowledgeBaseWithReferences extends BaseEntity {
   ai_summary?: string;
   date_added: string;
   file_attachment?: string;
+  filename?: string;
+  content_type?: string;
   link_citations?: string[];
   related_entities: string[];
   related_entity_ids: string[];

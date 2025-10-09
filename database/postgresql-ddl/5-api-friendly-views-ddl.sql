@@ -133,17 +133,19 @@ GROUP BY g.id, g.name, g.description, g.status, g.scope, g.success_criteria, g.d
 
 -- Knowledge base with comprehensive references
 CREATE VIEW knowledge_base_with_references AS
-SELECT 
+SELECT
     kb.id::text as id,
     kb.document_name,
     kb.ai_summary,
     kb.date_added,
     kb.file_attachment,
+    kb.filename,
+    kb.content_type,
     kb.link_citations,
-    array_agg(DISTINCT 
-        CASE 
+    array_agg(DISTINCT
+        CASE
             WHEN kbr.entity_type = 'project' THEN p.name
-            WHEN kbr.entity_type = 'goal' THEN g.name  
+            WHEN kbr.entity_type = 'goal' THEN g.name
             WHEN kbr.entity_type = 'task' THEN t.name
         END
     ) FILTER (WHERE kbr.entity_type IS NOT NULL) as related_entities,
@@ -162,5 +164,5 @@ LEFT JOIN knowledge_base_references kbr ON kb.id = kbr.knowledge_base_id
 LEFT JOIN projects p ON kbr.entity_type = 'project' AND kbr.entity_id = p.id
 LEFT JOIN goals g ON kbr.entity_type = 'goal' AND kbr.entity_id = g.id
 LEFT JOIN tasks t ON kbr.entity_type = 'task' AND kbr.entity_id = t.id
-GROUP BY kb.id, kb.document_name, kb.ai_summary, kb.date_added, kb.file_attachment, 
-         kb.link_citations, kb.created_at, kb.updated_at;
+GROUP BY kb.id, kb.document_name, kb.ai_summary, kb.date_added, kb.file_attachment,
+         kb.filename, kb.content_type, kb.link_citations, kb.created_at, kb.updated_at;
