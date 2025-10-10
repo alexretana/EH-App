@@ -45,6 +45,40 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_PUBLIC_API_DISABLED=false
+      - N8N_EDITOR_BASE_URL=http://localhost:5678
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+  discord-bot:
+    build:
+      context: ./discord-bot
+      dockerfile: Dockerfile
+    container_name: discord-bot
+    restart: unless-stopped
+    ports:
+      - "54545:54545"
+    environment:
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - DISCORD_CHANNEL_ID=${DISCORD_CHANNEL_ID}
+      - HTTP_PORT=54545
 
 volumes:
   postgres_data:
+  n8n_data:
