@@ -313,6 +313,20 @@ docker-compose -f .devcontainer/docker-compose.yml down -v postgres
 
 ### Common Issues
 
+#### DevContainer Build Errors
+
+If you encounter errors like `exit status 1` when DevPod is trying to build the devcontainer, it's likely due to conflicting features in your devcontainer.json:
+
+```bash
+# Use the provided rebuild script
+./scripts/rebuild-devpod.sh
+
+# Or manually rebuild:
+devpod stop <workspace-name>
+devpod delete <workspace-name>
+devpod up
+```
+
 #### Port Forwarding Problems
 
 ```bash
