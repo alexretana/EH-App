@@ -11,7 +11,18 @@ devpod delete eh-app-workspace 2>/dev/null || echo "No existing workspace to del
 
 # Create new workspace with updated configuration
 echo "🚀 Creating new workspace with updated configuration..."
-devpod up --ide vscode
+echo "Note: If you're using DigitalOcean, this will create a new droplet."
+echo "      The old droplet will be deleted automatically."
+
+# Check if user wants to use a specific provider
+if [ "$1" = "local" ]; then
+    devpod up --provider docker --ide vscode
+elif [ "$1" = "do" ] || [ "$1" = "digitalocean" ]; then
+    devpod up --provider digitalocean --ide vscode
+else
+    # Default to whatever provider was used last
+    devpod up --ide vscode
+fi
 
 echo "✅ DevPod workspace rebuilt successfully!"
 echo ""

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:0-22
+FROM mcr.microsoft.com/devcontainers/javascript-node:1-22
 
 # Install Python and related tools
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

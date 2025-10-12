@@ -327,6 +327,34 @@ devpod delete <workspace-name>
 devpod up
 ```
 
+#### Image Tag Not Found Errors
+
+If you see errors like `MANIFEST_UNKNOWN: manifest tagged by "0-22" is not found`, this means the base image tag doesn't exist:
+
+```bash
+# The fix has been applied to use the correct tag format
+# Old: mcr.microsoft.com/devcontainers/javascript-node:0-22
+# New: mcr.microsoft.com/devcontainers/javascript-node:22
+
+# Rebuild your workspace with the corrected Dockerfile
+./scripts/rebuild-devpod.sh
+```
+
+#### DigitalOcean Provider Issues
+
+When using DigitalOcean, DevPod creates and manages droplets for you:
+
+```bash
+# For DigitalOcean specifically
+./scripts/rebuild-devpod.sh do
+
+# Or explicitly specify the provider
+devpod up --provider digitalocean --ide vscode
+
+# Note: This will create a new droplet and delete the old one
+# Make sure any important data is committed to git
+```
+
 #### Port Forwarding Problems
 
 ```bash
