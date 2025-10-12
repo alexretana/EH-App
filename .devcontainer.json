@@ -15,5 +15,6 @@
 				"kilocode.Kilo-Code@4.103.0"
 			]
 		}
-	}
+	},
+	"postCreateCommand": "npm install -g @anthropic-ai/claude-code"
 }
