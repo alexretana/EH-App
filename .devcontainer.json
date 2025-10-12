@@ -1,1 +1,11 @@
-{"image":"mcr.microsoft.com/devcontainers/javascript-node"}
+{
+	"image":"mcr.microsoft.com/devcontainers/javascript-node",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2":{
+			"version": "latest"
+		},
+		"ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
+			"version": "latest"
+		}
+	}
+}
