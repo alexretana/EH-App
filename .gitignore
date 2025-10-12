@@ -234,3 +234,6 @@ settings.local.*
 playwright-report/
 frontend/test-results/
 /test-results/
+
+# Dev utility scripts
+dev_util_scripts/*.json
