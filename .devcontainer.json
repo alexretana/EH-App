@@ -8,5 +8,12 @@
 		"ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
 			"version": "latest"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"kilocode.Kilo-Code@4.103.0"
+			]
+		}
 	}
 }
