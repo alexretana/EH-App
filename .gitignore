@@ -74,11 +74,26 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+# Ignore all .env files except template files
 .env
 .env.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
+.env.staging
+
+# Keep template files
+!.env.example
+
+# Service-specific .env files (actual secrets)
+discord-bot/.env
+n8n/.env
+database/.env
+backend/.env
+frontend/.env
 
 # Spyder project settings
 .spyderproject

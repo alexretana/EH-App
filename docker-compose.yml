@@ -4,17 +4,15 @@ services:
       context: ./database
       dockerfile: Dockerfile
     container_name: eh-app-postgres
-    environment:
-      POSTGRES_DB: "event_horizon"
-      POSTGRES_USER: "event_horizon_user"
-      POSTGRES_PASSWORD: "eventhorizon"
+    env_file:
+      - .env.development
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
+    restart: ${RESTART_POLICY:-unless-stopped}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U event_horizon_user -d event_horizon"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-event_horizon_user} -d ${POSTGRES_DB:-event_horizon}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,67 +22,57 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: eh-app-backend
+    env_file:
+      - .env.development
     ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://event_horizon_user:eventhorizon@postgres:5432/event_horizon
+      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
-    restart: unless-stopped
+    restart: ${RESTART_POLICY:-unless-stopped}
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: eh-app-frontend
+    env_file:
+      - .env.development
     ports:
-      - "5173:5173"
-    environment:
-      - DOCKER_ENV=true
+      - "${FRONTEND_PORT:-5173}:5173"
     depends_on:
       - backend
-    restart: unless-stopped
+    restart: ${RESTART_POLICY:-unless-stopped}
+
   n8n:
     build:
       context: ./n8n
       dockerfile: Dockerfile
     container_name: n8n
-    restart: unless-stopped
+    env_file:
+      - .env.development
     ports:
-      - "5678:5678"
-    environment:
-      - GENERIC_TIMEZONE=America/New_York
-      - TZ=America/New_York
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - NODE_FUNCTION_ALLOW_EXTERNAL=*
-      - N8N_RUNNERS_ENABLED=true
-      - N8N_PUBLIC_API_DISABLED=false
-      - N8N_EDITOR_BASE_URL=http://localhost:5678
-      # API key for the setup script (generate a secure one for production)
-      - N8N_API_KEY=your-secure-api-key-here
-      # Additional environment variables for credentials
-      - N8N_BASE_URL=http://localhost:5678
+      - "${N8N_PORT:-5678}:5678"
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n/.env:/tmp/.env:ro
     depends_on:
       postgres:
         condition: service_healthy
+    restart: ${RESTART_POLICY:-unless-stopped}
     stdin_open: true
     tty: true
+
   discord-bot:
     build:
       context: ./discord-bot
       dockerfile: Dockerfile
     container_name: discord-bot
-    restart: unless-stopped
+    env_file:
+      - .env.development
     ports:
-      - "54545:54545"
-    environment:
-      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
-      - DISCORD_CHANNEL_ID=${DISCORD_CHANNEL_ID}
-      - HTTP_PORT=54545
+      - "${DISCORD_BOT_PORT:-54545}:54545"
+    restart: ${RESTART_POLICY:-unless-stopped}
 
 volumes:
   postgres_data:
