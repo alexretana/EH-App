@@ -45,7 +45,94 @@ A project management application built with React frontend and FastAPI backend, 
 
 ## Setup Instructions
 
-### Option 1: Using Docker Compose (Recommended)
+### Option 1: Using DevPod (Recommended for Cloud/Remote Development)
+
+DevPod allows you to create reproducible development environments in the cloud or locally, using the same devcontainer configuration. You can use either the desktop app (recommended) or CLI.
+
+**IMPORTANT: First, commit the devcontainer files to GitHub**
+
+Before using DevPod, you must commit the devcontainer configuration to your repository:
+
+```bash
+# Add all devcontainer and devpod files
+git add .devcontainer/
+git add devpod.yaml
+git add README-DEVPOD.md
+git add README.md
+
+# Commit the changes
+git commit -m "Add DevContainer and DevPod configuration"
+
+# Push to GitHub
+git push origin main
+```
+
+#### Option 1A: DevPod Desktop App (Recommended)
+
+1. **Install DevPod Desktop App**: Download from [devpod.sh](https://devpod.sh/)
+2. **Clone the repository**:
+   ```bash
+   git clone <your-repo-url>
+   cd EH-App
+   ```
+3. **Setup with Desktop App**:
+   - Open the DevPod desktop app
+   - Click "Add Workspace" → "Clone from Git Repository"
+   - Select your cloned `EH-App` folder
+   - Choose VS Code as IDE and your preferred provider (Docker for local, AWS/GCP for cloud)
+   - Click "Create" and wait for setup
+4. **Start Services**: Once the workspace opens in VS Code, run `./start-dev.sh` in the terminal
+5. **Access Applications**:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+   - n8n: http://localhost:5678
+
+#### Option 1B: DevPod CLI
+
+For terminal-based workflow:
+
+1. **Install DevPod CLI**: Follow the installation guide at [devpod.sh](https://devpod.sh/)
+2. **Clone the repository**:
+   ```bash
+   git clone <your-repo-url>
+   cd EH-App
+   ```
+3. **Start DevPod workspace**:
+   ```bash
+   # Local development
+   devpod up
+   
+   # Or with cloud provider
+   devpod up --provider aws
+   devpod up --provider gcp
+   ```
+4. **Start Services**: Once connected, run `./start-dev.sh` in the terminal
+5. **Access Applications**:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+   - n8n: http://localhost:5678
+
+For detailed DevPod instructions, see [`README-DEVPOD.md`](README-DEVPOD.md).
+
+### Option 2: Using VS Code DevContainer (Recommended for Local Development)
+
+The VS Code DevContainer provides a complete, pre-configured development environment.
+
+1. **Open in VS Code**: Open this project in VS Code
+2. **Reopen in Container**: When prompted, click "Reopen in Container" or use the Command Palette (Ctrl+Shift+P) and select "Dev Containers: Reopen in Container"
+3. **Wait for Setup**: The container will automatically build and configure itself (first-time setup may take several minutes)
+4. **Start Services**: Once the container is ready, run `./start-dev.sh` in the terminal to start all development services
+5. **Access Applications**:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+   - n8n: http://localhost:5678
+
+For detailed DevContainer documentation, see [`.devcontainer/README.md`](.devcontainer/README.md).
+
+### Option 2: Using Docker Compose
 
 1. Clone the repository
 2. Start all services using Docker Compose:
@@ -57,7 +144,7 @@ A project management application built with React frontend and FastAPI backend, 
    - Backend API: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
 
-### Option 2: Local Development
+### Option 3: Local Development
 
 #### 1. Database Setup
 
