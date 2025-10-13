@@ -4,12 +4,12 @@ FROM n8nio/n8n:latest
 # Set working directory
 WORKDIR /tmp
 
-# Install required packages
+# Install required packages (Alpine uses apk, not apt-get)
 USER root
-RUN apt-get update && apt-get install -y \
-    gettext-base \
+RUN apk add --no-cache \
+    gettext \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    bash
 
 # Create scripts directory
 RUN mkdir -p /scripts

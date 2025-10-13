@@ -9,6 +9,35 @@
 			"version": "latest"
 		}
 	},
+	"forwardPorts": [
+		5432,
+		8000,
+		5173,
+		5678,
+		8545
+	],
+	"portsAttributes": {
+		"5432": {
+			"label": "PostgreSQL",
+			"onAutoForward": "notify"
+		},
+		"8000": {
+			"label": "Backend API",
+			"onAutoForward": "notify"
+		},
+		"5173": {
+			"label": "Frontend",
+			"onAutoForward": "openBrowser"
+		},
+		"5678": {
+			"label": "n8n",
+			"onAutoForward": "notify"
+		},
+		"8545": {
+			"label": "Discord Bot",
+			"onAutoForward": "silent"
+		}
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [

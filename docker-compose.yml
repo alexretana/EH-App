@@ -71,7 +71,7 @@ services:
     env_file:
       - .env.development
     ports:
-      - "${DISCORD_BOT_PORT:-54545}:54545"
+      - "${DISCORD_BOT_PORT:-8545}:8545"
     restart: ${RESTART_POLICY:-unless-stopped}
 
 volumes:
