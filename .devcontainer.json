@@ -41,7 +41,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"kilocode.Kilo-Code@4.103.0"
+				"kilocode.Kilo-Code@latest",
+				"esbenp.prettier-vscode@latest"
 			]
 		}
 	},
