@@ -23,6 +23,9 @@ RUN chmod +x /scripts/*.sh
 # These will be available when the container starts
 COPY workflow&creds /data/workflow&creds
 
+# Fix permissions for the workflow&creds directory so node user can write
+RUN chown -R node:node "/data/workflow&creds"
+
 # Copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
