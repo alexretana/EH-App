@@ -4,17 +4,24 @@ FROM n8nio/n8n:latest
 # Set working directory
 WORKDIR /tmp
 
-# Install Python and pip for the setup script
+# Install required packages
 USER root
 RUN apt-get update && apt-get install -y \
+    gettext-base \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python requests library
-RUN pip3 install requests
+# Create scripts directory
+RUN mkdir -p /scripts
 
-# Copy the setup script and workflow files
-COPY setup_n8n.py .
-COPY *.json .
+# Copy setup scripts
+COPY scripts/generate-creds.sh /scripts/generate-creds.sh
+COPY scripts/setup-workflows.sh /scripts/setup-workflows.sh
+RUN chmod +x /scripts/*.sh
+
+# Copy workflow and credential files to /data directory structure
+# These will be available when the container starts
+COPY workflow&creds /data/workflow&creds
 
 # Copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh

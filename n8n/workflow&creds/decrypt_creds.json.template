@@ -1,0 +1,87 @@
+[
+  {
+    "createdAt": "2025-09-18T14:19:33.948Z",
+    "updatedAt": "2025-10-12T12:00:05.709Z",
+    "id": "${N8N_GOOGLE_CREDENTIAL_ID}",
+    "name": "Google Calendar account",
+    "data": {
+      "clientId": "${N8N_GOOGLE_CLIENT_ID}",
+      "clientSecret": "${N8N_GOOGLE_CLIENT_SECRET}",
+      "oauthTokenData": {
+        "access_token": "${N8N_GOOGLE_ACCESS_TOKEN}",
+        "expires_in": 3599,
+        "refresh_token": "${N8N_GOOGLE_REFRESH_TOKEN}",
+        "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar",
+        "token_type": "Bearer",
+        "refresh_token_expires_in": 391845,
+        "callbackQueryString": {
+          "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar"
+        }
+      }
+    },
+    "type": "googleCalendarOAuth2Api",
+    "isManaged": false
+  },
+  {
+    "createdAt": "2025-09-20T15:12:29.659Z",
+    "updatedAt": "2025-09-20T15:17:51.890Z",
+    "id": "${N8N_SMTP_CREDENTIAL_ID}",
+    "name": "SMTP account",
+    "data": {
+      "user": "${N8N_SMTP_USER}",
+      "password": "${N8N_SMTP_PASSWORD}",
+      "host": "${N8N_SMTP_HOST}",
+      "hostName": "${N8N_SMTP_HOSTNAME}"
+    },
+    "type": "smtp",
+    "isManaged": false
+  },
+  {
+    "createdAt": "2025-09-25T04:31:53.075Z",
+    "updatedAt": "2025-09-25T04:31:53.072Z",
+    "id": "${N8N_OPENROUTER_CREDENTIAL_ID}",
+    "name": "OpenRouter account",
+    "data": {
+      "apiKey": "${N8N_OPENROUTER_API_KEY}"
+    },
+    "type": "openRouterApi",
+    "isManaged": false
+  },
+  {
+    "createdAt": "2025-09-30T01:14:09.827Z",
+    "updatedAt": "2025-09-30T01:14:09.823Z",
+    "id": "${N8N_PERPLEXITY_CREDENTIAL_ID}",
+    "name": "Perplexity account",
+    "data": {
+      "apiKey": "${N8N_PERPLEXITY_API_KEY}"
+    },
+    "type": "perplexityApi",
+    "isManaged": false
+  },
+  {
+    "createdAt": "2025-10-03T16:59:55.294Z",
+    "updatedAt": "2025-10-03T16:59:55.288Z",
+    "id": "${N8N_POSTGRES_CREDENTIAL_ID}",
+    "name": "Postgres account",
+    "data": {
+      "host": "${POSTGRES_HOST}",
+      "database": "${POSTGRES_DB}",
+      "user": "${POSTGRES_USER}",
+      "password": "${POSTGRES_PASSWORD}"
+    },
+    "type": "postgres",
+    "isManaged": false
+  },
+  {
+    "createdAt": "2025-10-11T03:25:36.912Z",
+    "updatedAt": "2025-10-11T03:26:22.523Z",
+    "id": "${N8N_REDIS_CREDENTIAL_ID}",
+    "name": "Redis account",
+    "data": {
+      "password": "${REDIS_PASSWORD}",
+      "host": "${REDIS_HOST}"
+    },
+    "type": "redis",
+    "isManaged": false
+  }
+]
