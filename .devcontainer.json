@@ -41,8 +41,10 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"kilocode.Kilo-Code@latest",
-				"esbenp.prettier-vscode@latest"
+				"kilocode.Kilo-Code",
+				"esbenp.prettier-vscode",
+				"cweijan.vscode-redis-client",
+				"cweijan.vscode-postgresql-client2"
 			]
 		}
 	},
