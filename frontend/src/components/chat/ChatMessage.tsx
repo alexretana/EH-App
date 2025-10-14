@@ -24,17 +24,19 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
       transition={{ duration: 0.2 }}
     >
       {isUser ? (
-        <div
-          className="
-            max-w-[80%] p-4 rounded-2xl
-            bg-[oklab(1_0_0_/_0.12)] border-[oklab(1_0_0_/_0.2)]
-            border backdrop-blur-md
-          "
-        >
-          <p className="text-glass whitespace-pre-wrap break-words">
-            {message.content}
-          </p>
-          <span className="text-xs text-glass-muted mt-2 block">
+        <div>
+          <div
+            className="
+              max-w-[80%] p-4 rounded-2xl
+              bg-[oklab(1_0_0_/_0.12)] border-[oklab(1_0_0_/_0.2)]
+              border backdrop-blur-md
+            "
+          >
+            <p className="text-glass whitespace-pre-wrap break-words">
+              {message.content}
+            </p>
+          </div>
+          <span className="text-xs text-glass-muted mt-1 block">
             {formatTime(message.timestamp)}
           </span>
         </div>
