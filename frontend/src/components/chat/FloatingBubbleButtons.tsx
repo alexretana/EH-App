@@ -31,7 +31,8 @@ export const FloatingBubbleButtons = ({
         variant="ghost"
         size="icon"
         onClick={onBack}
-        className="glass-button rounded-full w-12 h-12 flex items-center justify-center shadow-lg"
+        className="glass-button rounded-full w-12 h-12 flex items-center justify-center shadow-lg mr-3"
+        style={{ background: 'oklab(1 0 0 / 0.05)', backdropFilter: 'blur(12px)' }}
         aria-label="Back to chat history"
       >
         <ArrowLeft className="h-5 w-5 text-glass" />
@@ -43,6 +44,7 @@ export const FloatingBubbleButtons = ({
         size="icon"
         onClick={onScrollToBottom}
         className="glass-button rounded-full w-12 h-12 flex items-center justify-center shadow-lg"
+        style={{ background: 'oklab(1 0 0 / 0.05)', backdropFilter: 'blur(12px)' }}
         aria-label="Scroll to bottom"
       >
         <ArrowDown className="h-5 w-5 text-glass" />
