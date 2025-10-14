@@ -36,7 +36,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
               {message.content}
             </p>
           </div>
-          <span className="text-xs text-glass-muted mt-1 block">
+          <span className="text-xs text-glass-muted mt-1 block ml-4">
             {formatTime(message.timestamp)}
           </span>
         </div>
