@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FolderOpen, BookOpen, CheckSquare, BrainCircuit } from 'lucide-react';
+import { FolderOpen, BookOpen, CheckSquare, BrainCog } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +27,7 @@ const AppSidebar: React.FC = () => {
   ];
 
   const aiAgentItems = [
-    { name: 'Project Planner', icon: BrainCircuit, href: '/ai/project-planner' }
+    { name: 'Project Planner', icon: BrainCog, href: '/ai/project-planner' }
   ];
 
   return (
