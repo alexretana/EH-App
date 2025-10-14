@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FolderOpen, BookOpen, CheckSquare } from 'lucide-react';
+import { FolderOpen, BookOpen, CheckSquare, BrainCircuit } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +26,10 @@ const AppSidebar: React.FC = () => {
     { name: 'Tasks', icon: CheckSquare, href: '/tasks' }
   ];
 
+  const aiAgentItems = [
+    { name: 'Project Planner', icon: BrainCircuit, href: '/ai/project-planner' }
+  ];
+
   return (
     <Sidebar variant="inset" className="">
       <SidebarHeader className="glass">
@@ -41,6 +45,37 @@ const AppSidebar: React.FC = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.href;
+                
+                return (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <NavLink
+                        to={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "glass-hover-level-1 text-primary sidebar-glass"
+                            : "hover:bg-white/10 glass-hover-level-3"
+                        )}
+                      >
+                        <Icon className="h-5 w-5" />
+                        {item.name}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-glass">AI Agents</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {aiAgentItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.href;
                 

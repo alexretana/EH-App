@@ -8,6 +8,7 @@ import AnimatedPage from '@/components/layout/AnimatedPage';
 import ProjectView from '@/views/ProjectView';
 import KnowledgeBaseView from '@/views/KnowledgeBaseView';
 import TaskView from '@/views/TaskView';
+import ProjectPlannerView from '@/views/ProjectPlannerView';
 
 const AppRouter: React.FC = () => {
   return (
@@ -30,6 +31,11 @@ const AppRouter: React.FC = () => {
             <Route path="/tasks" element={
               <AnimatedPage>
                 <TaskView />
+              </AnimatedPage>
+            } />
+            <Route path="/ai/project-planner" element={
+              <AnimatedPage>
+                <ProjectPlannerView />
               </AnimatedPage>
             } />
             <Route path="*" element={<Navigate to="/projects" replace />} />
