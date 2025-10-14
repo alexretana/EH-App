@@ -302,6 +302,14 @@
     text-shadow: 0 1px 2px oklab(0 0 0 / 0.2);
   }
 
+  .text-ai-glow {
+    color: var(--text);
+    text-shadow:
+      0 0 5px oklch(0.5875 0.2009 285.3 / 0.15),
+      0 0 10px oklch(0.5875 0.2009 285.3 / 0.1),
+      0 1px 3px oklab(0 0 0 / 0.3);
+  }
+
   .text-gradient-primary {
     background: linear-gradient(0deg, var(--text-muted), 30%, var(--text));
     -webkit-background-clip: text;

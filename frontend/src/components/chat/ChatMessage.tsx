@@ -18,28 +18,38 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 
   return (
     <motion.div
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
+      className={isUser ? "flex justify-start" : "w-full"}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <div
-        className={`
-          max-w-[80%] p-4 rounded-2xl
-          ${isUser
-            ? 'bg-[oklab(1_0_0_/_0.12)] border-[oklab(1_0_0_/_0.2)]'
-            : 'bg-[oklab(1_0_0_/_0.08)] border-[oklab(1_0_0_/_0.15)]'
-          }
-          border backdrop-blur-md
-        `}
-      >
-        <p className="text-glass whitespace-pre-wrap break-words">
-          {message.content}
-        </p>
-        <span className="text-xs text-glass-muted mt-2 block">
-          {formatTime(message.timestamp)}
-        </span>
-      </div>
+      {isUser ? (
+        <div
+          className="
+            max-w-[80%] p-4 rounded-2xl
+            bg-[oklab(1_0_0_/_0.12)] border-[oklab(1_0_0_/_0.2)]
+            border backdrop-blur-md
+          "
+        >
+          <p className="text-glass whitespace-pre-wrap break-words">
+            {message.content}
+          </p>
+          <span className="text-xs text-glass-muted mt-2 block">
+            {formatTime(message.timestamp)}
+          </span>
+        </div>
+      ) : (
+        <div className="w-full px-4 py-3">
+          <div className="w-full max-w-none">
+            <p className="text-ai-glow whitespace-pre-wrap break-words">
+              {message.content}
+            </p>
+            <span className="text-xs text-glass-muted mt-2 block">
+              {formatTime(message.timestamp)}
+            </span>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
