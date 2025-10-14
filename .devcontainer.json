@@ -48,8 +48,7 @@
 			"extensions": [
 				"kilocode.Kilo-Code",
 				"esbenp.prettier-vscode",
-				"cweijan.vscode-redis-client",
-				"cweijan.vscode-postgresql-client2"
+				"cweijan.vscode-redis-client"
 			]
 		}
 	},
