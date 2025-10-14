@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Send } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -12,6 +13,23 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSend, disabled, isLoading }: ChatInputProps) => {
   const [input, setInput] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isMobile = useIsMobile();
+  
+  // Auto-resize textarea within constraints
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto';
+      
+      // Calculate new height with constraints
+      const maxHeight = isMobile ? window.innerHeight * 0.8 : window.innerHeight * 0.5;
+      const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+      
+      textarea.style.height = `${newHeight}px`;
+    }
+  }, [input, isMobile]);
 
   const handleSend = () => {
     if (input.trim() && !disabled) {
@@ -28,7 +46,14 @@ export const ChatInput = ({ onSend, disabled, isLoading }: ChatInputProps) => {
   };
 
   return (
-    <div className="glass-card p-4 rounded-xl">
+    <div
+      className="glass-card p-4 rounded-xl"
+      style={{
+        maxHeight: isMobile ? '80vh' : '50vh',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
       {/* Loading indicator */}
       {isLoading && (
         <div className="h-0.5 w-full bg-primary/30 rounded-full overflow-hidden mb-3">
@@ -41,15 +66,20 @@ export const ChatInput = ({ onSend, disabled, isLoading }: ChatInputProps) => {
         </div>
       )}
       
-      <div className="flex gap-2">
+      <div className="flex gap-2" style={{ minHeight: '60px' }}>
         <Textarea
+          ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your message..."
           disabled={disabled}
-          className="glass-input flex-1 resize-none"
-          rows={3}
+          className="glass-input flex-1 resize-none overflow-y-auto"
+          style={{
+            maxHeight: isMobile ? 'calc(80vh - 120px)' : 'calc(50vh - 120px)',
+            minHeight: '60px'
+          }}
+          rows={1}
         />
         <Button
           onClick={handleSend}
