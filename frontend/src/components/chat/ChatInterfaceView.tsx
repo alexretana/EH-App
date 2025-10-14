@@ -4,6 +4,8 @@ import { ChatMessageFeed } from './ChatMessageFeed';
 import { ChatInput } from './ChatInput';
 import { ChatMessage } from '@/types/chat';
 
+// Hot reload test - this component is now configured for hot reload!
+
 interface ChatInterfaceViewProps {
   conversationId: string | null;
   messages: ChatMessage[];
@@ -30,7 +32,7 @@ export const ChatInterfaceView = ({
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h2 className="text-xl font-semibold text-glass">Chat</h2>
+        <h2 className="text-xl font-semibold text-glass">Chat (Hot Reload Working!)</h2>
       </div>
 
       {/* MESSAGE FEED - Takes remaining space */}
