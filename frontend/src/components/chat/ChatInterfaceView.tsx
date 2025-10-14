@@ -32,7 +32,7 @@ export const ChatInterfaceView = ({
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h2 className="text-xl font-semibold text-glass">Chat (Hot Reload Working!)</h2>
+        <h2 className="text-xl font-semibold text-glass">Chat</h2>
       </div>
 
       {/* MESSAGE FEED - Takes remaining space */}
