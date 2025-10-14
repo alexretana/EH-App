@@ -14,6 +14,7 @@
 		8000,
 		5173,
 		5678,
+		6379,
 		8545
 	],
 	"portsAttributes": {
@@ -31,6 +32,10 @@
 		},
 		"5678": {
 			"label": "n8n",
+			"onAutoForward": "notify"
+		},
+		"6379": {
+			"label": "redis",
 			"onAutoForward": "notify"
 		},
 		"8545": {
