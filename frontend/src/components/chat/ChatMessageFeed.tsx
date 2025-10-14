@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './ChatMessage';
 import { ChatMessage as ChatMessageType } from '@/types/chat';
@@ -9,12 +9,23 @@ interface ChatMessageFeedProps {
   isLoading: boolean;
 }
 
-export const ChatMessageFeed = ({ messages, isLoading }: ChatMessageFeedProps) => {
+export const ChatMessageFeed = forwardRef<
+  { scrollToBottom: () => void },
+  ChatMessageFeedProps
+>(({ messages, isLoading }, ref) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
+
+  useImperativeHandle(ref, () => ({
+    scrollToBottom
+  }));
 
   return (
     <ScrollArea className="h-full">
@@ -38,4 +49,4 @@ export const ChatMessageFeed = ({ messages, isLoading }: ChatMessageFeedProps) =
       </div>
     </ScrollArea>
   );
-};
+});
