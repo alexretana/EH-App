@@ -48,11 +48,15 @@ async def init_chat_session():
             # Parse the response from n8n
             response_data = response.json()
             
+            # Map agentResponse to direct_message_to_user for consistency
+            if "agentResponse" in response_data and "direct_message_to_user" not in response_data:
+                response_data["direct_message_to_user"] = response_data.pop("agentResponse")
+            
             # Validate the response has the expected fields
             if not all(key in response_data for key in ["direct_message_to_user", "resumeUrl", "sessionId"]):
                 raise HTTPException(
                     status_code=500,
-                    detail="Invalid response from n8n webhook"
+                    detail=f"Invalid response from n8n webhook. Missing required fields. Response: {response_data}"
                 )
             
             return WebhookResponse(**response_data)
@@ -93,11 +97,15 @@ async def resume_chat_session(request: ChatMessageRequest):
             # Parse the response from n8n
             response_data = response.json()
             
+            # Map agentResponse to direct_message_to_user for consistency
+            if "agentResponse" in response_data and "direct_message_to_user" not in response_data:
+                response_data["direct_message_to_user"] = response_data.pop("agentResponse")
+            
             # Validate the response has the expected fields
             if not all(key in response_data for key in ["direct_message_to_user", "resumeUrl", "sessionId"]):
                 raise HTTPException(
                     status_code=500,
-                    detail="Invalid response from n8n webhook"
+                    detail=f"Invalid response from n8n webhook. Missing required fields. Response: {response_data}"
                 )
             
             return WebhookResponse(**response_data)
