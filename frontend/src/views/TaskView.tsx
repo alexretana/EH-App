@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { List, LayoutGrid, Filter, ArrowUpDown, Plus, Edit, Clock, Target, Play, Pause, CheckCircle, RotateCcw } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { List, LayoutGrid, Filter, ArrowUpDown, Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import TaskModal from '@/components/tasks/TaskModal';
 import { TaskDataTable } from '@/components/tasks/TaskDataTable';
@@ -19,7 +18,7 @@ const TaskView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   
-  const { tasks, goals, projects, isLoading, createTask, updateTask } = useApp();
+  const { tasks, goals, projects, isLoading, updateTask } = useApp();
 
   const handleCreateTask = () => {
     setCurrentTask(null);
@@ -123,7 +122,7 @@ const TaskView: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap justify-between gap-4">
             {/* View Mode Toggle */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-glass">View:</span>
@@ -159,15 +158,16 @@ const TaskView: React.FC = () => {
               </div>
             </div>
 
-            <Separator className="w-full" />
+            <Separator orientation="vertical" className="hidden sm:block h-6" />
+            <Separator orientation="horizontal" className="sm:hidden w-full" />
 
             {/* Filter Options */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 min-w-[200px]">
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-glass-muted" />
                 <span className="text-sm font-medium text-glass">Show:</span>
               </div>
-              <RadioGroup value={filterOption} onValueChange={(value: any) => setFilterOption(value)} className="flex flex-wrap gap-2">
+              <RadioGroup value={filterOption} onValueChange={(value: 'all' | 'active-projects' | 'active-goals' | 'active-milestones') => setFilterOption(value)} className="flex flex-wrap gap-2">
                 <div className="flex items-center space-x-1">
                   <RadioGroupItem value="all" id="all" className="sr-only" />
                   <Label htmlFor="all" className={`text-xs px-2 py-1 rounded cursor-pointer ${
@@ -206,13 +206,14 @@ const TaskView: React.FC = () => {
               </RadioGroup>
             </div>
 
-            <Separator className="w-full" />
+            <Separator orientation="vertical" className="hidden sm:block h-6" />
+            <Separator orientation="horizontal" className="sm:hidden w-full" />
 
             {/* Sort Options */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-[150px]">
               <ArrowUpDown className="h-4 w-4 text-glass-muted" />
               <span className="text-sm font-medium text-glass">Sort:</span>
-              <Select value={sortOption} onValueChange={(value: any) => setSortOption(value)}>
+              <Select value={sortOption} onValueChange={(value: 'status' | 'dependency') => setSortOption(value)}>
                 <SelectTrigger className="w-32 sm:w-40 glass-input">
                   <SelectValue />
                 </SelectTrigger>
