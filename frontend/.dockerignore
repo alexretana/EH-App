@@ -1,0 +1,8 @@
+node_modules
+.gitignore
+.dockerignore
+Dockerfile
+dist
+build
+.cache
+playwright-report

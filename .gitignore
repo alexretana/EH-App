@@ -226,9 +226,6 @@ jspm_packages/
 # TernJS port file
 .tern-port
 
-# Docker
-.dockerignore
-
 # Kubernetes
 *.kubeconfig
 
