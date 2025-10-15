@@ -26,6 +26,82 @@ def get_redis_client():
         decode_responses=True
     )
 
+def parse_user_message(content: str) -> str:
+    """
+    Parse user input from various message formats in the n8n workflow.
+    
+    This function handles multiple patterns used by different agents:
+    1. "User's Most Recent Chat Input:" followed by content and "---" separator
+    2. Simple content with context data after "======"
+    3. Content with just "[object Object]" or empty
+    
+    Returns the actual user input or a fallback message.
+    """
+    # Handle empty or null content
+    if not content or content.strip() == "":
+        return "(User input not available)"
+    
+    lines = content.split('\n')
+    
+    # Pattern 1: Look for "User's Most Recent Chat Input:" prefix
+    for i, line in enumerate(lines):
+        if line.startswith("User's Most Recent Chat Input:"):
+            # Extract everything after the prefix
+            user_input = line.replace("User's Most Recent Chat Input:", "").strip()
+            
+            # If there's content on the same line after the prefix, use it
+            if user_input:
+                return user_input
+            
+            # Otherwise, look for content between this line and the "---" separator
+            for j in range(i + 1, len(lines)):
+                if lines[j].strip() == "---":
+                    # Join the lines from after the prefix to before the separator
+                    user_content = '\n'.join(lines[i + 1:j]).strip()
+                    return user_content if user_content else "(User input not available)"
+            
+            # If no separator found, return the next non-empty line if it exists
+            for j in range(i + 1, len(lines)):
+                if lines[j].strip():
+                    return lines[j].strip()
+    
+    # Pattern 2: Look for content before "======" separator
+    for i, line in enumerate(lines):
+        if line.strip() == "======" and i > 0:
+            # The user input is everything before this separator
+            user_content = '\n'.join(lines[:i]).strip()
+            if user_content and user_content not in ["[object Object]"]:
+                return user_content
+    
+    # Pattern 3: Check if content is just placeholder text
+    if content.strip() in ["[object Object]", "\n\nCurrent Project's Context Data: \n[object Object]\n\nCurrent Project's Goals Data:\n[object Object]"]:
+        return "(User input not available)"
+    
+    # Pattern 4: If content contains JSON-like structures, try to extract just the user part
+    # Check for patterns like "Current Project's Context Data:" and extract what comes before
+    for i, line in enumerate(lines):
+        if "Current Project's" in line and "Data:" in line and i > 0:
+            # User input is likely everything before this line
+            user_content = '\n'.join(lines[:i]).strip()
+            if user_content and user_content not in ["[object Object]"]:
+                return user_content
+    
+    # Pattern 5: Handle the case where the content is just a simple user input
+    # without any special prefixes or separators
+    if content.strip() and len(content.strip()) < 200:  # Reasonable length for user input
+        # Check if it looks like a user message (not JSON or technical data)
+        if not any(char in content.strip() for char in ['{', '}', '[', ']']):
+            return content.strip()
+    
+    # If all else fails, return the content if it's not a placeholder
+    if content.strip() and content.strip() not in ["[object Object]"]:
+        # Return just the first line if it's a long message
+        first_line = lines[0].strip()
+        if first_line and len(first_line) < 100:  # Reasonable length for user input
+            return first_line
+    
+    return "(User input not available)"
+
 class ChatRequest(BaseModel):
     """Request model for chat - can be used for both initial and resume requests"""
     sessionId: Optional[str] = None
@@ -211,7 +287,9 @@ async def restore_conversation(request: RestoreConversationRequest):
             )
         
         # Get all messages for the session
-        messages_raw = r.lrange(request.sessionId, 0, -1).reverse()
+        messages_raw = r.lrange(request.sessionId, 0, -1)
+        if messages_raw:
+            messages_raw.reverse()
         
         formatted_messages = []
         
@@ -243,25 +321,11 @@ async def restore_conversation(request: RestoreConversationRequest):
                     })
                 else:
                     # Extract user input from human message
-                    content = msg_wrapper['data']['content']
+                    content = parse_user_message(msg_wrapper['data']['content'])
                     
-                    # Try to extract the actual user input if it has the special prefix
-                    lines = content.split('\n')
-                    user_line = next((line for line in lines if line.startswith("User's Most Recent Chat Input:")), "")
-                    if user_line:
-                        # Found the special prefix, extract everything after it until the "---" separator
-                        user_content = user_line.replace("User's Most Recent Chat Input: ", "")
-                        # Find the line with "---" and take everything before it
-                        for i, line in enumerate(lines):
-                            if line.strip() == "---" and i > 0:
-                                # Join the lines from after the prefix to before the separator
-                                user_content = '\n'.join(lines[lines.index(user_line) + 1:i])
-                                break
-                        content = user_content.strip()
-                    else:
-                        # No special prefix, check if content is just "[object Object]" or empty
-                        if content.strip() in ["[object Object]", "", "\n\nCurrent Project's Context Data: \n[object Object]\n\nCurrent Project's Goals Data:\n[object Object]"]:
-                            content = "(User input not available)"
+                    # Skip user messages that contain placeholder context data
+                    if "Current Project's Context Data:" in msg_wrapper['data']['content'] and "[object Object]" in msg_wrapper['data']['content']:
+                        continue
                     
                     # Generate a unique ID for the message
                     message_id = str(uuid.uuid4())
@@ -271,13 +335,17 @@ async def restore_conversation(request: RestoreConversationRequest):
                     if not timestamp and request.sessionId:
                         timestamp = request.sessionId
                     
-                    formatted_messages.append({
+                    user_message = {
                         "id": message_id,
                         "role": 'user',
                         "content": content,
                         "timestamp": timestamp,
                         "created_at": timestamp
-                    })
+                    }
+                    
+                    # Always skip the first message (starting prompt)
+                    if len(formatted_messages) > 0 or messages_raw.index(msg_raw) > 0:
+                        formatted_messages.append(user_message)
             except (json.JSONDecodeError, KeyError) as e:
                 # Skip malformed messages but continue processing
                 continue
