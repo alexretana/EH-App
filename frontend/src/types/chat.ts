@@ -23,14 +23,28 @@ export interface ChatState {
   conversations: ChatConversation[];
   isLoading: boolean;
   error: string | null;
+  sessionId: string | null;
+  resumeUrl: string | null;
 }
 
 export type SendMessageRequest = {
   conversationId?: string;
   message: string;
+  sessionId?: string;
 };
 
 export type SendMessageResponse = {
   conversationId: string;
   message: ChatMessage;
+};
+
+export type WebhookResponse = {
+  direct_message_to_user: string;
+  resumeUrl: string;
+  sessionId: string;
+};
+
+export type ResumeChatRequest = {
+  sessionId: string;
+  chatInput: string;
 };
