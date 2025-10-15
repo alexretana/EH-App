@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { ChatConversation } from '@/types/chat';
+import { ChatConversation, ChatSession } from '@/types/chat';
 
 interface ChatHistoryCardProps {
-  conversation: ChatConversation;
-  onSelect?: (id: string) => void; // Optional for MVP
+  conversation?: ChatConversation;
+  session?: ChatSession;
+  onSelect?: (id: string) => void;
 }
 
 const formatRelativeTime = (timestamp: string): string => {
@@ -32,29 +33,42 @@ const formatRelativeTime = (timestamp: string): string => {
   }
 };
 
-export const ChatHistoryCard = ({ conversation, onSelect }: ChatHistoryCardProps) => {
-  // onSelect is intentionally unused for MVP - cards are not clickable yet
-  void onSelect; // Explicitly mark as unused
+export const ChatHistoryCard = ({ conversation, session, onSelect }: ChatHistoryCardProps) => {
+  // Use session if provided, otherwise fall back to conversation
+  const title = session?.description || conversation?.title || "Untitled Conversation";
+  const lastMessage = session?.lastMessage || conversation?.lastMessage || "";
+  const timestamp = session?.timestamp || conversation?.timestamp || "";
+  const messageCount = session?.messageCount || conversation?.messageCount || 0;
+  const id = session?.sessionId || conversation?.id || "";
+  
+  const handleClick = () => {
+    if (onSelect && id) {
+      onSelect(id);
+    }
+  };
+  
   return (
     <motion.div
-      className="glass-card p-6 rounded-xl glass-hover-level-2 cursor-default"
+      className="glass-card p-6 rounded-xl glass-hover-level-2 cursor-pointer"
       layout
       whileHover={{ scale: 1.005 }}
+      whileTap={{ scale: 0.995 }}
+      onClick={handleClick}
     >
       <div className="flex flex-col gap-2">
         <h3 className="text-lg font-semibold text-glass line-clamp-1">
-          {conversation.title}
+          {title}
         </h3>
         <p className="text-sm text-glass-muted line-clamp-2">
-          {conversation.lastMessage}
+          {lastMessage}
         </p>
         <div className="flex items-center justify-between mt-2">
           <span className="text-xs text-glass-muted">
-            {formatRelativeTime(conversation.timestamp)}
+            {formatRelativeTime(timestamp)}
           </span>
-          {conversation.messageCount && (
+          {messageCount > 0 && (
             <Badge variant="outline" className="glass-button text-xs">
-              {conversation.messageCount} messages
+              {messageCount} messages
             </Badge>
           )}
         </div>

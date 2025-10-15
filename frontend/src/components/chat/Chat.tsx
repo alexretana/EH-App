@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChatHistoryView } from './ChatHistoryView';
 import { ChatInterfaceView } from './ChatInterfaceView';
 import {
   sendChatRequest,
-  webhookResponseToChatMessage
+  webhookResponseToChatMessage,
+  getChatSessions,
+  restoreConversation
 } from '@/data/api/chatApi';
 import { mockChatConversations } from '@/data/mockChatData';
-import { ChatMessage, ChatConversation } from '@/types/chat';
+import { ChatMessage, ChatConversation, ChatSession } from '@/types/chat';
 
 interface ChatProps {
   title?: string;
@@ -18,14 +20,29 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
   // apiEndpoint is reserved for future use with real API endpoints
   void apiEndpoint; // Explicitly mark as unused
   const [currentView, setCurrentView] = useState<'history' | 'interface'>('history');
-  const [conversations, setConversations] = useState<ChatConversation[]>(mockChatConversations);
-  void setConversations; // Explicitly mark as unused for now
-  // setConversations is reserved for future use when updating conversation list
+  const [conversations] = useState<ChatConversation[]>(mockChatConversations);
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+
+  // Load chat sessions on component mount
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const chatSessions = await getChatSessions();
+        setSessions(chatSessions);
+      } catch (error) {
+        console.error('Error loading chat sessions:', error);
+        // Continue with mock data if API fails
+      }
+    };
+    
+    loadSessions();
+  }, []);
 
   const handleNewChat = async () => {
     setCurrentView('interface');
@@ -54,6 +71,34 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
       // TODO: Handle error state - maybe show error message to user
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSelectConversation = async (sessionId: string) => {
+    setCurrentView('interface');
+    setMessages([]);
+    setCurrentConversationId(sessionId);
+    setSessionId(sessionId);
+    setResumeUrl(null);
+    setIsRestoring(true);
+
+    try {
+      // Restore the conversation history
+      const restoredData = await restoreConversation(sessionId);
+      
+      // Set the restored messages
+      setMessages(restoredData.messages);
+      
+      // Initialize chat session with n8n to prepare for continuation
+      const webhookResponse = await sendChatRequest(sessionId);
+      
+      // Set session data
+      setResumeUrl(webhookResponse.resumeUrl);
+    } catch (error) {
+      console.error('Error restoring conversation:', error);
+      // TODO: Handle error state - maybe show error message to user
+    } finally {
+      setIsRestoring(false);
     }
   };
 
@@ -112,15 +157,17 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
     <div className={`h-full ${className || ''}`}>
       {currentView === 'history' ? (
         <ChatHistoryView
-          conversations={conversations}
+          conversations={sessions.length === 0 ? conversations : undefined}
+          sessions={sessions.length > 0 ? sessions : undefined}
           onNewChat={handleNewChat}
+          onSelectConversation={handleSelectConversation}
           title={title}
         />
       ) : (
         <ChatInterfaceView
           conversationId={currentConversationId}
           messages={messages}
-          isLoading={isLoading}
+          isLoading={isLoading || isRestoring}
           onSendMessage={handleSendMessage}
           onBack={handleBackToHistory}
         />

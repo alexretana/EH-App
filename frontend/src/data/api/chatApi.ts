@@ -3,7 +3,9 @@ import {
   SendMessageResponse,
   ChatMessage,
   WebhookResponse,
-  ResumeChatRequest
+  ResumeChatRequest,
+  ChatSession,
+  RestoreConversationResponse
 } from '@/types/chat';
 
 const generateId = (): string => {
@@ -123,4 +125,43 @@ export const sendMessage = async (
   //   body: JSON.stringify(request)
   // });
   // return response.json();
+};
+
+/**
+ * Get all chat sessions with their descriptions and metadata
+ */
+export const getChatSessions = async (): Promise<ChatSession[]> => {
+  const response = await fetch('/api/chat/sessions', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch chat sessions: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Restore a conversation by fetching all messages for a session
+ */
+export const restoreConversation = async (
+  sessionId: string
+): Promise<RestoreConversationResponse> => {
+  const response = await fetch('/api/chat/restore', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ sessionId }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to restore conversation: ${response.statusText}`);
+  }
+
+  return response.json();
 };

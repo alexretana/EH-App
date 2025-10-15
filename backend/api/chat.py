@@ -1,13 +1,29 @@
 import os
 import httpx
+import json
+import redis
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 # Get n8n URL from environment or use default
 N8N_URL = os.getenv("N8N_URL", "http://n8n:5678")
+
+# Redis connection
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "n8n_password")
+
+def get_redis_client():
+    """Get a Redis client connection"""
+    return redis.Redis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        password=REDIS_PASSWORD,
+        decode_responses=True
+    )
 
 class ChatRequest(BaseModel):
     """Request model for chat - can be used for both initial and resume requests"""
@@ -19,6 +35,23 @@ class WebhookResponse(BaseModel):
     """Response model from n8n webhook"""
     direct_message_to_user: str
     resumeUrl: str
+    sessionId: str
+
+class ChatSession(BaseModel):
+    """Model for chat session metadata"""
+    sessionId: str
+    description: str
+    lastMessage: str
+    messageCount: int
+    timestamp: str
+
+class RestoreConversationRequest(BaseModel):
+    """Request model for restoring a conversation"""
+    sessionId: str
+
+class RestoreConversationResponse(BaseModel):
+    """Response model for restored conversation"""
+    messages: List[Dict[str, Any]]
     sessionId: str
 
 @router.post("/chat", response_model=WebhookResponse)
@@ -80,6 +113,153 @@ async def chat(request: ChatRequest):
         raise HTTPException(
             status_code=503,
             detail=f"Failed to connect to n8n service: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error: {str(e)}"
+        )
+
+@router.get("/sessions", response_model=List[ChatSession])
+async def get_chat_sessions():
+    """
+    Get all chat sessions with their descriptions and metadata
+    """
+    try:
+        r = get_redis_client()
+        
+        # Get all session keys (timestamps)
+        session_keys = r.keys("*")
+        
+        # Filter out non-session keys (like chat_descriptions)
+        session_keys = [key for key in session_keys if key != "chat_descriptions"]
+        
+        sessions = []
+        
+        # Sort by timestamp (newest first)
+        session_keys.sort(reverse=True)
+        
+        for session_id in session_keys:
+            # Get description from chat_descriptions hash
+            description = r.hget("chat_descriptions", session_id)
+            if not description:
+                description = "New Conversation"
+            
+            # Get message count and last message
+            message_count = r.llen(session_id)
+            last_message = ""
+            
+            if message_count > 0:
+                # Get the last message
+                last_msg_raw = r.lindex(session_id, -1)
+                if last_msg_raw:
+                    try:
+                        last_msg = json.loads(last_msg_raw)
+                        if last_msg.get("type") == "ai":
+                            # Parse AI message content
+                            content_data = json.loads(last_msg["data"]["content"])
+                            last_message = content_data.get("direct_response_to_user", "")
+                        else:
+                            # Extract user input from human message
+                            lines = last_msg["data"]["content"].split('\n')
+                            user_line = next((line for line in lines if line.startswith("User's Most Recent Chat Input:")), "")
+                            last_message = user_line.replace("User's Most Recent Chat Input: ", "")
+                    except (json.JSONDecodeError, KeyError):
+                        last_message = "Unable to preview message"
+            
+            # Parse session ID as timestamp
+            try:
+                timestamp = session_id  # ISO 8601 format
+            except:
+                timestamp = session_id
+            
+            sessions.append({
+                "sessionId": session_id,
+                "description": description,
+                "lastMessage": last_message[:100] + "..." if len(last_message) > 100 else last_message,
+                "messageCount": message_count,
+                "timestamp": timestamp
+            })
+        
+        return sessions
+        
+    except redis.RedisError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Failed to connect to Redis: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error: {str(e)}"
+        )
+
+@router.post("/restore", response_model=RestoreConversationResponse)
+async def restore_conversation(request: RestoreConversationRequest):
+    """
+    Restore a conversation by fetching all messages for a session
+    """
+    try:
+        r = get_redis_client()
+        
+        # Check if session exists
+        if not r.exists(request.sessionId):
+            raise HTTPException(
+                status_code=404,
+                detail=f"Session {request.sessionId} not found"
+            )
+        
+        # Get all messages for the session
+        messages_raw = r.lrange(request.sessionId, 0, -1)
+        
+        formatted_messages = []
+        
+        for msg_raw in messages_raw:
+            try:
+                # Parse the message wrapper
+                msg_wrapper = json.loads(msg_raw)
+                msg_type = msg_wrapper['type']
+                
+                if msg_type == 'ai':
+                    # Parse AI message content
+                    content_data = json.loads(msg_wrapper['data']['content'])
+                    content = content_data.get('direct_response_to_user', '')
+                    
+                    formatted_messages.append({
+                        "id": msg_wrapper.get('id', ''),
+                        "role": 'agent',
+                        "content": content,
+                        "timestamp": msg_wrapper.get('timestamp', ''),
+                        "created_at": msg_wrapper.get('timestamp', '')
+                    })
+                else:
+                    # Extract user input from human message
+                    lines = msg_wrapper['data']['content'].split('\n')
+                    user_line = next((line for line in lines if line.startswith("User's Most Recent Chat Input:")), "")
+                    content = user_line.replace("User's Most Recent Chat Input: ", "")
+                    
+                    formatted_messages.append({
+                        "id": msg_wrapper.get('id', ''),
+                        "role": 'user',
+                        "content": content,
+                        "timestamp": msg_wrapper.get('timestamp', ''),
+                        "created_at": msg_wrapper.get('timestamp', '')
+                    })
+            except (json.JSONDecodeError, KeyError) as e:
+                # Skip malformed messages but continue processing
+                continue
+        
+        return {
+            "messages": formatted_messages,
+            "sessionId": request.sessionId
+        }
+        
+    except HTTPException:
+        raise
+    except redis.RedisError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Failed to connect to Redis: {str(e)}"
         )
     except Exception as e:
         raise HTTPException(

@@ -48,3 +48,20 @@ export type ResumeChatRequest = {
   sessionId: string;
   chatInput: string;
 };
+
+export type ChatSession = {
+  sessionId: string;
+  description: string;
+  lastMessage: string;
+  messageCount: number;
+  timestamp: string;
+};
+
+export type RestoreConversationRequest = {
+  sessionId: string;
+};
+
+export type RestoreConversationResponse = {
+  messages: ChatMessage[];
+  sessionId: string;
+};

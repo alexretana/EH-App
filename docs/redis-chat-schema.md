@@ -1,0 +1,180 @@
+# Redis Chat Storage Schema for n8n
+
+## Overview
+
+n8n uses Redis to store chat session data when configured for chat workflows. The chat data is organized by session IDs, which are timestamps in ISO 8601 format.
+
+## Key Structure
+
+### Session Keys
+- **Format**: ISO 8601 timestamps (e.g., `2025-10-15T10:58:13.866-04:00`)
+- **Data Type**: Redis List
+- **Purpose**: Each key represents a unique chat session
+
+### Message Storage
+Each session key contains a Redis List with chat messages in chronological order. Messages are stored as JSON strings.
+
+## Message JSON Structure
+
+Each message in the list follows this structure:
+
+```json
+{
+  "type": "ai|human",
+  "data": {
+    "content": "...",
+    "tool_calls": [],
+    "invalid_tool_calls": [],
+    "additional_kwargs": {},
+    "response_metadata": {}
+  }
+}
+```
+
+### Message Types
+
+1. **AI Messages** (`type: "ai"`)
+   - Contains the AI agent's response
+   - The `content` field contains a JSON string with the response structure
+
+2. **Human Messages** (`type: "human"`)
+   - Contains user input
+   - The `content` field includes the user's message plus additional context
+
+## AI Message Content Structure
+
+The `content` field of AI messages contains a JSON string with this structure:
+
+```json
+{
+  "direct_response_to_user": "The actual response text",
+  "agent_to_route_to": "Agent name",
+  "forwarded_message": "Message forwarded to next agent",
+  "project_data": "JSON string of project data or null"
+}
+```
+
+## Human Message Content Structure
+
+The `content` field of human messages contains a structured string with:
+
+1. User's input
+2. Separator (`---`)
+3. List of Projects from Database (JSON array)
+4. Session metadata including:
+   - `sessionId`: The Redis key for this session
+   - `resumeUrl`: n8n webhook URL for continuing the conversation
+
+## Working with the Data
+
+### Retrieving All Chat Sessions
+```bash
+# Get all session keys (timestamps)
+docker exec redis-container redis-cli -a password keys "*"
+```
+
+### Getting Messages for a Session
+```bash
+# Get all messages for a specific session
+docker exec redis-container redis-cli -a password lrange "2025-10-15T10:58:13.866-04:00" 0 -1
+
+# Get the number of messages in a session
+docker exec redis-container redis-cli -a password llen "2025-10-15T10:58:13.866-04:00"
+```
+
+### Parsing Messages
+
+Each message needs to be parsed twice:
+1. First parse to get the message wrapper (with type and data)
+2. Second parse the `content` field of the data object to get the actual message content
+
+#### Example Python Parsing
+```python
+import json
+import redis
+
+# Connect to Redis
+r = redis.Redis(host='localhost', port=6379, password='n8n_password')
+
+# Get all session keys
+session_keys = r.keys("*")
+
+# Process a session
+session_id = "2025-10-15T10:58:13.866-04:00"
+messages = r.lrange(session_id, 0, -1)
+
+for msg in messages:
+    # Parse the message wrapper
+    msg_wrapper = json.loads(msg)
+    msg_type = msg_wrapper['type']
+    
+    # Parse the content
+    content_data = json.loads(msg_wrapper['data']['content'])
+    
+    if msg_type == 'ai':
+        print(f"AI: {content_data['direct_response_to_user']}")
+    else:
+        # Extract user input from the content string
+        lines = msg_wrapper['data']['content'].split('\n')
+        user_input = next((line for line in lines if line.startswith("User's Most Recent Chat Input:")), "")
+        print(f"Human: {user_input}")
+```
+
+## Frontend Integration
+
+To display previous chat history in the frontend:
+
+1. **Get Session List**: Retrieve all Redis keys to populate a chat history sidebar
+2. **Load Session**: When a user selects a previous session:
+   - Use the session ID as the `sessionId` parameter in your API call
+   - Retrieve all messages from Redis using `LRANGE`
+   - Parse and display the messages in chronological order
+3. **Continue Conversation**: Send new messages with the same `sessionId` to continue the conversation
+
+## Key Considerations
+
+1. **Session Persistence**: Sessions persist until manually expired or Redis evicts them
+2. **Timestamp Format**: Session IDs include timezone information (e.g., `-04:00`)
+3. **Message Order**: Messages are stored in chronological order (oldest first)
+4. **Content Parsing**: The nested JSON structure requires careful parsing
+5. **Project Context**: Human messages include full project context for each interaction
+
+## Example Session Data
+
+A typical session contains alternating AI and human messages:
+
+1. AI: Welcome message with options
+2. Human: User selection with project context
+3. AI: Response based on selection
+4. Human: Additional user input
+5. AI: Further response
+
+This pattern continues throughout the conversation, with each human message containing the full project context from the database.
+
+## Chat Descriptions Table
+
+### Overview
+In addition to storing chat messages, a separate Redis hash table is used to store chat session descriptions (titles) that are generated by the n8n summarization chain.
+
+### Key Structure
+- **Key Name**: `chat_descriptions`
+- **Data Type**: Redis Hash
+- **Purpose**: Maps session IDs to their generated descriptions
+
+### Hash Structure
+```
+HGET chat_descriptions "2025-10-15T10:58:13.866-04:00"
+"Database Migration Planning"
+```
+
+### Description Generation
+- When an agent is about to route to another agent in n8n, a summarization LLM chain is triggered
+- The chain generates a 60-character max description based on the conversation context
+- n8n directly updates the chat_descriptions table with the new description
+- New conversations default to "New Conversation" until a description is generated
+
+### Integration with Chat History
+1. Frontend retrieves all session keys from Redis
+2. For each session ID, check chat_descriptions for a custom title
+3. If no description exists, use "New Conversation"
+4. Display these descriptions in the chat history sidebar

@@ -1,21 +1,27 @@
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { ChatHistoryCard } from './ChatHistoryCard';
-import { ChatConversation } from '@/types/chat';
+import { ChatConversation, ChatSession } from '@/types/chat';
 
 interface ChatHistoryViewProps {
-  conversations: ChatConversation[];
+  conversations?: ChatConversation[];
+  sessions?: ChatSession[];
   onNewChat: () => void;
-  onSelectConversation?: (id: string) => void; // Optional for MVP
+  onSelectConversation?: (id: string) => void;
   title?: string;
 }
 
 export const ChatHistoryView = ({
   conversations,
+  sessions,
   onNewChat,
   onSelectConversation,
   title
 }: ChatHistoryViewProps) => {
+  // Use sessions if provided, otherwise fall back to conversations
+  const hasSessions = sessions && sessions.length > 0;
+  const itemsToDisplay = hasSessions ? sessions : (conversations || []);
+  
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-glass">
@@ -35,16 +41,17 @@ export const ChatHistoryView = ({
         </motion.div>
 
         {/* CONVERSATION HISTORY CARDS */}
-        {conversations.length === 0 ? (
+        {itemsToDisplay.length === 0 ? (
           <div className="glass-card p-8 rounded-xl text-center">
             <p className="text-glass-muted">No previous conversations</p>
           </div>
         ) : (
-          conversations.map(conversation => (
+          itemsToDisplay.map((item) => (
             <ChatHistoryCard
-              key={conversation.id}
-              conversation={conversation}
-              onSelect={onSelectConversation} // null for MVP
+              key={hasSessions ? (item as ChatSession).sessionId : (item as ChatConversation).id}
+              conversation={hasSessions ? undefined : item as ChatConversation}
+              session={hasSessions ? item as ChatSession : undefined}
+              onSelect={onSelectConversation}
             />
           ))
         )}
