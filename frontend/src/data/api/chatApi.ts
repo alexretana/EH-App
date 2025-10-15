@@ -36,44 +36,63 @@ export const mockSendMessage = async (
 };
 
 /**
- * Initialize a new chat session by calling the backend API
+ * Send a chat request to the backend API
+ * Can be used to initialize a new session or resume an existing one
  */
-export const initializeChatSession = async (): Promise<WebhookResponse> => {
-  const response = await fetch('/api/chat/init', {
+export const sendChatRequest = async (
+  sessionId?: string,
+  chatInput?: string,
+  resumeUrl?: string
+): Promise<WebhookResponse> => {
+  const requestBody: {
+    sessionId?: string;
+    chatInput?: string;
+    resumeUrl?: string;
+  } = {};
+  
+  // Only include these fields if they have values
+  if (sessionId !== undefined) {
+    requestBody.sessionId = sessionId;
+  }
+  if (chatInput !== undefined) {
+    requestBody.chatInput = chatInput;
+  }
+  if (resumeUrl !== undefined) {
+    requestBody.resumeUrl = resumeUrl;
+  }
+
+  const response = await fetch('/api/chat/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({}),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to initialize chat session: ${response.statusText}`);
+    throw new Error(`Failed to send chat request: ${response.statusText}`);
   }
 
   return response.json();
 };
 
 /**
+ * Initialize a new chat session by calling the backend API
+ * @deprecated Use sendChatRequest() instead
+ */
+export const initializeChatSession = async (): Promise<WebhookResponse> => {
+  return sendChatRequest();
+};
+
+/**
  * Send a message to continue the chat session via backend
+ * @deprecated Use sendChatRequest() instead
  */
 export const resumeChatSession = async (
   resumeUrl: string,
   request: ResumeChatRequest
 ): Promise<WebhookResponse> => {
-  const response = await fetch('/api/chat/resume', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to resume chat session: ${response.statusText}`);
-  }
-
-  return response.json();
+  return sendChatRequest(request.sessionId, request.chatInput, resumeUrl);
 };
 
 /**

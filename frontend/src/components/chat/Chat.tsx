@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { ChatHistoryView } from './ChatHistoryView';
 import { ChatInterfaceView } from './ChatInterfaceView';
 import {
-  initializeChatSession,
-  resumeChatSession,
+  sendChatRequest,
   webhookResponseToChatMessage
 } from '@/data/api/chatApi';
 import { mockChatConversations } from '@/data/mockChatData';
@@ -38,7 +37,7 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
 
     try {
       // Initialize chat session with n8n webhook
-      const webhookResponse = await initializeChatSession();
+      const webhookResponse = await sendChatRequest();
       
       // Set session data
       setSessionId(webhookResponse.sessionId);
@@ -83,11 +82,8 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
     setIsLoading(true);
 
     try {
-      // Send message to resume URL
-      const webhookResponse = await resumeChatSession(resumeUrl, {
-        sessionId,
-        chatInput: message
-      });
+      // Send message using the unified chat endpoint
+      const webhookResponse = await sendChatRequest(sessionId, message, resumeUrl);
 
       // Update session data in case it changed
       setSessionId(webhookResponse.sessionId);
