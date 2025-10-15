@@ -131,6 +131,11 @@ class RestoreConversationResponse(BaseModel):
     messages: List[Dict[str, Any]]
     sessionId: str
 
+class AddDescriptionRequest(BaseModel):
+    """Request model for adding a chat description"""
+    sessionId: str
+    description: str
+
 @router.post("/chat", response_model=WebhookResponse)
 async def chat(request: ChatRequest):
     """
@@ -385,3 +390,42 @@ async def health_check():
         return {"status": "unhealthy", "n8n_connection": "failed", "error": str(e)}
     except Exception as e:
         return {"status": "unhealthy", "error": str(e)}
+
+@router.post("/addDescription")
+async def add_description(request: AddDescriptionRequest):
+    """
+    Add or update a chat description in Redis
+    This endpoint is called by n8n to store conversation titles
+    """
+    try:
+        r = get_redis_client()
+        
+        # Validate the description length (max 60 characters as per design)
+        if len(request.description) > 60:
+            raise HTTPException(
+                status_code=400,
+                detail="Description must be 60 characters or less"
+            )
+        
+        # Set the description in the chat_descriptions hash
+        # HSET chat_descriptions {sessionId} {description}
+        r.hset("chat_descriptions", request.sessionId, request.description)
+        
+        return {
+            "success": True,
+            "sessionId": request.sessionId,
+            "description": request.description
+        }
+        
+    except redis.RedisError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Failed to connect to Redis: {str(e)}"
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error: {str(e)}"
+        )
