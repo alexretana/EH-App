@@ -211,7 +211,7 @@ async def restore_conversation(request: RestoreConversationRequest):
             )
         
         # Get all messages for the session
-        messages_raw = r.lrange(request.sessionId, 0, -1)
+        messages_raw = r.lrange(request.sessionId, 0, -1).reverse()
         
         formatted_messages = []
         
