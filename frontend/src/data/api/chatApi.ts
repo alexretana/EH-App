@@ -36,10 +36,10 @@ export const mockSendMessage = async (
 };
 
 /**
- * Initialize a new chat session by calling the n8n webhook
+ * Initialize a new chat session by calling the backend API
  */
 export const initializeChatSession = async (): Promise<WebhookResponse> => {
-  const response = await fetch('http://n8n:5678/webhook-test/project-planner', {
+  const response = await fetch('/api/chat/init', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,13 +55,13 @@ export const initializeChatSession = async (): Promise<WebhookResponse> => {
 };
 
 /**
- * Send a message to the resume URL to continue the chat session
+ * Send a message to continue the chat session via backend
  */
 export const resumeChatSession = async (
   resumeUrl: string,
   request: ResumeChatRequest
 ): Promise<WebhookResponse> => {
-  const response = await fetch(resumeUrl, {
+  const response = await fetch('/api/chat/resume', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

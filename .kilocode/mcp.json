@@ -22,6 +22,10 @@
         "run-test-mcp-server"
       ],
       "cwd": "${workspaceFolder}"
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["chrome-devtools-cmp@latest"]
     }
   }
 }
