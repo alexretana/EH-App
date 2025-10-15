@@ -9,7 +9,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
@@ -30,15 +29,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Task } from "@/types/mockData"
+import { Task, Goal, Project } from "@/types/mockData"
 import { Edit, XCircle, Play, Pause, CheckCircle, RotateCcw, Clock, Target, Calendar } from "lucide-react"
 
 interface TaskDataTableProps {
   tasks: Task[]
-  goals: any[]
-  projects: any[]
+  goals: Goal[]
+  projects: Project[]
   onEditTask: (task: Task) => void
   onUpdateTaskStatus: (id: string, status: Task['status']) => void
 }
@@ -451,9 +449,8 @@ export function TaskDataTable({
       {/* Desktop Table View */}
       <div className="hidden md:block">
         <div className="glass-card rounded-xl overflow-hidden">
-          <ScrollArea className="w-full" style={{ height: 'calc(100vh - 280px)' }}>
-            <div className="min-w-[800px]">
-              <Table>
+          <div className="min-w-[800px]">
+            <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id} className="border-glass/20 glass-header">
@@ -519,7 +516,6 @@ export function TaskDataTable({
                 </TableBody>
               </Table>
             </div>
-          </ScrollArea>
         </div>
       </div>
       
