@@ -32,7 +32,7 @@ async def init_chat_session():
     webhook_url = f"{N8N_URL}/webhook-test/project-planner"
     
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
                 webhook_url,
                 json={},  # Empty body for initial request
@@ -74,7 +74,7 @@ async def resume_chat_session(request: ChatMessageRequest):
     Resume a chat session by sending a message to the resume URL
     """
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
                 request.resumeUrl,
                 json={

@@ -13,7 +13,7 @@ async def test_chat_init():
     """Test the chat initialization endpoint"""
     print("Testing chat initialization...")
     
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=300.0) as client:
         response = await client.post(f"{BACKEND_URL}/api/chat/init")
         
         if response.status_code == 200:
@@ -33,7 +33,7 @@ async def test_chat_resume(session_id: str, resume_url: str):
     """Test the chat resume endpoint"""
     print(f"\nTesting chat resume with session ID: {session_id}")
     
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=300.0) as client:
         response = await client.post(
             f"{BACKEND_URL}/api/chat/resume",
             json={
