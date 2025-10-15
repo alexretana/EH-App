@@ -89,11 +89,9 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
       // Set the restored messages
       setMessages(restoredData.messages);
       
-      // Initialize chat session with n8n to prepare for continuation
-      const webhookResponse = await sendChatRequest(sessionId);
-      
-      // Set session data
-      setResumeUrl(webhookResponse.resumeUrl);
+      // Don't initialize the chat session yet - wait for user to send a message
+      // This prevents the 500 error since we don't have a resumeUrl yet
+      // The chat will be initialized when the user sends their first message
     } catch (error) {
       console.error('Error restoring conversation:', error);
       // TODO: Handle error state - maybe show error message to user
@@ -109,11 +107,33 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
   };
 
   const handleSendMessage = async (message: string) => {
-    if (!sessionId || !resumeUrl) {
+    // If we have a sessionId but no resumeUrl, we need to initialize the chat first
+    if (sessionId && !resumeUrl) {
+      setIsLoading(true);
+      try {
+        // Initialize chat session with n8n to prepare for continuation
+        const webhookResponse = await sendChatRequest(sessionId);
+        
+        // Set session data
+        setResumeUrl(webhookResponse.resumeUrl);
+        
+        // Now send the message
+        await sendMessageWithResume(message, webhookResponse.resumeUrl);
+      } catch (error) {
+        console.error('Error initializing chat session:', error);
+        setIsLoading(false);
+        return;
+      }
+    } else if (sessionId && resumeUrl) {
+      // Normal flow - send message with existing resumeUrl
+      await sendMessageWithResume(message, resumeUrl);
+    } else {
       console.error('No active session');
       return;
     }
+  };
 
+  const sendMessageWithResume = async (message: string, currentResumeUrl: string) => {
     // Add user message to the chat
     const userMessage: ChatMessage = {
       id: generateId(),
@@ -128,7 +148,7 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
 
     try {
       // Send message using the unified chat endpoint
-      const webhookResponse = await sendChatRequest(sessionId, message, resumeUrl);
+      const webhookResponse = await sendChatRequest(sessionId!, message, currentResumeUrl);
 
       // Update session data in case it changed
       setSessionId(webhookResponse.sessionId);

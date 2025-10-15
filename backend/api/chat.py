@@ -2,6 +2,7 @@ import os
 import httpx
 import json
 import redis
+import uuid
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
@@ -225,25 +226,57 @@ async def restore_conversation(request: RestoreConversationRequest):
                     content_data = json.loads(msg_wrapper['data']['content'])
                     content = content_data.get('direct_response_to_user', '')
                     
+                    # Generate a unique ID for the message
+                    message_id = str(uuid.uuid4())
+                    
+                    # Use the sessionId as a base for timestamp if not available
+                    timestamp = msg_wrapper.get('timestamp', '')
+                    if not timestamp and request.sessionId:
+                        timestamp = request.sessionId
+                    
                     formatted_messages.append({
-                        "id": msg_wrapper.get('id', ''),
+                        "id": message_id,
                         "role": 'agent',
                         "content": content,
-                        "timestamp": msg_wrapper.get('timestamp', ''),
-                        "created_at": msg_wrapper.get('timestamp', '')
+                        "timestamp": timestamp,
+                        "created_at": timestamp
                     })
                 else:
                     # Extract user input from human message
-                    lines = msg_wrapper['data']['content'].split('\n')
+                    content = msg_wrapper['data']['content']
+                    
+                    # Try to extract the actual user input if it has the special prefix
+                    lines = content.split('\n')
                     user_line = next((line for line in lines if line.startswith("User's Most Recent Chat Input:")), "")
-                    content = user_line.replace("User's Most Recent Chat Input: ", "")
+                    if user_line:
+                        # Found the special prefix, extract everything after it until the "---" separator
+                        user_content = user_line.replace("User's Most Recent Chat Input: ", "")
+                        # Find the line with "---" and take everything before it
+                        for i, line in enumerate(lines):
+                            if line.strip() == "---" and i > 0:
+                                # Join the lines from after the prefix to before the separator
+                                user_content = '\n'.join(lines[lines.index(user_line) + 1:i])
+                                break
+                        content = user_content.strip()
+                    else:
+                        # No special prefix, check if content is just "[object Object]" or empty
+                        if content.strip() in ["[object Object]", "", "\n\nCurrent Project's Context Data: \n[object Object]\n\nCurrent Project's Goals Data:\n[object Object]"]:
+                            content = "(User input not available)"
+                    
+                    # Generate a unique ID for the message
+                    message_id = str(uuid.uuid4())
+                    
+                    # Use the sessionId as a base for timestamp if not available
+                    timestamp = msg_wrapper.get('timestamp', '')
+                    if not timestamp and request.sessionId:
+                        timestamp = request.sessionId
                     
                     formatted_messages.append({
-                        "id": msg_wrapper.get('id', ''),
+                        "id": message_id,
                         "role": 'user',
                         "content": content,
-                        "timestamp": msg_wrapper.get('timestamp', ''),
-                        "created_at": msg_wrapper.get('timestamp', '')
+                        "timestamp": timestamp,
+                        "created_at": timestamp
                     })
             except (json.JSONDecodeError, KeyError) as e:
                 # Skip malformed messages but continue processing
