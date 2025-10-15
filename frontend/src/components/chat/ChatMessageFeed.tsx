@@ -32,7 +32,7 @@ export const ChatMessageFeed = forwardRef<
       <div className="space-y-4 p-4">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-64">
-            <p className="text-glass-muted">Start a conversation...</p>
+            <p className="text-glass-muted">Agent is waking up...</p>
           </div>
         ) : (
           messages.map(message => (
