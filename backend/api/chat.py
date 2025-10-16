@@ -146,7 +146,7 @@ async def chat(request: ChatRequest):
             # If sessionId is None, this is an initial request
             if request.sessionId is None:
                 # Initialize new chat session
-                webhook_url = f"{N8N_URL}/webhook-test/project-planner"
+                webhook_url = f"{N8N_URL}/n8n/project-planner"
                 response = await client.post(
                     webhook_url,
                     json={},  # Empty body for initial request
