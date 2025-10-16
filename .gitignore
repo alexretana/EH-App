@@ -77,7 +77,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-# Ignore all .env files except template files
+# Ignore all .env files except infrastructure and template files
 .env
 .env.local
 .env.development
@@ -87,9 +87,16 @@ celerybeat.pid
 .env.production
 .env.production.local
 .env.staging
+.env.credentials
+.env.credentials.*
+.env.third-party
+.env.third-party.*
 
-# Keep template files
+# Keep template and infrastructure files
 !.env.example
+!.env.infrastructure
+!.env.credentials.example
+!.env.third-party.example
 
 # Service-specific .env files (actual secrets)
 discord-bot/.env

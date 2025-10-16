@@ -22,7 +22,9 @@ services:
       dockerfile: Dockerfile
     container_name: eh-app-postgres
     env_file:
-      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY:-unless-stopped}
@@ -38,7 +40,9 @@ services:
       dockerfile: Dockerfile
     container_name: eh-app-backend
     env_file:
-      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,7 +54,9 @@ services:
       dockerfile: Dockerfile
     container_name: eh-app-frontend
     env_file:
-      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -64,7 +70,9 @@ services:
       dockerfile: Dockerfile
     container_name: n8n
     env_file:
-      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_setup_data:/data
@@ -90,7 +98,9 @@ services:
       dockerfile: Dockerfile
     container_name: discord-bot
     env_file:
-      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
     restart: ${RESTART_POLICY:-unless-stopped}
 
 volumes:
