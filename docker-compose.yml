@@ -1,4 +1,21 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: eh-app-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+      - n8n
+
   postgres:
     build:
       context: ./database
@@ -6,8 +23,6 @@ services:
     container_name: eh-app-postgres
     env_file:
       - .env.development
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY:-unless-stopped}
@@ -24,8 +39,6 @@ services:
     container_name: eh-app-backend
     env_file:
       - .env.development
-    ports:
-      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,8 +51,6 @@ services:
     container_name: eh-app-frontend
     env_file:
       - .env.development
-    ports:
-      - "${FRONTEND_PORT:-5173}:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -54,8 +65,6 @@ services:
     container_name: n8n
     env_file:
       - .env.development
-    ports:
-      - "${N8N_PORT:-5678}:5678"
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_setup_data:/data
@@ -69,9 +78,8 @@ services:
     
   redis:
     image: redis:latest
+    container_name: eh-app-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     command: redis-server --requirepass n8n_password --appendonly yes --save 60 1000
     volumes:
       - redis_data:/data
@@ -83,8 +91,6 @@ services:
     container_name: discord-bot
     env_file:
       - .env.development
-    ports:
-      - "${DISCORD_BOT_PORT:-8545}:8545"
     restart: ${RESTART_POLICY:-unless-stopped}
 
 volumes:
@@ -92,3 +98,5 @@ volumes:
   n8n_data:
   n8n_setup_data:
   redis_data:
+  caddy_data:
+  caddy_config:

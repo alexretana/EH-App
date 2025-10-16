@@ -1,0 +1,23 @@
+{
+    email alex.retana@live.com
+}
+
+# Production domain (frontend + backend)
+event-horizon.retanatech.com {
+    @api path /api/*
+    handle @api {
+        reverse_proxy backend:8000
+    }
+
+    reverse_proxy frontend:5173
+}
+
+# n8n subdomain
+eh-n8n.retanatech.com {
+    reverse_proxy n8n:5678
+}
+
+# Local HTTPS (Caddy will generate a trusted cert automatically)
+http://localhost {
+    reverse_proxy frontend:5173
+}
