@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
 import { ChatConversation, ChatSession } from '@/types/chat';
 
 interface ChatHistoryCardProps {
@@ -36,9 +35,7 @@ const formatRelativeTime = (timestamp: string): string => {
 export const ChatHistoryCard = ({ conversation, session, onSelect }: ChatHistoryCardProps) => {
   // Use session if provided, otherwise fall back to conversation
   const title = session?.description || conversation?.title || "Untitled Conversation";
-  const lastMessage = session?.lastMessage || conversation?.lastMessage || "";
   const timestamp = session?.timestamp || conversation?.timestamp || "";
-  const messageCount = session?.messageCount || conversation?.messageCount || 0;
   const id = session?.sessionId || conversation?.id || "";
   
   const handleClick = () => {
@@ -59,19 +56,9 @@ export const ChatHistoryCard = ({ conversation, session, onSelect }: ChatHistory
         <h3 className="text-lg font-semibold text-glass line-clamp-1">
           {title}
         </h3>
-        <p className="text-sm text-glass-muted line-clamp-2">
-          {lastMessage}
-        </p>
-        <div className="flex items-center justify-between mt-2">
-          <span className="text-xs text-glass-muted">
-            {formatRelativeTime(timestamp)}
-          </span>
-          {messageCount > 0 && (
-            <Badge variant="outline" className="glass-button text-xs">
-              {messageCount} messages
-            </Badge>
-          )}
-        </div>
+        <span className="text-xs text-glass-muted">
+          {formatRelativeTime(timestamp)}
+        </span>
       </div>
     </motion.div>
   );
