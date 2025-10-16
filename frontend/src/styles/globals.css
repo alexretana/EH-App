@@ -312,7 +312,7 @@
   }
 
   .text-gradient-primary {
-    background: linear-gradient(0deg, var(--text-muted), 30%, var(--text));
+    background: linear-gradient(0deg, var(--text-muted), 50%, var(--text));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
