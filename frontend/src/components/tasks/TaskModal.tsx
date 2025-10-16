@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { CreateTask, UpdateTask, Task, Goal, Project } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
+import { useCreateTask, useUpdateTask, useGoals, useProjects } from '@/hooks/useQueries';
 
 const taskSchema = z.object({
   name: z.string().min(1, 'Task name is required'),
@@ -37,7 +38,10 @@ interface TaskModalProps {
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) => {
-  const { createTask, updateTask, goals, projects } = useApp();
+  const createTaskMutation = useCreateTask();
+  const updateTaskMutation = useUpdateTask();
+  const { data: goals } = useGoals();
+  const { data: projects } = useProjects();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [filteredGoals, setFilteredGoals] = useState<Goal[]>([]);
@@ -59,26 +63,28 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
   });
   
   useEffect(() => {
-    // Get unique projects from goals
-    const uniqueProjects = Array.from(
-      new Set(goals.map(goal => goal.project_id))
-    ).map(projectId => {
-      return projects.find(p => p.id === projectId);
-    }).filter(Boolean) as Project[];
-    
-    if (uniqueProjects.length > 0 && !selectedProjectId) {
-      setSelectedProjectId(uniqueProjects[0].id);
-    }
-    
-    // Filter goals based on selected project
-    if (selectedProjectId) {
-      const projectGoals = goals.filter(goal => goal.project_id === selectedProjectId);
-      setFilteredGoals(projectGoals);
+    if (goals && projects) {
+      // Get unique projects from goals
+      const uniqueProjects = Array.from(
+        new Set(goals.map(goal => goal.project_id))
+      ).map(projectId => {
+        return projects.find(p => p.id === projectId);
+      }).filter(Boolean) as Project[];
+      
+      if (uniqueProjects.length > 0 && !selectedProjectId) {
+        setSelectedProjectId(uniqueProjects[0].id);
+      }
+      
+      // Filter goals based on selected project
+      if (selectedProjectId) {
+        const projectGoals = goals.filter(goal => goal.project_id === selectedProjectId);
+        setFilteredGoals(projectGoals);
+      }
     }
   }, [goals, projects, selectedProjectId]);
   
   useEffect(() => {
-    if (task) {
+    if (task && goals) {
       const goal = goals.find(g => g.id === task.goal_id);
       if (goal) {
         setSelectedProjectId(goal.project_id);
@@ -115,36 +121,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
     setError(null);
     try {
       if (task) {
-        await updateTask(task.id, values as UpdateTask);
-        toast.success('Task updated successfully!');
+        await updateTaskMutation.mutateAsync({ id: task.id, updates: values as UpdateTask });
       } else {
-        await createTask(values as CreateTask);
-        toast.success('Task created successfully!');
+        await createTaskMutation.mutateAsync(values as CreateTask);
       }
       onClose();
     } catch (error) {
       console.error('Error saving task:', error);
-      // Extract user-friendly error message
-      let errorMessage = 'Failed to save task. Please try again.';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        // Try to extract more specific error details from API response
-        if ((error as any).details && (error as any).details.detail) {
-          const details = (error as any).details.detail;
-          if (Array.isArray(details) && details.length > 0) {
-            // Extract field-specific errors
-            const fieldErrors = details.map((d: any) => {
-              if (d.loc && d.loc.length > 0) {
-                const fieldName = d.loc[d.loc.length - 1];
-                return `${fieldName}: ${d.msg}`;
-              }
-              return d.msg;
-            });
-            errorMessage = fieldErrors.join(', ');
-          }
-        }
-      }
-      setError(errorMessage);
+      setError('Failed to save task. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -152,19 +136,21 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, goalId }) 
   
   const handleProjectChange = (projectId: string) => {
     setSelectedProjectId(projectId);
-    const projectGoals = goals.filter(goal => goal.project_id === projectId);
-    setFilteredGoals(projectGoals);
-    
-    // Reset goal selection
-    form.setValue('goal_id', projectGoals.length > 0 ? projectGoals[0].id : '');
+    if (goals) {
+      const projectGoals = goals.filter(goal => goal.project_id === projectId);
+      setFilteredGoals(projectGoals);
+      
+      // Reset goal selection
+      form.setValue('goal_id', projectGoals.length > 0 ? projectGoals[0].id : '');
+    }
   };
   
   // Get unique projects from goals
-  const uniqueProjects = Array.from(
+  const uniqueProjects = goals && projects ? Array.from(
     new Set(goals.map(goal => goal.project_id))
   ).map(projectId => {
     return projects.find(p => p.id === projectId);
-  }).filter(Boolean) as Project[];
+  }).filter(Boolean) as Project[] : [];
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

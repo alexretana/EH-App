@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { CreateKnowledgeBase, UpdateKnowledgeBase, KnowledgeBase } from '@/types/mockData';
-import { useApp } from '@/contexts/AppContext';
+import { useCreateKnowledgeBase, useUpdateKnowledgeBase } from '@/hooks/useQueries';
 import FileUpload from './FileUpload';
 
 const knowledgeBaseSchema = z.object({
@@ -43,7 +43,8 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
     });
   }, []);
   
-  const { createKnowledgeBase, updateKnowledgeBase } = useApp();
+  const createKnowledgeBaseMutation = useCreateKnowledgeBase();
+  const updateKnowledgeBaseMutation = useUpdateKnowledgeBase();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newCitation, setNewCitation] = useState('');
   const [citations, setCitations] = useState<string[]>([]);
@@ -106,36 +107,14 @@ const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({ isOpen, onClose
       };
       
       if (knowledgeBase) {
-        await updateKnowledgeBase(knowledgeBase.id, data as UpdateKnowledgeBase);
-        toast.success('Document updated successfully!');
+        await updateKnowledgeBaseMutation.mutateAsync({ id: knowledgeBase.id, updates: data as UpdateKnowledgeBase });
       } else {
-        await createKnowledgeBase(data as CreateKnowledgeBase);
-        toast.success('Document created successfully!');
+        await createKnowledgeBaseMutation.mutateAsync(data as CreateKnowledgeBase);
       }
       onClose();
     } catch (error) {
       console.error('Error saving knowledge base document:', error);
-      // Extract user-friendly error message
-      let errorMessage = 'Failed to save document. Please try again.';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        // Try to extract more specific error details from API response
-        if ((error as any).details && (error as any).details.detail) {
-          const details = (error as any).details.detail;
-          if (Array.isArray(details) && details.length > 0) {
-            // Extract field-specific errors
-            const fieldErrors = details.map((d: any) => {
-              if (d.loc && d.loc.length > 0) {
-                const fieldName = d.loc[d.loc.length - 1];
-                return `${fieldName}: ${d.msg}`;
-              }
-              return d.msg;
-            });
-            errorMessage = fieldErrors.join(', ');
-          }
-        }
-      }
-      setError(errorMessage);
+      setError('Failed to save document. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useApp } from '@/contexts/AppContext';
+import { useTasks, useGoals, useProjects, useUpdateTask } from '@/hooks/useQueries';
 import TaskModal from '@/components/tasks/TaskModal';
 import { TaskDataTable } from '@/components/tasks/TaskDataTable';
 import { Task } from '@/types/mockData';
@@ -18,7 +19,14 @@ const TaskView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   
-  const { tasks, goals, projects, isLoading, updateTask } = useApp();
+  // React Query hooks
+  const { data: tasks = [], isLoading: tasksLoading } = useTasks();
+  const { data: goals = [], isLoading: goalsLoading } = useGoals();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const updateTaskMutation = useUpdateTask();
+  
+  // Combined loading state
+  const isLoading = tasksLoading || goalsLoading || projectsLoading;
 
   const handleCreateTask = () => {
     setCurrentTask(null);
@@ -33,7 +41,7 @@ const TaskView: React.FC = () => {
 
   const handleUpdateTaskStatus = async (id: string, status: Task['status']) => {
     try {
-      await updateTask(id, { id, status });
+      await updateTaskMutation.mutateAsync({ id, updates: { status, id } });
     } catch (error) {
       console.error('Error updating task status:', error);
     }

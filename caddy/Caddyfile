@@ -18,6 +18,7 @@ eh-n8n.retanatech.com {
 }
 
 # Local HTTPS (Caddy will generate a trusted cert automatically)
-http://localhost {
+https://localhost {
     reverse_proxy frontend:5173
+    tls internal
 }

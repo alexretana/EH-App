@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useApp } from '@/contexts/AppContext';
+import { useKnowledgeBase, useProjects, useDeleteKnowledgeBase } from '@/hooks/useQueries';
 import KnowledgeBaseModal from '@/components/knowledge/KnowledgeBaseModal';
 import BulkUploadModal from '@/components/knowledge/BulkUploadModal';
 import { KnowledgeBase } from '@/types/mockData';
@@ -23,7 +24,14 @@ const KnowledgeBaseView: React.FC = () => {
       pedantic: false
     });
   }, []);
-  const { knowledgeBase, isLoading, deleteKnowledgeBase, projects } = useApp();
+  
+  // React Query hooks
+  const { data: knowledgeBase = [], isLoading: kbLoading } = useKnowledgeBase();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const deleteKnowledgeBaseMutation = useDeleteKnowledgeBase();
+  
+  // Combined loading state
+  const isLoading = kbLoading || projectsLoading;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
@@ -75,7 +83,7 @@ const KnowledgeBaseView: React.FC = () => {
   const handleDeleteDocument = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
       try {
-        await deleteKnowledgeBase(id);
+        await deleteKnowledgeBaseMutation.mutateAsync(id);
       } catch (error) {
         console.error('Error deleting document:', error);
       }
@@ -101,6 +109,10 @@ const KnowledgeBaseView: React.FC = () => {
         // Check if this document has any project references
         const hasProjectReference = doc.related_entity_ids?.some((entityId: string, index: number) => {
           return doc.entity_types?.[index] === 'project' && entityId === selectedProjectId;
+        }) || doc.related_entities?.some((entityName: string, index: number) => {
+          // Fallback to checking if the entity name matches the project name
+          const project = projects.find(p => p.id === selectedProjectId);
+          return project && entityName === project.name;
         });
         
         return hasProjectReference;
@@ -118,7 +130,7 @@ const KnowledgeBaseView: React.FC = () => {
     }
     
     return filtered;
-  }, [knowledgeBase, selectedProjectId, debouncedSearchQuery]);
+  }, [knowledgeBase, selectedProjectId, debouncedSearchQuery, projects]);
 
   if (isLoading) {
     return (

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useApp } from '@/contexts/AppContext';
+import { useProjects, useCreateKnowledgeBase, useKnowledgeBase } from '@/hooks/useQueries';
 
 interface BulkUploadModalProps {
   isOpen: boolean;
@@ -21,7 +21,9 @@ interface FileWithContent {
 }
 
 const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose }) => {
-  const { projects, createKnowledgeBase, refreshKnowledgeBase } = useApp();
+  const { data: projects = [] } = useProjects();
+  const createKnowledgeBaseMutation = useCreateKnowledgeBase();
+  const { data: knowledgeBase = [] } = useKnowledgeBase();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [files, setFiles] = useState<FileWithContent[]>([]);
@@ -141,7 +143,7 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose }) =>
           date_added: new Date().toISOString().split('T')[0],
         };
 
-        const createdKb = await createKnowledgeBase(kbData);
+        const createdKb = await createKnowledgeBaseMutation.mutateAsync(kbData);
 
         // Upload the file attachment
         const formData = new FormData();
@@ -171,7 +173,7 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ isOpen, onClose }) =>
     // Show results
     if (successCount > 0) {
       toast.success(`Successfully uploaded ${successCount} document${successCount > 1 ? 's' : ''}`);
-      await refreshKnowledgeBase();
+      // The knowledge base will be automatically refreshed by React Query
     }
 
     if (failCount > 0) {

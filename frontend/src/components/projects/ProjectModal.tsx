@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { CreateProject, UpdateProject, Project } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
+import { useCreateProject, useUpdateProject, useProjects } from '@/hooks/useQueries';
 
 const projectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -40,7 +41,9 @@ interface ProjectModalProps {
 }
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project }) => {
-  const { createProject, updateProject } = useApp();
+  const createProjectMutation = useCreateProject();
+  const updateProjectMutation = useUpdateProject();
+  const { data: projects } = useProjects();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -105,36 +108,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project })
       };
       
       if (project) {
-        await updateProject(project.id, data as UpdateProject);
-        toast.success('Project updated successfully!');
+        await updateProjectMutation.mutateAsync({ id: project.id, updates: data as UpdateProject });
       } else {
-        await createProject(data as CreateProject);
-        toast.success('Project created successfully!');
+        await createProjectMutation.mutateAsync(data as CreateProject);
       }
       onClose();
     } catch (error) {
       console.error('Error saving project:', error);
-      // Extract user-friendly error message
-      let errorMessage = 'Failed to save project. Please try again.';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        // Try to extract more specific error details from API response
-        if ((error as any).details && (error as any).details.detail) {
-          const details = (error as any).details.detail;
-          if (Array.isArray(details) && details.length > 0) {
-            // Extract field-specific errors
-            const fieldErrors = details.map((d: any) => {
-              if (d.loc && d.loc.length > 0) {
-                const fieldName = d.loc[d.loc.length - 1];
-                return `${fieldName}: ${d.msg}`;
-              }
-              return d.msg;
-            });
-            errorMessage = fieldErrors.join(', ');
-          }
-        }
-      }
-      setError(errorMessage);
+      setError('Failed to save project. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

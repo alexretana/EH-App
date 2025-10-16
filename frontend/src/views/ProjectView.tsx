@@ -1,26 +1,53 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Plus, Edit, Trash2, ChevronRight, Calendar, Clock, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
+import { 
+  useProjects, 
+  useDeleteProject
+} from '@/hooks/useQueries';
 import ProjectModal from '@/components/projects/ProjectModal';
 import GoalModal from '@/components/goals/GoalModal';
 import TaskModal from '@/components/tasks/TaskModal';
 import { Project, Goal, Task } from '@/types/mockData';
 
 const ProjectView: React.FC = () => {
-  const { projects, isLoading, deleteProject, deleteGoal, deleteTask, getGoalsByProjectId, getTasksByGoalId } = useApp();
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [currentProject, setCurrentProject] = useState<Project | null>(null);
-  const [currentGoal, setCurrentGoal] = useState<Goal | null>(null);
-  const [currentTask, setCurrentTask] = useState<Task | null>(null);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
-  const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
+  // UI state from context
+  const { 
+    activeProjectId, 
+    setActiveProjectId,
+    expandedProjects,
+    setExpandedProjects,
+    expandedGoals,
+    setExpandedGoals,
+    isProjectModalOpen,
+    setIsProjectModalOpen,
+    isGoalModalOpen,
+    setIsGoalModalOpen,
+    isTaskModalOpen,
+    setIsTaskModalOpen,
+    currentProject,
+    setCurrentProject,
+    currentGoal,
+    setCurrentGoal,
+    currentTask,
+    setCurrentTask,
+    selectedProjectId,
+    setSelectedProjectId,
+    selectedGoalId,
+    setSelectedGoalId,
+    // Keep using the old methods for now
+    getGoalsByProjectId,
+    getTasksByGoalId,
+    deleteGoal,
+    deleteTask
+  } = useApp();
+  
+  // React Query hooks for server state
+  const { data: projects, isLoading, error } = useProjects();
+  const deleteProjectMutation = useDeleteProject();
 
   const handleCreateProject = () => {
     setCurrentProject(null);
@@ -77,7 +104,12 @@ const ProjectView: React.FC = () => {
   const handleDeleteProject = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this project? This will also delete all associated goals and tasks.')) {
       try {
-        await deleteProject(id);
+        await deleteProjectMutation.mutateAsync(id);
+        
+        // Clear active project if it was deleted
+        if (activeProjectId === id) {
+          setActiveProjectId(null);
+        }
       } catch (error) {
         console.error('Error deleting project:', error);
       }
@@ -121,7 +153,6 @@ const ProjectView: React.FC = () => {
     setCurrentTask(null);
   };
 
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -132,6 +163,15 @@ const ProjectView: React.FC = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="glass-card p-6 rounded-xl">
+          <p className="text-glass">Error loading projects. Please try again.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -144,7 +184,7 @@ const ProjectView: React.FC = () => {
           </Button>
         </div>
 
-        {projects.length === 0 ? (
+        {(!projects || projects.length === 0) ? (
           <div className="flex flex-col items-center justify-center h-64 glass-card rounded-xl p-8">
             <h2 className="text-2xl font-semibold text-glass mb-4">Create Your First Project</h2>
             <p className="text-glass-muted mb-6 text-center max-w-md">

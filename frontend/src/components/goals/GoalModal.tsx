@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { CreateGoal, UpdateGoal, Goal } from '@/types/mockData';
 import { useApp } from '@/contexts/AppContext';
+import { useCreateGoal, useUpdateGoal, useProjects } from '@/hooks/useQueries';
 
 const goalSchema = z.object({
   name: z.string().min(1, 'Goal name is required'),
@@ -34,7 +35,9 @@ interface GoalModalProps {
 }
 
 const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, goal, projectId }) => {
-  const { createGoal, updateGoal, projects } = useApp();
+  const createGoalMutation = useCreateGoal();
+  const updateGoalMutation = useUpdateGoal();
+  const { data: projects } = useProjects();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -77,33 +80,14 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, goal, projectId 
     setError(null);
     try {
       if (goal) {
-        await updateGoal(goal.id, values as UpdateGoal);
-        toast.success('Goal updated successfully!');
+        await updateGoalMutation.mutateAsync({ id: goal.id, updates: values as UpdateGoal });
       } else {
-        await createGoal(values as CreateGoal);
-        toast.success('Goal created successfully!');
+        await createGoalMutation.mutateAsync(values as CreateGoal);
       }
       onClose();
     } catch (error) {
       console.error('Error saving goal:', error);
-      let errorMessage = 'Failed to save goal. Please try again.';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        if ((error as any).details && (error as any).details.detail) {
-          const details = (error as any).details.detail;
-          if (Array.isArray(details) && details.length > 0) {
-            const fieldErrors = details.map((d: any) => {
-              if (d.loc && d.loc.length > 0) {
-                const fieldName = d.loc[d.loc.length - 1];
-                return `${fieldName}: ${d.msg}`;
-              }
-              return d.msg;
-            });
-            errorMessage = fieldErrors.join(', ');
-          }
-        }
-      }
-      setError(errorMessage);
+      setError('Failed to save goal. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

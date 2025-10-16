@@ -1,69 +1,46 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { toast } from 'sonner';
-import { 
-  Project, 
-  Goal, 
-  Task, 
-  KnowledgeBase,
-  CreateProject,
-  UpdateProject,
-  CreateGoal,
-  UpdateGoal,
-  CreateTask,
-  UpdateTask,
-  CreateKnowledgeBase,
-  UpdateKnowledgeBase
-} from '@/types/mockData';
-import {
-  projectApi,
-  goalApi,
-  taskApi,
-  knowledgeApi
-} from '@/data/api/realApi';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { Project, Goal, Task, CreateGoal, UpdateGoal, CreateTask, UpdateTask } from '@/types/mockData';
 
 interface AppContextType {
-  // Data
-  projects: Project[];
-  goals: Goal[];
-  tasks: Task[];
-  knowledgeBase: KnowledgeBase[];
-  
-  // Loading states
-  isLoading: boolean;
-  
-  
-  // Current active project
+  // Client-side state only
   activeProjectId: string | null;
   setActiveProjectId: (id: string | null) => void;
+  expandedProjects: Set<string>;
+  setExpandedProjects: (projects: Set<string>) => void;
+  expandedGoals: Set<string>;
+  setExpandedGoals: (goals: Set<string>) => void;
   
-  // Project operations
-  createProject: (project: CreateProject) => Promise<Project>;
-  updateProject: (id: string, updates: UpdateProject) => Promise<Project | null>;
-  deleteProject: (id: string) => Promise<boolean>;
-  refreshProjects: () => Promise<void>;
+  // UI state
+  isProjectModalOpen: boolean;
+  setIsProjectModalOpen: (open: boolean) => void;
+  isGoalModalOpen: boolean;
+  setIsGoalModalOpen: (open: boolean) => void;
+  isTaskModalOpen: boolean;
+  setIsTaskModalOpen: (open: boolean) => void;
   
-  // Goal operations
+  // Current editing items
+  currentProject: Project | null;
+  setCurrentProject: (project: Project | null) => void;
+  currentGoal: Goal | null;
+  setCurrentGoal: (goal: Goal | null) => void;
+  currentTask: Task | null;
+  setCurrentTask: (task: Task | null) => void;
+  
+  // Selections
+  selectedProjectId: string | null;
+  setSelectedProjectId: (id: string | null) => void;
+  selectedGoalId: string | null;
+  setSelectedGoalId: (id: string | null) => void;
+  
+  // Temporary methods for goals and tasks (until fully migrated)
+  getGoalsByProjectId: (projectId: string) => Goal[];
+  getTasksByGoalId: (goalId: string) => Task[];
+  deleteGoal: (id: string) => Promise<boolean>;
+  deleteTask: (id: string) => Promise<boolean>;
   createGoal: (goal: CreateGoal) => Promise<Goal>;
   updateGoal: (id: string, updates: UpdateGoal) => Promise<Goal | null>;
-  deleteGoal: (id: string) => Promise<boolean>;
-  refreshGoals: () => Promise<void>;
-  getGoalsByProjectId: (projectId: string) => Goal[];
-  
-  // Task operations
   createTask: (task: CreateTask) => Promise<Task>;
   updateTask: (id: string, updates: UpdateTask) => Promise<Task | null>;
-  deleteTask: (id: string) => Promise<boolean>;
-  refreshTasks: () => Promise<void>;
-  getTasksByGoalId: (goalId: string) => Task[];
-  
-  // Knowledge base operations
-  createKnowledgeBase: (kb: CreateKnowledgeBase) => Promise<KnowledgeBase>;
-  updateKnowledgeBase: (id: string, updates: UpdateKnowledgeBase) => Promise<KnowledgeBase | null>;
-  deleteKnowledgeBase: (id: string) => Promise<boolean>;
-  refreshKnowledgeBase: () => Promise<void>;
-  
-  // Utility functions
-  refreshAllData: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -81,326 +58,137 @@ interface AppProviderProps {
 }
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  // State
-  const [projects, setProjects] = useState<Project[]>([]);
+  // Client-side state only
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+  const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
+  
+  // UI state
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  
+  // Current editing items
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [currentGoal, setCurrentGoal] = useState<Goal | null>(null);
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  
+  // Selections
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  
+  // Temporary storage for goals and tasks (until fully migrated to React Query)
   const [goals, setGoals] = useState<Goal[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeBase[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
-  const [knowledgeApiEnabled, setKnowledgeApiEnabled] = useState(true);
   
-  // Error handling
-  const handleError = (err: unknown, message: string) => {
-    console.error(message, err);
-    
-    // Extract detailed error information for developers
-    let errorMessage = message;
-    if (err instanceof Error) {
-      errorMessage = `${message}: ${err.message}`;
-      // Log additional error details if available
-      if ((err as any).details) {
-        console.error('Error details:', (err as any).details);
-      }
-    }
-    
-    // Show error toast using sonner
-    toast.error(errorMessage);
-    setIsLoading(false);
-  };
-  
-  // Refresh functions
-  const refreshProjects = async () => {
-    try {
-      const data = await projectApi.getAll();
-      setProjects(data);
-    } catch (err) {
-      handleError(err, 'Failed to load projects');
-    }
-  };
-  
-  const refreshGoals = async () => {
-    try {
-      const data = await goalApi.getAll();
-      setGoals(data);
-    } catch (err) {
-      handleError(err, 'Failed to load goals');
-    }
-  };
-  
-  const refreshTasks = async () => {
-    try {
-      const data = await taskApi.getAll();
-      setTasks(data);
-    } catch (err) {
-      handleError(err, 'Failed to load tasks');
-    }
-  };
-  
-  const refreshKnowledgeBase = async () => {
-    // Skip if knowledge API is disabled
-    if (!knowledgeApiEnabled) {
-      return;
-    }
-    
-    try {
-      const data = await knowledgeApi.getAll();
-      setKnowledgeBase(data);
-    } catch (err) {
-      // If knowledge API fails, disable it and continue with other data
-      console.warn('Knowledge API is currently unavailable. Disabling knowledge base features.');
-      setKnowledgeApiEnabled(false);
-      // Don't show an error to the user for this specific failure
-    }
-  };
-  
-  const refreshAllData = async () => {
-    setIsLoading(true);
-    
-    try {
-      await Promise.all([
-        refreshProjects(),
-        refreshGoals(),
-        refreshTasks(),
-        refreshKnowledgeBase()
-      ]);
-    } catch (err) {
-      handleError(err, 'Failed to load data');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Initialize data
-  useEffect(() => {
-    refreshAllData();
-  }, []);
-  
-  // Project operations
-  const createProject = async (project: CreateProject): Promise<Project> => {
-    try {
-      const newProject = await projectApi.create(project);
-      setProjects(prev => [...prev, newProject]);
-      return newProject;
-    } catch (err) {
-      handleError(err, 'Failed to create project');
-      throw err;
-    }
-  };
-  
-  const updateProject = async (id: string, updates: UpdateProject): Promise<Project | null> => {
-    try {
-      const updatedProject = await projectApi.update(id, updates);
-      if (updatedProject) {
-        setProjects(prev => prev.map(p => p.id === id ? updatedProject : p));
-      }
-      return updatedProject;
-    } catch (err) {
-      handleError(err, 'Failed to update project');
-      throw err;
-    }
-  };
-  
-  const deleteProject = async (id: string): Promise<boolean> => {
-    try {
-      const success = await projectApi.delete(id);
-      if (success) {
-        setProjects(prev => prev.filter(p => p.id !== id));
-        // Also remove associated goals and tasks
-        setGoals(prev => prev.filter(g => g.project_id !== id));
-        const projectGoalIds = goals.filter(g => g.project_id === id).map(g => g.id);
-        setTasks(prev => prev.filter(t => !projectGoalIds.includes(t.goal_id)));
-        
-        // Clear active project if it was deleted
-        if (activeProjectId === id) {
-          setActiveProjectId(null);
-        }
-      }
-      return success;
-    } catch (err) {
-      handleError(err, 'Failed to delete project');
-      throw err;
-    }
-  };
-  
-  // Goal operations
-  const createGoal = async (goal: CreateGoal): Promise<Goal> => {
-    try {
-      const newGoal = await goalApi.create(goal);
-      setGoals(prev => [...prev, newGoal]);
-      return newGoal;
-    } catch (err) {
-      handleError(err, 'Failed to create goal');
-      throw err;
-    }
-  };
-  
-  const updateGoal = async (id: string, updates: UpdateGoal): Promise<Goal | null> => {
-    try {
-      const updatedGoal = await goalApi.update(id, updates);
-      if (updatedGoal) {
-        setGoals(prev => prev.map(g => g.id === id ? updatedGoal : g));
-      }
-      return updatedGoal;
-    } catch (err) {
-      handleError(err, 'Failed to update goal');
-      throw err;
-    }
-  };
-  
-  const deleteGoal = async (id: string): Promise<boolean> => {
-    try {
-      const success = await goalApi.delete(id);
-      if (success) {
-        setGoals(prev => prev.filter(g => g.id !== id));
-        // Also remove associated tasks
-        setTasks(prev => prev.filter(t => t.goal_id !== id));
-      }
-      return success;
-    } catch (err) {
-      handleError(err, 'Failed to delete goal');
-      throw err;
-    }
-  };
-  
+  // Temporary methods for goals and tasks
   const getGoalsByProjectId = (projectId: string): Goal[] => {
     return goals.filter(goal => goal.project_id === projectId);
-  };
-  
-  // Task operations
-  const createTask = async (task: CreateTask): Promise<Task> => {
-    try {
-      const newTask = await taskApi.create(task);
-      setTasks(prev => [...prev, newTask]);
-      return newTask;
-    } catch (err) {
-      handleError(err, 'Failed to create task');
-      throw err;
-    }
-  };
-  
-  const updateTask = async (id: string, updates: UpdateTask): Promise<Task | null> => {
-    try {
-      const updatedTask = await taskApi.update(id, updates);
-      if (updatedTask) {
-        setTasks(prev => prev.map(t => t.id === id ? updatedTask : t));
-      }
-      return updatedTask;
-    } catch (err) {
-      handleError(err, 'Failed to update task');
-      throw err;
-    }
-  };
-  
-  const deleteTask = async (id: string): Promise<boolean> => {
-    try {
-      const success = await taskApi.delete(id);
-      if (success) {
-        setTasks(prev => prev.filter(t => t.id !== id));
-      }
-      return success;
-    } catch (err) {
-      handleError(err, 'Failed to delete task');
-      throw err;
-    }
   };
   
   const getTasksByGoalId = (goalId: string): Task[] => {
     return tasks.filter(task => task.goal_id === goalId);
   };
   
-  // Knowledge base operations
-  const createKnowledgeBase = async (kb: CreateKnowledgeBase): Promise<KnowledgeBase> => {
-    if (!knowledgeApiEnabled) {
-      throw new Error('Knowledge API is currently unavailable');
-    }
-    
-    try {
-      const newKb = await knowledgeApi.create(kb);
-      setKnowledgeBase(prev => [...prev, newKb]);
-      return newKb;
-    } catch (err) {
-      handleError(err, 'Failed to create knowledge base document');
-      throw err;
-    }
+  const deleteGoal = async (id: string): Promise<boolean> => {
+    // This is a temporary implementation
+    setGoals(prev => prev.filter(g => g.id !== id));
+    setTasks(prev => prev.filter(t => t.goal_id !== id));
+    return true;
   };
   
-  const updateKnowledgeBase = async (id: string, updates: UpdateKnowledgeBase): Promise<KnowledgeBase | null> => {
-    if (!knowledgeApiEnabled) {
-      throw new Error('Knowledge API is currently unavailable');
-    }
-    
-    try {
-      const updatedKb = await knowledgeApi.update(id, updates);
-      if (updatedKb) {
-        setKnowledgeBase(prev => prev.map(kb => kb.id === id ? updatedKb : kb));
-      }
-      return updatedKb;
-    } catch (err) {
-      handleError(err, 'Failed to update knowledge base document');
-      throw err;
-    }
+  const deleteTask = async (id: string): Promise<boolean> => {
+    // This is a temporary implementation
+    setTasks(prev => prev.filter(t => t.id !== id));
+    return true;
   };
   
-  const deleteKnowledgeBase = async (id: string): Promise<boolean> => {
-    if (!knowledgeApiEnabled) {
-      throw new Error('Knowledge API is currently unavailable');
+  const createGoal = async (goal: CreateGoal): Promise<Goal> => {
+    // This is a temporary implementation
+    const newGoal = {
+      ...goal,
+      id: Date.now().toString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as Goal;
+    setGoals(prev => [...prev, newGoal]);
+    return newGoal;
+  };
+  
+  const updateGoal = async (id: string, updates: UpdateGoal): Promise<Goal | null> => {
+    // This is a temporary implementation
+    const updatedGoal = goals.find(g => g.id === id);
+    if (updatedGoal) {
+      const newGoal = { ...updatedGoal, ...updates, updated_at: new Date().toISOString() };
+      setGoals(prev => prev.map(g => g.id === id ? newGoal : g));
+      return newGoal;
     }
-    
-    try {
-      const success = await knowledgeApi.delete(id);
-      if (success) {
-        setKnowledgeBase(prev => prev.filter(kb => kb.id !== id));
-      }
-      return success;
-    } catch (err) {
-      handleError(err, 'Failed to delete knowledge base document');
-      throw err;
+    return null;
+  };
+  
+  const createTask = async (task: CreateTask): Promise<Task> => {
+    // This is a temporary implementation
+    const newTask = {
+      ...task,
+      id: Date.now().toString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as Task;
+    setTasks(prev => [...prev, newTask]);
+    return newTask;
+  };
+  
+  const updateTask = async (id: string, updates: UpdateTask): Promise<Task | null> => {
+    // This is a temporary implementation
+    const updatedTask = tasks.find(t => t.id === id);
+    if (updatedTask) {
+      const newTask = { ...updatedTask, ...updates, updated_at: new Date().toISOString() };
+      setTasks(prev => prev.map(t => t.id === id ? newTask : t));
+      return newTask;
     }
+    return null;
   };
   
   const value: AppContextType = {
-    // Data
-    projects,
-    goals,
-    tasks,
-    knowledgeBase,
-    
-    // States
-    isLoading,
+    // Client-side state
     activeProjectId,
-    
-    // Actions
     setActiveProjectId,
+    expandedProjects,
+    setExpandedProjects,
+    expandedGoals,
+    setExpandedGoals,
     
-    // Project operations
-    createProject,
-    updateProject,
-    deleteProject,
-    refreshProjects,
+    // UI state
+    isProjectModalOpen,
+    setIsProjectModalOpen,
+    isGoalModalOpen,
+    setIsGoalModalOpen,
+    isTaskModalOpen,
+    setIsTaskModalOpen,
     
-    // Goal operations
+    // Current editing items
+    currentProject,
+    setCurrentProject,
+    currentGoal,
+    setCurrentGoal,
+    currentTask,
+    setCurrentTask,
+    
+    // Selections
+    selectedProjectId,
+    setSelectedProjectId,
+    selectedGoalId,
+    setSelectedGoalId,
+    
+    // Temporary methods
+    getGoalsByProjectId,
+    getTasksByGoalId,
+    deleteGoal,
+    deleteTask,
     createGoal,
     updateGoal,
-    deleteGoal,
-    refreshGoals,
-    getGoalsByProjectId,
-    
-    // Task operations
     createTask,
     updateTask,
-    deleteTask,
-    refreshTasks,
-    getTasksByGoalId,
-    
-    // Knowledge base operations
-    createKnowledgeBase,
-    updateKnowledgeBase,
-    deleteKnowledgeBase,
-    refreshKnowledgeBase,
-    
-    // Utility functions
-    refreshAllData
   };
   
   return (
