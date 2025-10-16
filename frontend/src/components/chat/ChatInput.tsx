@@ -41,7 +41,10 @@ export const ChatInput = ({ onSend, disabled, isLoading }: ChatInputProps) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      // Only send if not disabled
+      if (!disabled) {
+        handleSend();
+      }
     }
   };
 
@@ -73,7 +76,6 @@ export const ChatInput = ({ onSend, disabled, isLoading }: ChatInputProps) => {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your message..."
-          disabled={disabled}
           className="glass-input flex-1 resize-none overflow-y-auto"
           style={{
             maxHeight: isMobile ? 'calc(80vh - 120px)' : 'calc(50vh - 120px)',
