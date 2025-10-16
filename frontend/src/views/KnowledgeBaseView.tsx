@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link, Search, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,17 +29,23 @@ const KnowledgeBaseView: React.FC = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   // Debounce search query
   useEffect(() => {
+    if (searchQuery !== debouncedSearchQuery) {
+      setIsSearching(true);
+    }
+    
     const handler = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
+      setIsSearching(false);
     }, 2500); // 2.5 second delay
 
     return () => {
       clearTimeout(handler);
     };
-  }, [searchQuery]);
+  }, [searchQuery, debouncedSearchQuery]);
 
   const handleCreateDocument = () => {
     setCurrentDocument(null);
@@ -128,16 +134,19 @@ const KnowledgeBaseView: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="relative flex-1 max-w-md">
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-glass-muted" />
             <Input
               type="text"
               placeholder="Search documents..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="glass-input text-glass pl-10 w-full"
+              className="glass-input text-glass pl-10 pr-10 w-full"
             />
+            {isSearching && (
+              <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-glass-muted animate-spin" />
+            )}
           </div>
           <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
             <SelectTrigger className="glass-input text-glass w-[200px]">
@@ -171,13 +180,21 @@ const KnowledgeBaseView: React.FC = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredKnowledgeBase.map((doc) => (
-              <motion.div
-                key={doc.id}
-                whileHover={{ y: -5 }}
-                transition={{ type: 'spring', damping: 10, stiffness: 100 }}
-              >
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            layout
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredKnowledgeBase.map((doc) => (
+                <motion.div
+                  key={doc.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  whileHover={{ y: -5 }}
+                  transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                >
                 <Card className="glass-card glass-hover-level-1 h-full">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
@@ -250,10 +267,11 @@ const KnowledgeBaseView: React.FC = () => {
                       </motion.div>
                     </div>
                   </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
       </div>
       
