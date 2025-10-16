@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link } from 'lucide-react';
+import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { useApp } from '@/contexts/AppContext';
 import KnowledgeBaseModal from '@/components/knowledge/KnowledgeBaseModal';
 import { KnowledgeBase } from '@/types/mockData';
@@ -26,6 +27,19 @@ const KnowledgeBaseView: React.FC = () => {
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [currentDocument, setCurrentDocument] = useState<KnowledgeBase | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
+  // Debounce search query
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 2500); // 2.5 second delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const handleCreateDocument = () => {
     setCurrentDocument(null);
@@ -62,21 +76,33 @@ const KnowledgeBaseView: React.FC = () => {
     setCurrentDocument(null);
   };
 
-  // Filter knowledge base items by selected project
+  // Filter knowledge base items by selected project and search query
   const filteredKnowledgeBase = useMemo(() => {
-    if (selectedProjectId === 'all') {
-      return knowledgeBase;
+    // First apply project filter
+    let filtered = knowledgeBase;
+    if (selectedProjectId !== 'all') {
+      filtered = knowledgeBase.filter((doc) => {
+        // Check if this document has any project references
+        const hasProjectReference = doc.related_entity_ids?.some((entityId: string, index: number) => {
+          return doc.entity_types?.[index] === 'project' && entityId === selectedProjectId;
+        });
+        
+        return hasProjectReference;
+      });
     }
     
-    return knowledgeBase.filter((doc) => {
-      // Check if this document has any project references
-      const hasProjectReference = doc.related_entity_ids?.some((entityId: string, index: number) => {
-        return doc.entity_types?.[index] === 'project' && entityId === selectedProjectId;
-      });
-      
-      return hasProjectReference;
-    });
-  }, [knowledgeBase, selectedProjectId]);
+    // Then apply search filter within the project-filtered results
+    if (debouncedSearchQuery.trim()) {
+      const query = debouncedSearchQuery.toLowerCase();
+      filtered = filtered.filter(doc =>
+        doc.document_name.toLowerCase().includes(query) ||
+        (doc.ai_summary && doc.ai_summary.toLowerCase().includes(query)) ||
+        (doc.content && doc.content.toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }, [knowledgeBase, selectedProjectId, debouncedSearchQuery]);
 
   if (isLoading) {
     return (
@@ -95,24 +121,37 @@ const KnowledgeBaseView: React.FC = () => {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <h1 className="text-3xl font-bold text-glass">Knowledge Base</h1>
           <div className="flex items-center gap-3">
-            <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-              <SelectTrigger className="glass-input text-glass w-[200px]">
-                <SelectValue placeholder="Filter by project" />
-              </SelectTrigger>
-              <SelectContent className="glass-modal !rounded-lg">
-                <SelectItem value="all" className="text-glass">All Projects</SelectItem>
-                {projects.map((project) => (
-                  <SelectItem key={project.id} value={project.id} className="text-glass">
-                    {project.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
             <Button className="glass-button text-[var(--text)]" onClick={handleCreateDocument}>
               <Plus className="h-4 w-4 mr-2" />
               Add Document
             </Button>
           </div>
+        </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-glass-muted" />
+            <Input
+              type="text"
+              placeholder="Search documents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="glass-input text-glass pl-10 w-full"
+            />
+          </div>
+          <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+            <SelectTrigger className="glass-input text-glass w-[200px]">
+              <SelectValue placeholder="Filter by project" />
+            </SelectTrigger>
+            <SelectContent className="glass-modal !rounded-lg">
+              <SelectItem value="all" className="text-glass">All Projects</SelectItem>
+              {projects.map((project) => (
+                <SelectItem key={project.id} value={project.id} className="text-glass">
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {filteredKnowledgeBase.length === 0 ? (
