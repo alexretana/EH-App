@@ -189,11 +189,30 @@ const KnowledgeBaseView: React.FC = () => {
                 <motion.div
                   key={doc.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.4,
+                      ease: [0.25, 0.1, 0.25, 1.0] // easeInOutCubic
+                    }
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: 20,
+                    transition: {
+                      duration: 0.3,
+                      ease: [0.4, 0.0, 0.6, 1.0] // easeInOutQuart
+                    }
+                  }}
                   whileHover={{ y: -5 }}
-                  transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                  transition={{
+                    layout: {
+                      duration: 0.3,
+                      ease: [0.25, 0.1, 0.25, 1.0]
+                    }
+                  }}
                 >
                 <Card className="glass-card glass-hover-level-1 h-full">
                   <CardHeader className="pb-3">
