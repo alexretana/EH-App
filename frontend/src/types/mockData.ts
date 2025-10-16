@@ -64,6 +64,9 @@ export interface KnowledgeBase extends BaseEntity {
   content_type?: string;
   link_citations?: string[];
   date_added: string;
+  related_entities?: string[];
+  related_entity_ids?: string[];
+  entity_types?: string[];
 }
 
 // Knowledge base reference entity

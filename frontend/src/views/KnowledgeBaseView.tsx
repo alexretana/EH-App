@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useApp } from '@/contexts/AppContext';
 import KnowledgeBaseModal from '@/components/knowledge/KnowledgeBaseModal';
 import { KnowledgeBase } from '@/types/mockData';
@@ -20,10 +21,11 @@ const KnowledgeBaseView: React.FC = () => {
       pedantic: false
     });
   }, []);
-  const { knowledgeBase, isLoading, deleteKnowledgeBase } = useApp();
+  const { knowledgeBase, isLoading, deleteKnowledgeBase, projects } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [currentDocument, setCurrentDocument] = useState<KnowledgeBase | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
 
   const handleCreateDocument = () => {
     setCurrentDocument(null);
@@ -60,6 +62,21 @@ const KnowledgeBaseView: React.FC = () => {
     setCurrentDocument(null);
   };
 
+  // Filter knowledge base items by selected project
+  const filteredKnowledgeBase = useMemo(() => {
+    if (selectedProjectId === 'all') {
+      return knowledgeBase;
+    }
+    
+    return knowledgeBase.filter((doc) => {
+      // Check if this document has any project references
+      const hasProjectReference = doc.related_entity_ids?.some((entityId: string, index: number) => {
+        return doc.entity_types?.[index] === 'project' && entityId === selectedProjectId;
+      });
+      
+      return hasProjectReference;
+    });
+  }, [knowledgeBase, selectedProjectId]);
 
   if (isLoading) {
     return (
@@ -75,20 +92,39 @@ const KnowledgeBaseView: React.FC = () => {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <h1 className="text-3xl font-bold text-glass">Knowledge Base</h1>
-          <Button className="glass-button text-[var(--text)]" onClick={handleCreateDocument}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Document
-          </Button>
+          <div className="flex items-center gap-3">
+            <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+              <SelectTrigger className="glass-input text-glass w-[200px]">
+                <SelectValue placeholder="Filter by project" />
+              </SelectTrigger>
+              <SelectContent className="glass-modal">
+                <SelectItem value="all" className="text-glass">All Projects</SelectItem>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id} className="text-glass">
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button className="glass-button text-[var(--text)]" onClick={handleCreateDocument}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Document
+            </Button>
+          </div>
         </div>
 
-        {knowledgeBase.length === 0 ? (
+        {filteredKnowledgeBase.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 glass-card rounded-xl p-8">
             <FileText className="h-12 w-12 text-glass-muted mb-4" />
-            <h2 className="text-2xl font-semibold text-glass mb-4">No Documents Yet</h2>
+            <h2 className="text-2xl font-semibold text-glass mb-4">
+              {selectedProjectId === 'all' ? 'No Documents Yet' : 'No Documents for Selected Project'}
+            </h2>
             <p className="text-glass-muted mb-6 text-center max-w-md">
-              Create your first knowledge base document to store important information related to your projects.
+              {selectedProjectId === 'all'
+                ? 'Create your first knowledge base document to store important information related to your projects.'
+                : 'No knowledge base documents found for this project. Try selecting a different project or create a new document.'}
             </p>
             <Button className="glass-button text-[var(--text)]" onClick={handleCreateDocument}>
               <Plus className="h-4 w-4 mr-2" />
@@ -97,7 +133,7 @@ const KnowledgeBaseView: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {knowledgeBase.map((doc) => (
+            {filteredKnowledgeBase.map((doc) => (
               <motion.div
                 key={doc.id}
                 whileHover={{ y: -5 }}
