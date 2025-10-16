@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link, Search, Loader2 } from 'lucide-react';
+import { Plus, FileText, Calendar, Edit, Trash2, Eye, Link, Search, Loader2, FolderUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { useApp } from '@/contexts/AppContext';
 import KnowledgeBaseModal from '@/components/knowledge/KnowledgeBaseModal';
+import BulkUploadModal from '@/components/knowledge/BulkUploadModal';
 import { KnowledgeBase } from '@/types/mockData';
 
 const KnowledgeBaseView: React.FC = () => {
@@ -24,6 +25,7 @@ const KnowledgeBaseView: React.FC = () => {
   }, []);
   const { knowledgeBase, isLoading, deleteKnowledgeBase, projects } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [currentDocument, setCurrentDocument] = useState<KnowledgeBase | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
@@ -50,6 +52,14 @@ const KnowledgeBaseView: React.FC = () => {
   const handleCreateDocument = () => {
     setCurrentDocument(null);
     setIsModalOpen(true);
+  };
+
+  const handleBulkUpload = () => {
+    setIsBulkUploadModalOpen(true);
+  };
+
+  const closeBulkUploadModal = () => {
+    setIsBulkUploadModalOpen(false);
   };
 
   const handleEditDocument = (doc: KnowledgeBase) => {
@@ -127,6 +137,10 @@ const KnowledgeBaseView: React.FC = () => {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <h1 className="text-3xl font-bold text-glass">Knowledge Base</h1>
           <div className="flex items-center gap-3">
+            <Button className="glass-button text-[var(--text)]" onClick={handleBulkUpload}>
+              <FolderUp className="h-4 w-4 mr-2" />
+              Bulk Upload
+            </Button>
             <Button className="glass-button text-[var(--text)]" onClick={handleCreateDocument}>
               <Plus className="h-4 w-4 mr-2" />
               Add Document
@@ -298,6 +312,11 @@ const KnowledgeBaseView: React.FC = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         knowledgeBase={currentDocument}
+      />
+
+      <BulkUploadModal
+        isOpen={isBulkUploadModalOpen}
+        onClose={closeBulkUploadModal}
       />
       
       {/* Read Document Modal */}
