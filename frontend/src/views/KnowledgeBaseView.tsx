@@ -99,7 +99,7 @@ const KnowledgeBaseView: React.FC = () => {
               <SelectTrigger className="glass-input text-glass w-[200px]">
                 <SelectValue placeholder="Filter by project" />
               </SelectTrigger>
-              <SelectContent className="glass-modal">
+              <SelectContent className="glass-modal !rounded-lg">
                 <SelectItem value="all" className="text-glass">All Projects</SelectItem>
                 {projects.map((project) => (
                   <SelectItem key={project.id} value={project.id} className="text-glass">
