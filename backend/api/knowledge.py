@@ -95,6 +95,7 @@ def create_knowledge_item(item: KnowledgeBaseCreate):
                 ref_query = """
                 INSERT INTO knowledge_base_references (knowledge_base_id, entity_type, entity_id)
                 VALUES (%s, 'project', %s)
+                RETURNING id
                 """
                 db.execute_insert(ref_query, (kb_id, project_id))
         
@@ -103,6 +104,7 @@ def create_knowledge_item(item: KnowledgeBaseCreate):
                 ref_query = """
                 INSERT INTO knowledge_base_references (knowledge_base_id, entity_type, entity_id)
                 VALUES (%s, 'goal', %s)
+                RETURNING id
                 """
                 db.execute_insert(ref_query, (kb_id, goal_id))
         
@@ -111,6 +113,7 @@ def create_knowledge_item(item: KnowledgeBaseCreate):
                 ref_query = """
                 INSERT INTO knowledge_base_references (knowledge_base_id, entity_type, entity_id)
                 VALUES (%s, 'task', %s)
+                RETURNING id
                 """
                 db.execute_insert(ref_query, (kb_id, task_id))
         

@@ -64,9 +64,25 @@ class Database:
         conn = self.connect()
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute(query, params)
-            conn.commit()
-            result = cursor.fetchone()
-            return str(result["id"]) if result and "id" in result else None
+            
+            # Check if query has RETURNING clause by checking if we can fetch results
+            try:
+                result = cursor.fetchone()
+                
+                if result is None:
+                    conn.rollback()
+                    raise Exception(f"INSERT query must include RETURNING clause to get the inserted ID. Error: the last operation didn't produce records (command status: {cursor.statusmessage})")
+                
+                # Commit after successful fetch
+                conn.commit()
+                
+                if "id" in result:
+                    return str(result["id"])
+                else:
+                    raise Exception("INSERT query did not return an 'id' field")
+            except Exception as e:
+                conn.rollback()
+                raise Exception(f"INSERT query must include RETURNING clause to get the inserted ID. Error: {str(e)}")
     
     def execute_update(self, query: str, params: tuple = None) -> bool:
         conn = self.connect()
