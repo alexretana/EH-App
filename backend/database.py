@@ -26,15 +26,16 @@ class Database:
             try:
                 self.conn = psycopg.connect(DATABASE_URL)
                 logger.info(f"Connected to database: {DATABASE_URL.split('@')[1]}")
-            # Register the UUID loader for this connection
-            from psycopg.adapt import Loader
-            
-            class UuidTextLoader(Loader):
-                def load(self, data):
-                    if isinstance(data, memoryview):
-                        return bytes(data).decode('utf-8')
-                    return data.decode('utf-8')
-            
+                
+                # Register the UUID loader for this connection
+                from psycopg.adapt import Loader
+                
+                class UuidTextLoader(Loader):
+                    def load(self, data):
+                        if isinstance(data, memoryview):
+                            return bytes(data).decode('utf-8')
+                        return data.decode('utf-8')
+                
                 # Register the loader for the UUID type by name
                 self.conn.adapters.register_loader("uuid", UuidTextLoader)
             except Exception as e:
