@@ -25,5 +25,6 @@ export default defineConfig({
     host: true,
     strictPort: true,
     port: 5173,
+    allowedHosts: ['localhost','127.0.0.1','event-horizon.retanatech.com', 'eh-n8n.retanatech.com'],
   },
 });
