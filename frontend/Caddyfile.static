@@ -1,0 +1,30 @@
+# =============================================================================
+# CADDYFILE FOR SERVING STATIC FRONTEND FILES
+# =============================================================================
+# Used by production frontend container to serve built static files
+
+:80 {
+    # Set root directory
+    root * /srv
+    
+    # Enable gzip compression
+    encode gzip
+    
+    # Serve files
+    file_server
+    
+    # SPA fallback - all routes should serve index.html
+    try_files {path} /index.html
+    
+    # Cache static assets
+    @static {
+        path *.js *.css *.png *.jpg *.jpeg *.gif *.ico *.woff *.woff2 *.ttf *.svg
+    }
+    header @static Cache-Control "public, max-age=31536000, immutable"
+    
+    # Don't cache HTML files
+    @html {
+        path *.html
+    }
+    header @html Cache-Control "no-cache, no-store, must-revalidate"
+}

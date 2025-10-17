@@ -1,0 +1,71 @@
+# =============================================================================
+# PRODUCTION CADDYFILE
+# =============================================================================
+# This configuration is used for production deployment
+# It serves static files from the frontend container and proxies API to backend
+
+{
+    email alex.retana@live.com
+}
+
+# Production domain (frontend + backend)
+event-horizon.retanatech.com {
+    # API routes go to backend
+    @api path /api/*
+    handle @api {
+        reverse_proxy backend:8000
+    }
+
+    # Static files from frontend container (running Caddy internally on port 80)
+    handle {
+        reverse_proxy frontend:80
+    }
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Logging to file
+    log {
+        output file /var/log/caddy/event-horizon-access.log
+        format json
+    }
+
+    # Enable compression
+    encode gzip
+
+    # Rate limiting (optional - requires caddy-ratelimit plugin)
+    # rate_limit {
+    #     zone dynamic {
+    #         key {remote_host}
+    #         events 100
+    #         window 1m
+    #     }
+    # }
+}
+
+# n8n subdomain
+eh-n8n.retanatech.com {
+    reverse_proxy n8n:5678
+    
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/n8n-access.log
+        format json
+    }
+
+    # Enable compression
+    encode gzip
+}

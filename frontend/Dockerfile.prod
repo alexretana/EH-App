@@ -1,0 +1,46 @@
+# =============================================================================
+# PRODUCTION MULTI-STAGE DOCKERFILE FOR FRONTEND
+# =============================================================================
+
+# Build stage - compile and build the frontend
+FROM node:22-alpine as builder
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY . .
+
+# Build arguments for environment variables
+ARG VITE_API_URL
+ARG VITE_APP_ENV=production
+
+# Set environment variables for build
+ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_APP_ENV=${VITE_APP_ENV}
+
+# Build the application
+RUN pnpm run build
+
+# Production stage - serve static files with Caddy
+FROM caddy:2-alpine as production
+
+WORKDIR /srv
+
+# Copy built files from builder stage
+COPY --from=builder /app/dist /srv
+
+# Copy Caddyfile for serving static files
+COPY Caddyfile.static /etc/caddy/Caddyfile
+
+EXPOSE 80
+
+# Caddy will automatically start with the Caddyfile

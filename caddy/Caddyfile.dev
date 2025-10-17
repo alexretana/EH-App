@@ -1,0 +1,30 @@
+# =============================================================================
+# DEVELOPMENT CADDYFILE
+# =============================================================================
+# This configuration is used for local development
+# It proxies requests to the Vite dev server and backend
+
+{
+    # Disable automatic HTTPS for local development
+    auto_https off
+}
+
+# Local development on port 80
+:80 {
+    # API routes go to backend
+    @api path /api/*
+    handle @api {
+        reverse_proxy backend:8000
+    }
+
+    # Everything else goes to Vite dev server (with hot-reload)
+    handle {
+        reverse_proxy frontend:5173
+    }
+
+    # Logging for debugging
+    log {
+        output stdout
+        format console
+    }
+}

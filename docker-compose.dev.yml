@@ -1,0 +1,90 @@
+# =============================================================================
+# DEVELOPMENT DOCKER COMPOSE OVERRIDE
+# =============================================================================
+# This file contains development-specific overrides for docker-compose.yml
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    command: pnpm run dev --host 0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    env_file:
+      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
+    restart: "no"
+    ports:
+      - "5173:5173"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    command: uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
+    restart: "no"
+    ports:
+      - "8000:8000"
+
+  postgres:
+    env_file:
+      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
+    restart: "no"
+
+  caddy:
+    volumes:
+      - ./caddy/Caddyfile.dev:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: "no"
+
+  n8n:
+    env_file:
+      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
+    restart: "no"
+
+  redis:
+    command: redis-server --requirepass redis_dev_password --appendonly yes --save 60 1000
+    restart: "no"
+
+  discord-bot:
+    env_file:
+      - .env.development
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
+    restart: "no"
+
+volumes:
+  postgres_data:
+    name: eh_app_postgres_dev
+  n8n_data:
+    name: eh_app_n8n_dev
+  n8n_setup_data:
+    name: eh_app_n8n_setup_dev
+  redis_data:
+    name: eh_app_redis_dev
+  caddy_data:
+    name: eh_app_caddy_dev
+  caddy_config:
+    name: eh_app_caddy_config_dev

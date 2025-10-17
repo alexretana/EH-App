@@ -17,8 +17,17 @@ import {
   UpdateKnowledgeBase
 } from '@/types/mockData';
 
-// API base URL - will use Vite proxy in development
-const API_BASE_URL = '/api';
+// API base URL - use environment variable or fallback to /api
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const APP_ENV = import.meta.env.VITE_APP_ENV || 'development';
+
+// Log API configuration in development
+if (APP_ENV === 'development') {
+  console.log('API Configuration:', {
+    baseUrl: API_BASE_URL,
+    environment: APP_ENV
+  });
+}
 
 // Helper function to handle API responses
 const handleResponse = async <T>(response: Response): Promise<T> => {

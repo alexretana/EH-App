@@ -1,4 +1,5 @@
-FROM python:3.12-slim
+# Base stage - shared between dev and prod
+FROM python:3.12-slim as base
 
 WORKDIR /app
 
@@ -23,5 +24,12 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Development stage
+FROM base as development
+
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# Production stage
+FROM base as production
+
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]

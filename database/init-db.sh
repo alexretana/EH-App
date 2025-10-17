@@ -34,8 +34,16 @@ for ddl_file in "${DDL_FILES[@]}"; do
     fi
 done
 
-# Check if this is a first-time build in development and run sample data
-if [ "$ENVIRONMENT" = "development" ] || [ "$DOCKER_ENV" = "true" ]; then
+# Environment-aware sample data loading
+APP_ENV=${APP_ENV:-development}
+DATABASE_SEED_MOCK_DATA=${DATABASE_SEED_MOCK_DATA:-false}
+
+echo ""
+echo "Environment: $APP_ENV"
+echo "Seed Mock Data: $DATABASE_SEED_MOCK_DATA"
+
+# Check if we should seed mock data based on environment variable
+if [ "$DATABASE_SEED_MOCK_DATA" = "true" ]; then
     # Check if the projects table exists and has data
     table_exists=$(psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'projects')")
     
@@ -59,7 +67,7 @@ if [ "$ENVIRONMENT" = "development" ] || [ "$DOCKER_ENV" = "true" ]; then
         echo "Projects table does not exist. Skipping sample data loading."
     fi
 else
-    echo "Not a development environment. Skipping sample data loading."
+    echo "Skipping mock data seeding (DATABASE_SEED_MOCK_DATA is not true)"
 fi
 
 echo "Database initialization completed successfully!"

@@ -13,9 +13,18 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Environment configuration
+APP_ENV = os.getenv("APP_ENV", "development")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO" if APP_ENV == "production" else "DEBUG")
+
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=getattr(logging, LOG_LEVEL),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
+
+logger.info(f"Starting Discord bot in {APP_ENV} mode")
 
 class ApprovalRequest:
     """Represents an active approval request"""

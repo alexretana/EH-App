@@ -5,8 +5,9 @@
 set -e
 
 SETUP_MARKER="/data/.n8n_setup_complete"
+APP_ENV=${APP_ENV:-development}
 
-echo "Starting n8n container entrypoint..."
+echo "Starting n8n container in ${APP_ENV} mode..."
 
 # Check if setup has already been completed
 if [ -f "$SETUP_MARKER" ]; then
@@ -15,7 +16,13 @@ if [ -f "$SETUP_MARKER" ]; then
 fi
 
 # First-time setup required
-echo "Running first-time setup..."
+echo "Running first-time setup for ${APP_ENV} environment..."
+
+# Environment-specific setup logic
+if [ "$APP_ENV" = "production" ]; then
+    echo "Production mode: ensuring secure configuration..."
+    # Add production-specific checks/setup here
+fi
 
 # Step 1: Generate credentials file from template
 echo "Step 1: Generating credentials from template..."

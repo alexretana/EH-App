@@ -1,12 +1,13 @@
-FROM node:22-alpine
+# Development stage
+FROM node:22-alpine as development
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-
 # Install pnpm
 RUN npm install -g pnpm
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -17,5 +18,5 @@ COPY . .
 # Expose port
 EXPOSE 5173
 
-# Run the application
+# Development command (with hot-reload)
 CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"]

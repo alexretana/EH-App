@@ -4,11 +4,18 @@ from psycopg import sql
 from psycopg.rows import dict_row
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
+logger = logging.getLogger(__name__)
+
 # Database connection
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/event_horizon")
+
+APP_ENV = os.getenv("APP_ENV", "development")
+
+logger.info(f"Database configuration for {APP_ENV} environment")
 
 class Database:
     def __init__(self):
@@ -16,7 +23,9 @@ class Database:
     
     def connect(self):
         if not self.conn:
-            self.conn = psycopg.connect(DATABASE_URL)
+            try:
+                self.conn = psycopg.connect(DATABASE_URL)
+                logger.info(f"Connected to database: {DATABASE_URL.split('@')[1]}")
             # Register the UUID loader for this connection
             from psycopg.adapt import Loader
             
@@ -26,8 +35,11 @@ class Database:
                         return bytes(data).decode('utf-8')
                     return data.decode('utf-8')
             
-            # Register the loader for the UUID type by name
-            self.conn.adapters.register_loader("uuid", UuidTextLoader)
+                # Register the loader for the UUID type by name
+                self.conn.adapters.register_loader("uuid", UuidTextLoader)
+            except Exception as e:
+                logger.error(f"Failed to connect to database: {e}")
+                raise
         return self.conn
     
     def execute_query(self, query: str, params: tuple = None) -> List[Dict[str, Any]]:
