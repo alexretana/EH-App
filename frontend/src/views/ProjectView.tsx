@@ -4,9 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
-import { 
-  useProjects, 
-  useDeleteProject
+import {
+  useProjects,
+  useGoals,
+  useTasks,
+  useDeleteProject,
+  useDeleteGoal,
+  useDeleteTask
 } from '@/hooks/useQueries';
 import ProjectModal from '@/components/projects/ProjectModal';
 import GoalModal from '@/components/goals/GoalModal';
@@ -37,17 +41,16 @@ const ProjectView: React.FC = () => {
     selectedProjectId,
     setSelectedProjectId,
     selectedGoalId,
-    setSelectedGoalId,
-    // Keep using the old methods for now
-    getGoalsByProjectId,
-    getTasksByGoalId,
-    deleteGoal,
-    deleteTask
+    setSelectedGoalId
   } = useApp();
   
   // React Query hooks for server state
   const { data: projects, isLoading, error } = useProjects();
+  const { data: goals } = useGoals();
+  const { data: tasks } = useTasks();
   const deleteProjectMutation = useDeleteProject();
+  const deleteGoalMutation = useDeleteGoal();
+  const deleteTaskMutation = useDeleteTask();
 
   const handleCreateProject = () => {
     setCurrentProject(null);
@@ -84,7 +87,7 @@ const ProjectView: React.FC = () => {
   const handleDeleteGoal = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this goal? This will also delete all associated tasks.')) {
       try {
-        await deleteGoal(id);
+        await deleteGoalMutation.mutateAsync(id);
       } catch (error) {
         console.error('Error deleting goal:', error);
       }
@@ -94,7 +97,7 @@ const ProjectView: React.FC = () => {
   const handleDeleteTask = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
-        await deleteTask(id);
+        await deleteTaskMutation.mutateAsync(id);
       } catch (error) {
         console.error('Error deleting task:', error);
       }
@@ -198,7 +201,7 @@ const ProjectView: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {projects.map((project) => {
-              const projectGoals = getGoalsByProjectId(project.id);
+              const projectGoals = goals?.filter(goal => goal.project_id === project.id) || [];
               const isExpanded = expandedProjects.has(project.id);
               
               return (
@@ -313,7 +316,7 @@ const ProjectView: React.FC = () => {
                           </div>
                         ) : (
                           projectGoals.map((goal) => {
-                            const goalTasks = getTasksByGoalId(goal.id);
+                            const goalTasks = tasks?.filter(task => task.goal_id === goal.id) || [];
                             const isGoalExpanded = expandedGoals.has(goal.id);
                             const completedTasks = goalTasks.filter(task => task.status === 'Done').length;
                             

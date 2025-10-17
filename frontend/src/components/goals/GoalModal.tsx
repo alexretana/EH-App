@@ -221,11 +221,11 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, goal, projectId 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {projects.map((project) => (
+                        {projects?.map((project) => (
                           <SelectItem key={project.id} value={project.id}>
                             {project.name}
                           </SelectItem>
-                        ))}
+                        )) || []}
                       </SelectContent>
                     </Select>
                     <FormMessage />
