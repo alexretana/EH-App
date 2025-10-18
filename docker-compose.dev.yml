@@ -61,6 +61,8 @@ services:
       - .env.infrastructure
       - .env.credentials
       - .env.third-party
+    ports:
+      - "5678:5678"
     restart: "no"
 
   redis:
