@@ -11,7 +11,7 @@ services:
       dockerfile: Dockerfile.prod
       target: production
       args:
-        - VITE_API_URL=https://event-horizon.retanatech.com
+        - VITE_API_URL=https://event-horizon.retanatech.com/api/
         - VITE_APP_ENV=production
     env_file:
       - .env.production
