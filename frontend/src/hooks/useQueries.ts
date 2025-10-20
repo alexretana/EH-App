@@ -6,17 +6,9 @@ import {
   knowledgeApi 
 } from '@/data/api/realApi';
 import { 
-  Project, 
-  Goal, 
-  Task, 
-  KnowledgeBase,
-  CreateProject,
   UpdateProject,
-  CreateGoal,
   UpdateGoal,
-  CreateTask,
   UpdateTask,
-  CreateKnowledgeBase,
   UpdateKnowledgeBase
 } from '@/types/mockData';
 import { toast } from 'sonner';

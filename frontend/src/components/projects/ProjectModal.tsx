@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,8 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { CreateProject, UpdateProject, Project } from '@/types/mockData';
-import { useApp } from '@/contexts/AppContext';
-import { useCreateProject, useUpdateProject, useProjects } from '@/hooks/useQueries';
+import { useCreateProject, useUpdateProject } from '@/hooks/useQueries';
 
 const projectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -43,7 +40,6 @@ interface ProjectModalProps {
 const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, project }) => {
   const createProjectMutation = useCreateProject();
   const updateProjectMutation = useUpdateProject();
-  const { data: projects } = useProjects();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   

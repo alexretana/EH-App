@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { useApp } from '@/contexts/AppContext';
 import { useKnowledgeBase, useProjects, useDeleteKnowledgeBase } from '@/hooks/useQueries';
 import KnowledgeBaseModal from '@/components/knowledge/KnowledgeBaseModal';
 import BulkUploadModal from '@/components/knowledge/BulkUploadModal';
@@ -109,7 +108,7 @@ const KnowledgeBaseView: React.FC = () => {
         // Check if this document has any project references
         const hasProjectReference = doc.related_entity_ids?.some((entityId: string, index: number) => {
           return doc.entity_types?.[index] === 'project' && entityId === selectedProjectId;
-        }) || doc.related_entities?.some((entityName: string, index: number) => {
+        }) || doc.related_entities?.some((entityName: string, _index: number) => {
           // Fallback to checking if the entity name matches the project name
           const project = projects.find(p => p.id === selectedProjectId);
           return project && entityName === project.name;
