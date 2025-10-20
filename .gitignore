@@ -265,3 +265,6 @@ n8n/workflow&creds/decrypt_creds.json
 # Auto-generated production secrets
 .env.generated
 .env.generated.backup
+
+# Merged environment files (created at runtime)
+.env.merged.*

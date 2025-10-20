@@ -89,11 +89,20 @@ echo ""
 echo "Building and starting services in production mode (locally)..."
 echo ""
 
+# Create merged environment file for Docker Compose interpolation
+echo "Merging environment files for Docker Compose..."
+cat .env.infrastructure .env.production .env.credentials .env.third-party .env.generated > .env.merged.prod
+echo "✓ Environment files merged to .env.merged.prod"
+
 # Start services in production mode
 docker compose \
+    --env-file .env.merged.prod \
     -f docker-compose.yml \
     -f docker-compose.prod.yml \
     up --build
+
+# Clean up merged environment file
+rm .env.merged.prod
 
 echo ""
 echo "=============================================="

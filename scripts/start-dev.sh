@@ -64,11 +64,20 @@ echo "  • Seed database with mock data"
 echo "  • Mount local directories for live code changes"
 echo ""
 
+# Create merged environment file for Docker Compose interpolation
+echo "Merging environment files for Docker Compose..."
+cat .env.development .env.infrastructure .env.credentials .env.third-party > .env.merged.dev
+echo "✓ Environment files merged to .env.merged.dev"
+
 # Start services in development mode
 docker compose \
+    --env-file .env.merged.dev \
     -f docker-compose.yml \
     -f docker-compose.dev.yml \
     up --build
+
+# Clean up merged environment file
+rm .env.merged.dev
 
 echo ""
 echo "=============================================="

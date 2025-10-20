@@ -87,11 +87,20 @@ echo "  • Use production database (no mock data)"
 echo "  • Apply restrictive CORS policies"
 echo ""
 
+# Create merged environment file for Docker Compose interpolation
+echo "Merging environment files for Docker Compose..."
+cat .env.production .env.infrastructure .env.credentials .env.third-party .env.generated > .env.merged.prod
+echo "✓ Environment files merged to .env.merged.prod"
+
 # Build and deploy with production configuration
 docker compose \
+    --env-file .env.merged.prod \
     -f docker-compose.yml \
     -f docker-compose.prod.yml \
     up -d --build
+
+# Clean up merged environment file
+rm .env.merged.prod
 
 echo ""
 echo "Waiting for services to start..."
