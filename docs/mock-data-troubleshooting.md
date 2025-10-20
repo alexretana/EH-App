@@ -24,8 +24,8 @@ Added `DATABASE_SEED_MOCK_DATA=true` to `.env.development`. This enables the SQL
 ```bash
 # The change has already been applied to .env.development
 # To rebuild the database with this setting:
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
 ### Solution 2: Enhanced Development Startup Script

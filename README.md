@@ -137,7 +137,7 @@ For detailed DevContainer documentation, see [`.devcontainer/README.md`](.devcon
 1. Clone the repository
 2. Start all services using Docker Compose:
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 3. The application will be available at:
    - Frontend: http://localhost:5173
@@ -271,11 +271,11 @@ Once the backend is running, you can access the API documentation at:
 
 ## Docker Commands
 
-The server is managed using a docker-compose file. You can use docker and docker compose commands to:
+The server is managed using a docker compose file. You can use docker and docker compose commands to:
 
-- Check the status of containers: `docker-compose ps`
-- Stop containers: `docker-compose stop`
-- Start containers: `docker-compose start`
-- Restart containers: `docker-compose restart`
-- Rebuild images: `docker-compose build --no-cache`
-- View logs: `docker-compose logs -f [service_name]`
+- Check the status of containers: `docker compose ps`
+- Stop containers: `docker compose stop`
+- Start containers: `docker compose start`
+- Restart containers: `docker compose restart`
+- Rebuild images: `docker compose build --no-cache`
+- View logs: `docker compose logs -f [service_name]`

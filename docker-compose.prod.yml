@@ -2,7 +2,7 @@
 # PRODUCTION DOCKER COMPOSE OVERRIDE
 # =============================================================================
 # This file contains production-specific overrides for docker-compose.yml
-# Use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+# Use with: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
 
 services:
   frontend:

@@ -120,7 +120,7 @@ The functionality has been split into the three separate files above.
 
 5. **Start services**:
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 ### For Production Deployment
@@ -151,7 +151,7 @@ The functionality has been split into the three separate files above.
 4. **Validate and deploy**:
    ```bash
    ./scripts/validate-env.sh
-   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
 
 ## Variable Categories
@@ -229,7 +229,7 @@ The [`validate-env.sh`](../scripts/validate-env.sh) script ensures all required 
 ```bash
 # In your deployment pipeline
 ./scripts/validate-env.sh || exit 1
-docker-compose up -d
+docker compose up -d
 ```
 
 ## Security Best Practices
@@ -274,14 +274,14 @@ cp .env.example .env.development
 1. Check `docker-compose.yml` has `env_file` directive
 2. Verify file path is correct (relative to docker-compose.yml)
 3. Ensure variable is exported in the .env file
-4. Restart services: `docker-compose restart`
+4. Restart services: `docker compose restart`
 
 #### Variables not updating
 
 ```bash
 # Recreate containers to reload environment
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 ## Migrating from Old Pattern
@@ -341,10 +341,10 @@ Use different compose files for different environments:
 
 ```bash
 # Development
-docker-compose -f docker-compose.yml up
+docker compose -f docker-compose.yml up
 
 # Production
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up
 ```
 
 ## Maintenance
@@ -379,4 +379,4 @@ For questions or issues:
 1. Check this documentation
 2. Run `./scripts/validate-env.sh` for validation
 3. Review `.env.example` for variable descriptions
-4. Check service logs: `docker-compose logs <service-name>`
+4. Check service logs: `docker compose logs <service-name>`

@@ -835,10 +835,10 @@ if [ ! -f .env.development ]; then
 fi
 
 # Stop any running containers
-docker-compose down
+docker compose down
 
 # Start services in development mode
-docker-compose \
+docker compose \
     -f docker-compose.yml \
     -f docker-compose.dev.yml \
     up --build
@@ -873,13 +873,13 @@ git pull origin main
 
 # Build and deploy
 echo "Building and starting services..."
-docker-compose \
+docker compose \
     -f docker-compose.yml \
     -f docker-compose.prod.yml \
     up -d --build
 
 # Show running services
-docker-compose ps
+docker compose ps
 
 echo "Production deployment complete"
 echo "Services available at:"
@@ -897,7 +897,7 @@ echo "  - n8n: https://eh-n8n.retanatech.com"
 echo "Starting Event Horizon in PRODUCTION mode (local test)..."
 
 # Use production config but with local overrides
-docker-compose \
+docker compose \
     -f docker-compose.yml \
     -f docker-compose.prod.yml \
     up --build
@@ -974,8 +974,8 @@ curl http://localhost/health
 curl http://localhost/api/health
 
 # Check logs
-docker-compose logs -f backend
-docker-compose logs -f frontend
+docker compose logs -f backend
+docker compose logs -f frontend
 ```
 
 ### Production Mode Testing (Local)
@@ -985,7 +985,7 @@ docker-compose logs -f frontend
 ./scripts/test-prod-local.sh
 
 # Verify build
-docker-compose ps
+docker compose ps
 curl http://localhost/health
 
 # Check that static files are served
@@ -1013,7 +1013,7 @@ If issues occur in production:
 
 1. **Quick Rollback**: 
    ```bash
-   docker-compose down
+   docker compose down
    git checkout <previous-commit>
    ./scripts/deploy-prod.sh
    ```

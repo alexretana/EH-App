@@ -71,7 +71,7 @@ if [ "$BACKUP_DB" = "y" ]; then
     BACKUP_DIR="./backups/$(date +%Y%m%d_%H%M%S)"
     mkdir -p "$BACKUP_DIR"
     echo "Creating database backup..."
-    docker-compose exec -T postgres pg_dump -U event_horizon_user event_horizon > "$BACKUP_DIR/database_backup.sql" || {
+    docker compose exec -T postgres pg_dump -U event_horizon_user event_horizon > "$BACKUP_DIR/database_backup.sql" || {
         echo "⚠️  Warning: Database backup failed"
     }
     echo "✓ Database backed up to $BACKUP_DIR"
@@ -88,7 +88,7 @@ echo "  • Apply restrictive CORS policies"
 echo ""
 
 # Build and deploy with production configuration
-docker-compose \
+docker compose \
     -f docker-compose.yml \
     -f docker-compose.prod.yml \
     up -d --build
@@ -102,7 +102,7 @@ echo ""
 echo "=============================================="
 echo "Running Services:"
 echo "=============================================="
-docker-compose ps
+docker compose ps
 
 echo ""
 echo "=============================================="
@@ -115,8 +115,8 @@ echo "  • Backend API: https://event-horizon.retanatech.com/api"
 echo "  • n8n: https://eh-n8n.retanatech.com"
 echo ""
 echo "To view logs:"
-echo "  docker-compose logs -f [service-name]"
+echo "  docker compose logs -f [service-name]"
 echo ""
 echo "To stop all services:"
-echo "  docker-compose -f docker-compose.yml -f docker-compose.prod.yml down"
+echo "  docker compose -f docker-compose.yml -f docker-compose.prod.yml down"
 echo ""
