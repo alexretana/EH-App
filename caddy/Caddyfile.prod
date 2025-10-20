@@ -11,8 +11,7 @@
 # Production domain (frontend + backend)
 event-horizon.retanatech.com {
     # API routes go to backend
-    @api path /api/*
-    handle @api {
+    handle_path /api/* {
         reverse_proxy backend:8000
     }
 
