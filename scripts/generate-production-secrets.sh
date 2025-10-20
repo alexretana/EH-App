@@ -32,54 +32,45 @@ fi
 echo "Generating secure random passwords and secrets..."
 echo ""
 
+# Generate all values first to ensure they're consistent
+POSTGRES_PASSWORD=$(generate_password)
+REDIS_PASSWORD=$(generate_password)
+JWT_SECRET=$(generate_hex)
+
 # Create new .env.generated file
 cat > .env.generated << EOF
 # =============================================================================
-# AUTO-GENERATED PRODUCTION SECRETS
+# AUTO-GENERATED PRODUCTION SECRETS TEMPLATE
 # =============================================================================
 # This file contains auto-generated secrets for production
-# DO NOT commit to version control
+# DO NOT commit the actual .env.generated file to version control
 # Generated on: $(date)
 
 # =============================================================================
 # DATABASE CONFIGURATION
 # =============================================================================
-POSTGRES_PASSWORD=$(generate_password)
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_USER=event_horizon_user
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+POSTGRES_DB=event_horizon_prod
+DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@\${POSTGRES_HOST}:\${POSTGRES_PORT}/\${POSTGRES_DB}
 
 # =============================================================================
 # REDIS CONFIGURATION
 # =============================================================================
-REDIS_PASSWORD=$(generate_password)
+REDIS_PASSWORD=${REDIS_PASSWORD}
+QUEUE_BULL_REDIS_PASSWORD=${REDIS_PASSWORD}
 
-# =============================================================================
-# N8N CONFIGURATION
-# =============================================================================
-N8N_API_KEY=$(generate_password)
 
 # =============================================================================
 # SECURITY CONFIGURATION
 # =============================================================================
-JWT_SECRET=$(generate_hex)
-
+JWT_SECRET=${JWT_SECRET}
 EOF
 
 echo "✓ Generated new .env.generated file"
 echo ""
-echo "⚠️  IMPORTANT:"
-echo "   • Update Discord bot credentials in .env.generated"
-echo "   • Ensure .env.generated is added to .gitignore"
-echo "   • Distribute .env.generated securely to production servers"
-echo ""
-
-# Check if .env.generated is in .gitignore
-if ! grep -q "^\.env\.generated$" .gitignore; then
-    echo "Adding .env.generated to .gitignore..."
-    echo "" >> .gitignore
-    echo "# Auto-generated production secrets" >> .gitignore
-    echo ".env.generated" >> .gitignore
-    echo ".env.generated.backup" >> .gitignore
-    echo "✓ Added to .gitignore"
-fi
 
 echo ""
 echo "=============================================="
