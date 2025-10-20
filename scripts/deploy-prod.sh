@@ -12,10 +12,10 @@ echo "Deploying Event Horizon in PRODUCTION mode"
 echo "=============================================="
 echo ""
 
-# Check if .env.production exists
-if [ ! -f .env.production ]; then
-    echo "❌ Error: .env.production not found"
-    echo "Please create it with production-specific settings"
+# Check if .env.infrastructure exists
+if [ ! -f .env.infrastructure ]; then
+    echo "❌ Error: .env.infrastructure not found"
+    echo "Please create it with infrastructure-specific settings"
     exit 1
 fi
 
@@ -26,10 +26,10 @@ if [ ! -f .env.credentials ]; then
     exit 1
 fi
 
-# Check if .env.third-party exists
-if [ ! -f .env.third-party ]; then
-    echo "❌ Error: .env.third-party not found"
-    echo "Production requires third-party API keys"
+# Check if .env.prod exists
+if [ ! -f .env.prod ]; then
+    echo "❌ Error: .env.prod not found"
+    echo "Please create it with production-specific settings"
     exit 1
 fi
 
@@ -79,18 +79,15 @@ echo ""
 
 # Create merged environment file for Docker Compose interpolation
 echo "Merging environment files for Docker Compose..."
-cat .env.infrastructure .env.production .env.credentials .env.third-party .env.generated > .env.merged.prod
-echo "✓ Environment files merged to .env.merged.prod"
+cat .env.infrastructure .env.credentials .env.prod .env.generated > .env.merged
+echo "✓ Environment files merged to .env.merged"
 
 # Build and deploy with production configuration
 docker compose \
-    --env-file .env.merged.prod \
+    --env-file .env.merged \
     -f docker-compose.yml \
     -f docker-compose.prod.yml \
     up -d --build
-
-# Clean up merged environment file
-rm .env.merged.prod
 
 echo ""
 echo "Waiting for services to start..."

@@ -12,10 +12,10 @@ echo "Starting Event Horizon in DEVELOPMENT mode"
 echo "=============================================="
 echo ""
 
-# Check if .env.development exists
-if [ ! -f .env.development ]; then
-    echo "❌ Error: .env.development not found"
-    echo "Please create it from the template or copy .env.development from the repository"
+# Check if .env.infrastructure exists
+if [ ! -f .env.infrastructure ]; then
+    echo "❌ Error: .env.infrastructure not found"
+    echo "Please create it with infrastructure-specific settings"
     exit 1
 fi
 
@@ -33,18 +33,11 @@ if [ ! -f .env.credentials ]; then
     fi
 fi
 
-# Check if .env.third-party exists
-if [ ! -f .env.third-party ]; then
-    echo "⚠️  Warning: .env.third-party not found"
-    echo "Creating from example template..."
-    if [ -f .env.third-party.example ]; then
-        cp .env.third-party.example .env.third-party
-        echo "✓ Created .env.third-party from example"
-        echo "⚠️  Please update .env.third-party with your actual API keys"
-    else
-        echo "❌ Error: .env.third-party.example not found"
-        exit 1
-    fi
+# Check if .env.dev exists
+if [ ! -f .env.dev ]; then
+    echo "❌ Error: .env.dev not found"
+    echo "Please create it with development-specific settings"
+    exit 1
 fi
 
 echo ""
@@ -66,18 +59,15 @@ echo ""
 
 # Create merged environment file for Docker Compose interpolation
 echo "Merging environment files for Docker Compose..."
-cat .env.development .env.infrastructure .env.credentials .env.third-party > .env.merged.dev
-echo "✓ Environment files merged to .env.merged.dev"
+cat .env.infrastructure .env.credentials .env.dev > .env.merged
+echo "✓ Environment files merged to .env.merged"
 
 # Start services in development mode (detached)
 docker compose \
-    --env-file .env.merged.dev \
+    --env-file .env.merged \
     -f docker-compose.yml \
     -f docker-compose.dev.yml \
     up --build -d
-
-# Clean up merged environment file
-rm .env.merged.dev
 
 echo ""
 echo "Waiting for services to be ready..."

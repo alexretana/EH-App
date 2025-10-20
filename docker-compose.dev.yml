@@ -14,11 +14,6 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    env_file:
-      - .env.development
-      - .env.infrastructure
-      - .env.credentials
-      - .env.third-party
     restart: "no"
     ports:
       - "5173:5173"
@@ -31,21 +26,11 @@ services:
     command: uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./backend:/app
-    env_file:
-      - .env.development
-      - .env.infrastructure
-      - .env.credentials
-      - .env.third-party
     restart: "no"
     ports:
       - "8000:8000"
 
   postgres:
-    env_file:
-      - .env.development
-      - .env.infrastructure
-      - .env.credentials
-      - .env.third-party
     restart: "no"
 
   caddy:
@@ -56,11 +41,6 @@ services:
     restart: "no"
 
   n8n:
-    env_file:
-      - .env.development
-      - .env.infrastructure
-      - .env.credentials
-      - .env.third-party
     ports:
       - "5678:5678"
     restart: "no"
@@ -70,11 +50,6 @@ services:
     restart: "no"
 
   discord-bot:
-    env_file:
-      - .env.development
-      - .env.infrastructure
-      - .env.credentials
-      - .env.third-party
     restart: "no"
 
 volumes:
