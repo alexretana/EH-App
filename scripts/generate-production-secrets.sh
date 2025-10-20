@@ -61,13 +61,6 @@ N8N_API_KEY=$(generate_password)
 # =============================================================================
 JWT_SECRET=$(generate_hex)
 
-# =============================================================================
-# DISCORD BOT CONFIGURATION
-# =============================================================================
-# NOTE: Discord configuration should be set manually from .env.development
-# These are not randomly generated as they need to match your actual Discord bot
-DISCORD_BOT_TOKEN=USE_VALUE_FROM_ENV_DEVELOPMENT
-DISCORD_CHANNEL_ID=USE_VALUE_FROM_ENV_DEVELOPMENT
 EOF
 
 echo "✓ Generated new .env.generated file"
