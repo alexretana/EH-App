@@ -18,6 +18,7 @@ services:
       - .env.infrastructure
       - .env.credentials
       - .env.third-party
+      - .env.generated
     restart: unless-stopped
 
   backend:
