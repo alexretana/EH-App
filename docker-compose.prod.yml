@@ -64,6 +64,10 @@ services:
     command: redis-server --requirepass "${REDIS_PASSWORD}" --appendonly yes --save 60 1000
     restart: unless-stopped
     env_file:
+      - .env.production
+      - .env.infrastructure
+      - .env.credentials
+      - .env.third-party
       - .env.generated
 
   discord-bot:
