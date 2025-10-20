@@ -329,7 +329,7 @@ export const taskDependencyApi = {
     };
   },
   
-  delete: async (taskId: string, dependsOnTaskId: string) => {
+  delete: async (_taskId: string, _dependsOnTaskId: string) => {
     // This endpoint doesn't exist yet in the backend
     console.warn('Task dependency deletion endpoint not implemented in backend yet');
     return false;
@@ -412,7 +412,7 @@ export const knowledgeApi = {
     };
   },
   
-  removeReference: async (knowledgeBaseId: string, entityType: 'project' | 'goal' | 'task', entityId: string) => {
+  removeReference: async (_knowledgeBaseId: string, _entityType: 'project' | 'goal' | 'task', _entityId: string) => {
     // This endpoint doesn't exist yet in the backend
     console.warn('Knowledge base reference deletion endpoint not implemented in backend yet');
     return false;

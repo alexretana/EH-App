@@ -19,6 +19,58 @@ if [ ! -f .env.production ]; then
     exit 1
 fi
 
+# Generate production secrets if needed
+if [ ! -f .env.generated ]; then
+    echo "🔧 Generating production secrets..."
+    ./scripts/generate-production-secrets.sh
+    echo ""
+else
+    echo "✓ Production secrets already exist"
+    echo ""
+fi
+
+# Check if .env.generated exists, create it if it doesn't
+if [ ! -f .env.generated ]; then
+    echo "⚠️  .env.generated not found"
+    echo "Generating production secrets..."
+    ./scripts/generate-production-secrets.sh
+    echo ""
+    echo "⚠️  IMPORTANT: Update Discord bot credentials in .env.generated"
+    echo ""
+fi
+
+# Check if .env.credentials exists
+if [ ! -f .env.credentials ]; then
+    echo "⚠️  Warning: .env.credentials not found"
+    echo "Creating from example template..."
+    if [ -f .env.credentials.example ]; then
+        cp .env.credentials.example .env.credentials
+        echo "✓ Created .env.credentials from example"
+        echo "⚠️  Please update .env.credentials with your actual credentials"
+    else
+        echo "❌ Error: .env.credentials.example not found"
+        exit 1
+    fi
+fi
+
+# Check if .env.third-party exists
+if [ ! -f .env.third-party ]; then
+    echo "⚠️  Warning: .env.third-party not found"
+    echo "Creating from example template..."
+    if [ -f .env.third-party.example ]; then
+        cp .env.third-party.example .env.third-party
+        echo "✓ Created .env.third-party from example"
+        echo "⚠️  Please update .env.third-party with your actual API keys"
+    else
+        echo "❌ Error: .env.third-party.example not found"
+        exit 1
+    fi
+fi
+
+echo ""
+echo "Configuration files ready"
+echo ""
+
 echo "⚠️  This will run production builds locally"
 echo "   • Frontend will be built as static files"
 echo "   • Backend will run with multiple workers"

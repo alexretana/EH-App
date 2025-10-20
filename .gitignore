@@ -261,3 +261,7 @@ frontend/test-results/
 # Dev utility scripts
 dev_util_scripts/*.json
 n8n/workflow&creds/decrypt_creds.json
+
+# Auto-generated production secrets
+.env.generated
+.env.generated.backup

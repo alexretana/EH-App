@@ -33,6 +33,25 @@ if [ ! -f .env.third-party ]; then
     exit 1
 fi
 
+# Check if .env.generated exists, create it if it doesn't
+if [ ! -f .env.generated ]; then
+    echo "⚠️  .env.generated not found"
+    echo "Generating production secrets..."
+    ./scripts/generate-production-secrets.sh
+    echo ""
+    echo "⚠️  IMPORTANT: Update Discord bot credentials in .env.generated"
+    echo ""
+fi
+
+# Generate production secrets if needed
+if [ ! -f .env.generated ]; then
+    echo "🔧 Generating production secrets..."
+    ./scripts/generate-production-secrets.sh
+    echo ""
+else
+    echo "✓ Production secrets already exist"
+fi
+
 echo "✓ Configuration files verified"
 echo ""
 

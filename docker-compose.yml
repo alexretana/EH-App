@@ -29,7 +29,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY:-unless-stopped}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-event_horizon_user} -d ${POSTGRES_DB:-event_horizon}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-event_horizon_user} -d ${POSTGRES_DB:-event_horizon_prod}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -91,6 +91,8 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes --save 60 1000
     volumes:
       - redis_data:/data
+    env_file:
+      - .env.generated
 
   discord-bot:
     build:
