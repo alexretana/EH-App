@@ -82,15 +82,15 @@ read
 # Stop any running containers
 echo ""
 echo "Stopping any running containers..."
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+docker compose -f docker-compose.yml -f docker-compose.prod.yml down
 
 echo ""
 echo "Building and starting services in production mode (locally)..."
 echo ""
 
 # Start services in production mode
-docker-compose \
+docker compose \
     -f docker-compose.yml \
     -f docker-compose.prod.yml \
     up --build
@@ -101,5 +101,5 @@ echo "Local production test stopped"
 echo "=============================================="
 echo ""
 echo "To clean up:"
-echo "  docker-compose -f docker-compose.yml -f docker-compose.prod.yml down"
+echo "  docker compose -f docker-compose.yml -f docker-compose.prod.yml down"
 echo ""

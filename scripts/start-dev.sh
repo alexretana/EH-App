@@ -53,7 +53,7 @@ echo ""
 
 # Stop any running containers
 echo "Stopping any running containers..."
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
 echo ""
 echo "Starting services in development mode..."
@@ -65,7 +65,7 @@ echo "  • Mount local directories for live code changes"
 echo ""
 
 # Start services in development mode
-docker-compose \
+docker compose \
     -f docker-compose.yml \
     -f docker-compose.dev.yml \
     up --build
