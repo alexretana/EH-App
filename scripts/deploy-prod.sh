@@ -89,7 +89,7 @@ echo ""
 
 # Create merged environment file for Docker Compose interpolation
 echo "Merging environment files for Docker Compose..."
-cat .env.production .env.infrastructure .env.credentials .env.third-party .env.generated > .env.merged.prod
+cat .env.infrastructure .env.production .env.credentials .env.third-party .env.generated > .env.merged.prod
 echo "✓ Environment files merged to .env.merged.prod"
 
 # Build and deploy with production configuration
