@@ -71,7 +71,9 @@ services:
       - .env.infrastructure
       - .env.credentials
       - .env.third-party
-      - .env.development  # Use Discord values from development
+    environment:
+      - APP_ENV=production
+      - LOG_LEVEL=INFO
     restart: unless-stopped
 
 volumes:
