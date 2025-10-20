@@ -22,7 +22,7 @@ services:
       dockerfile: Dockerfile
     container_name: eh-app-postgres
     env_file:
-      - .env.merged
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY:-unless-stopped}
@@ -38,7 +38,7 @@ services:
       dockerfile: Dockerfile
     container_name: eh-app-backend
     env_file:
-      - .env.merged
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,7 +50,7 @@ services:
       dockerfile: Dockerfile
     container_name: eh-app-frontend
     env_file:
-      - .env.merged
+      - .env
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -64,7 +64,7 @@ services:
       dockerfile: Dockerfile
     container_name: n8n
     env_file:
-      - .env.merged
+      - .env
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_setup_data:/data
@@ -84,7 +84,7 @@ services:
     volumes:
       - redis_data:/data
     env_file:
-      - .env.merged
+      - .env
 
   discord-bot:
     build:
@@ -92,7 +92,7 @@ services:
       dockerfile: Dockerfile
     container_name: discord-bot
     env_file:
-      - .env.merged
+      - .env
     restart: ${RESTART_POLICY:-unless-stopped}
 
 volumes:

@@ -67,6 +67,8 @@ QUEUE_BULL_REDIS_PASSWORD=${REDIS_PASSWORD}
 # SECURITY CONFIGURATION
 # =============================================================================
 JWT_SECRET=${JWT_SECRET}
+
+# EOF
 EOF
 
 echo "✓ Generated new .env.generated file"

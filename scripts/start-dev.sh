@@ -59,12 +59,18 @@ echo ""
 
 # Create merged environment file for Docker Compose interpolation
 echo "Merging environment files for Docker Compose..."
-cat .env.infrastructure .env.credentials .env.dev > .env.merged
-echo "✓ Environment files merged to .env.merged"
+cat .env.infrastructure .env.credentials .env.dev > .env
+echo "✓ Environment files merged to .env"
+
+# Export all environment variables from the merged .env file
+echo "Exporting environment variables..."
+set -a
+source .env
+set +a
+echo "✓ Environment variables exported"
 
 # Start services in development mode
 docker compose \
-    --env-file .env.merged \
     -f docker-compose.yml \
     -f docker-compose.dev.yml \
     up --build
