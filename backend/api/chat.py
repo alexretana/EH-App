@@ -167,38 +167,47 @@ async def chat(request: ChatRequest):
     """
     Handle chat requests - can initialize a new session or resume an existing one
     """
+    # Debug logging
+    print(f"[DEBUG] Chat request received: sessionId={request.sessionId}, chatInput={request.chatInput}, resumeUrl={request.resumeUrl}")
+    
     try:
         async with httpx.AsyncClient(timeout=300.0) as client:
-            # If sessionId is None, this is an initial request
+            # Determine which endpoint and payload to use based on session state
             if request.sessionId is None:
-                # Initialize new chat session
+                # Case 1: New chat session (no sessionId)
+                print(f"[DEBUG] Starting new chat session")
                 webhook_url = f"{N8N_URL}/n8n/project-planner"
-                response = await client.post(
-                    webhook_url,
-                    json={},  # Empty body for initial request
-                    headers={"Content-Type": "application/json"}
-                )
+                payload = {}  # Empty body for initial request
+                
+            elif request.resumeUrl:
+                # Case 2: Active session continuation (sessionId + resumeUrl)
+                # Use the webhook-waiting URL to continue the current workflow execution
+                print(f"[DEBUG] Continuing active session {request.sessionId} via resumeUrl")
+                webhook_url = translate_resume_url(request.resumeUrl)
+                payload = {
+                    "sessionId": request.sessionId,
+                    "chatInput": request.chatInput
+                }
+                
             else:
-                # Resume existing chat session using the resume URL
-                if not request.resumeUrl:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="resumeUrl is required when sessionId is provided"
-                    )
-                
-                # Translate public resumeUrl to internal Docker network URL
-                internal_resume_url = translate_resume_url(request.resumeUrl)
-                
-                response = await client.post(
-                    internal_resume_url,
-                    json={
-                        "sessionId": request.sessionId,
-                        "chatInput": request.chatInput
-                    },
-                    headers={"Content-Type": "application/json"}
-                )
+                # Case 3: Restored session (sessionId but no resumeUrl)
+                # Send to project-planner with sessionId to restore from Redis
+                print(f"[DEBUG] Restoring conversation for session {request.sessionId}")
+                webhook_url = f"{N8N_URL}/n8n/project-planner"
+                payload = {
+                    "sessionId": request.sessionId,
+                    "chatInput": request.chatInput
+                }
+            
+            print(f"[DEBUG] Sending request to {webhook_url} with payload: {payload}")
+            response = await client.post(
+                webhook_url,
+                json=payload,
+                headers={"Content-Type": "application/json"}
+            )
             
             if response.status_code != 200:
+                print(f"[DEBUG] n8n returned status {response.status_code}: {response.text}")
                 raise HTTPException(
                     status_code=response.status_code,
                     detail=f"Failed to process chat request: {response.text}"
