@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { marked } from 'marked';
 import { ChatMessage as ChatMessageType } from '@/types/chat';
 
 interface ChatMessageProps {
@@ -14,6 +16,15 @@ const formatTime = (timestamp: string): string => {
 };
 
 export const ChatMessage = ({ message }: ChatMessageProps) => {
+  // Configure marked with GFM support
+  useEffect(() => {
+    marked.use({
+      gfm: true,
+      breaks: false,
+      pedantic: false
+    });
+  }, []);
+
   const isUser = message.role === 'user';
 
   return (
@@ -43,9 +54,12 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
       ) : (
         <div className="w-full px-4 py-3">
           <div className="w-full max-w-none">
-            <p className="text-ai-glow whitespace-pre-wrap break-words">
-              {message.content}
-            </p>
+            <div
+              className="prose prose-invert max-w-none text-ai-glow"
+              dangerouslySetInnerHTML={{
+                __html: marked.parse(message.content)
+              }}
+            />
             <span className="text-xs text-glass-muted mt-2 block">
               {formatTime(message.timestamp)}
             </span>
