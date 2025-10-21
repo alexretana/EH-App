@@ -12,6 +12,32 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 # Get n8n URL from environment or use default
 N8N_URL = os.getenv("N8N_URL", "http://n8n:5678")
 
+# Get public n8n domain for URL translation
+N8N_PUBLIC_DOMAIN = os.getenv("N8N_BASE_URL", "https://eh-n8n.retanatech.com")
+
+def translate_resume_url(public_url: str) -> str:
+    """
+    Translate a public n8n URL to an internal Docker network URL.
+    
+    When n8n generates a resumeUrl, it uses the public domain (e.g., https://eh-n8n.retanatech.com).
+    However, the backend container should use the internal Docker network to avoid DNS issues
+    and unnecessary external routing.
+    
+    Example:
+        https://eh-n8n.retanatech.com/webhook-waiting/123
+        becomes
+        http://n8n:5678/webhook-waiting/123
+    """
+    if public_url.startswith(N8N_PUBLIC_DOMAIN):
+        # Extract the path from the public URL
+        path = public_url.replace(N8N_PUBLIC_DOMAIN, "")
+        # Construct internal URL
+        return f"{N8N_URL}{path}"
+    
+    # If the URL doesn't match the expected public domain, return as-is
+    # (This handles cases where the URL might already be internal or use a different format)
+    return public_url
+
 # Redis connection
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
@@ -160,8 +186,11 @@ async def chat(request: ChatRequest):
                         detail="resumeUrl is required when sessionId is provided"
                     )
                 
+                # Translate public resumeUrl to internal Docker network URL
+                internal_resume_url = translate_resume_url(request.resumeUrl)
+                
                 response = await client.post(
-                    request.resumeUrl,
+                    internal_resume_url,
                     json={
                         "sessionId": request.sessionId,
                         "chatInput": request.chatInput
