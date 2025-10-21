@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatHistoryView } from './ChatHistoryView';
 import { ChatInterfaceView } from './ChatInterfaceView';
 import {
@@ -7,8 +7,7 @@ import {
   getChatSessions,
   restoreConversation
 } from '@/data/api/chatApi';
-import { mockChatConversations } from '@/data/mockChatData';
-import { ChatMessage, ChatConversation, ChatSession } from '@/types/chat';
+import { ChatMessage, ChatSession } from '@/types/chat';
 
 interface ChatProps {
   title?: string;
@@ -20,7 +19,6 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
   // apiEndpoint is reserved for future use with real API endpoints
   void apiEndpoint; // Explicitly mark as unused
   const [currentView, setCurrentView] = useState<'history' | 'interface'>('history');
-  const [conversations] = useState<ChatConversation[]>(mockChatConversations);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +35,7 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
         setSessions(chatSessions);
       } catch (error) {
         console.error('Error loading chat sessions:', error);
-        // Continue with mock data if API fails
+        // Continue with empty sessions if API fails
       }
     };
     
@@ -143,7 +141,7 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
       created_at: new Date().toISOString()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev: ChatMessage[]) => [...prev, userMessage]);
     setIsLoading(true);
 
     try {
@@ -156,7 +154,7 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
 
       // Convert webhook response to chat message and add to messages
       const agentMessage = webhookResponseToChatMessage(webhookResponse);
-      setMessages(prev => [...prev, agentMessage]);
+      setMessages((prev: ChatMessage[]) => [...prev, agentMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
       // TODO: Handle error state
