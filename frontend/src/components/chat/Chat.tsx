@@ -177,8 +177,8 @@ export const Chat = ({ title, apiEndpoint, className }: ChatProps) => {
     <div className={`h-full ${className || ''}`}>
       {currentView === 'history' ? (
         <ChatHistoryView
-          conversations={sessions.length === 0 ? conversations : undefined}
-          sessions={sessions.length > 0 ? sessions : undefined}
+          conversations={undefined}
+          sessions={sessions}
           onNewChat={handleNewChat}
           onSelectConversation={handleSelectConversation}
           title={title}
