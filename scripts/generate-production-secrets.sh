@@ -54,7 +54,7 @@ POSTGRES_PORT=5432
 POSTGRES_USER=event_horizon_user
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 POSTGRES_DB=event_horizon_prod
-DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@\${POSTGRES_HOST}:\${POSTGRES_PORT}/\${POSTGRES_DB}
+DATABASE_URL=postgresql://event_horizon_user:${POSTGRES_PASSWORD}@postgres:5432/event_horizon_prod
 
 # =============================================================================
 # REDIS CONFIGURATION

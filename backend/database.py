@@ -24,6 +24,10 @@ class Database:
     def connect(self):
         if not self.conn:
             try:
+                # Log the full DATABASE_URL for debugging (mask password)
+                masked_url = DATABASE_URL.replace(DATABASE_URL.split(':')[2].split('@')[0], '***')
+                logger.info(f"Attempting to connect to database with URL: {masked_url}")
+                
                 self.conn = psycopg.connect(DATABASE_URL)
                 logger.info(f"Connected to database: {DATABASE_URL.split('@')[1]}")
                 
