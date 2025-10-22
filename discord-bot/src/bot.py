@@ -9,6 +9,7 @@ import logging
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 # Load environment variables
 load_dotenv()
@@ -61,6 +62,32 @@ class ApprovalBot(commands.Bot):
         
         # HTTP session for webhook calls
         self.session: aiohttp.ClientSession = None
+        
+        # Internal n8n URL for Docker network communication
+        self.n8n_internal_url = os.getenv('N8N_URL', 'http://n8n:5678')
+    
+    def translate_to_internal_url(self, public_url: str) -> str:
+        """
+        Convert any n8n URL (public or private) to internal Docker network URL.
+        
+        This ensures all container-to-container communication uses the internal
+        Docker network (http://n8n:5678) instead of external routing, which:
+        - Avoids DNS resolution issues in containerized environments
+        - Works consistently in both dev and prod
+        - Is faster (no external routing)
+        - More reliable (no dependency on external DNS)
+        
+        Example:
+            https://eh-n8n.retanatech.com/webhook-waiting/13
+            becomes
+            http://n8n:5678/webhook-waiting/13
+        """
+        # Extract the path from the public URL
+        parsed = urlparse(public_url)
+        path = parsed.path
+        
+        # Always use internal Docker network URL
+        return f"{self.n8n_internal_url}{path}"
         
     async def setup_hook(self):
         """Called when the bot is starting up"""
@@ -209,6 +236,10 @@ class ApprovalBot(commands.Bot):
     async def send_webhook_response(self, webhook_url: str, approved: bool, feedback: str = None) -> bool:
         """Send approval/rejection response to n8n webhook"""
         try:
+            # Translate public URL to internal Docker network URL
+            internal_url = self.translate_to_internal_url(webhook_url)
+            logger.info(f"Translated webhook URL: {webhook_url} -> {internal_url}")
+            
             # Start with the original request data
             response_data = dict(self.current_approval.request_data)
             
@@ -221,7 +252,7 @@ class ApprovalBot(commands.Bot):
             if feedback:
                 response_data['feedback'] = feedback
             
-            async with self.session.post(webhook_url, json=response_data) as response:
+            async with self.session.post(internal_url, json=response_data) as response:
                 if response.status == 200:
                     logger.info(f"Successfully sent response to webhook: {response_data}")
                     return True
