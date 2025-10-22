@@ -23,17 +23,15 @@
     "isManaged": false
   },
   {
-    "createdAt": "2025-09-20T15:12:29.659Z",
-    "updatedAt": "2025-09-20T15:17:51.890Z",
-    "id": "${N8N_SMTP_CREDENTIAL_ID}",
-    "name": "SMTP account",
+    "createdAt": "2025-10-22T15:01:05.876Z",
+    "updatedAt": "2025-10-22T15:01:05.872Z",
+    "id": "${N8N_AWS_CREDENTIAL_ID}",
+    "name": "AWS account",
     "data": {
-      "user": "${N8N_SMTP_USER}",
-      "password": "${N8N_SMTP_PASSWORD}",
-      "host": "${N8N_SMTP_HOST}",
-      "hostName": "${N8N_SMTP_HOSTNAME}"
+      "accessKeyId": "${N8N_AWS_ACCESS_KEY_ID}",
+      "secretAccessKey": "${N8N_AWS_SECRET_ACCESS_KEY}"
     },
-    "type": "smtp",
+    "type": "aws",
     "isManaged": false
   },
   {
